@@ -1,0 +1,16 @@
+package com.swer313.projectstep1.notification;
+
+public enum NotificationType {
+    BOOKING_CONFIRMED,
+    BOOKING_CANCELLED,
+    BOOKING_PENDING,
+    PAYMENT_SUCCESS,
+    BOOKING_REMINDER,
+    PAYMENT_FAILED,
+    PAYMENT_REFUNDED,
+    WELCOME_EMAIL,
+    PASSWORD_RESET,
+    REVIEW_REMINDER,
+    ROOM_AVAILABLE,
+    CUSTOM
+}
