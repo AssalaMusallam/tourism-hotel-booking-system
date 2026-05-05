@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Hotel, BedDouble, Sparkles, Plus } from 'lucide-react';
+import { Hotel, Sparkles, Plus, Users, Tag, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAdminHotels, useAmenities } from '../../hooks/useCatalogQueries';
 import useAuth from '../../hooks/useAuth';
@@ -19,7 +20,8 @@ const StatCard = ({ title, value, icon: Icon, color = 'terracotta' }) => (
 );
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  useEffect(() => { document.title = 'Dashboard – PinkFlow'; }, []);
 
   const { data: hotelsData, isLoading: hotelsLoading } = useAdminHotels({ page: 0, size: 1 });
   const { data: amenitiesData, isLoading: amenitiesLoading } = useAmenities({ page: 0, size: 1 });
@@ -33,9 +35,12 @@ const AdminDashboard = () => {
     <div className={styles.page}>
       <aside className={styles.sidebar}>
         <nav className={styles.nav}>
-          <Link to="/admin" className={`${styles.navLink} ${styles.active}`}>Dashboard</Link>
-          <Link to="/admin/hotels" className={styles.navLink}>Manage Hotels</Link>
+          <Link to="/dashboard" className={`${styles.navLink} ${styles.active}`}>Dashboard</Link>
+          <Link to="/dashboard/hotels" className={styles.navLink}>Manage Hotels</Link>
           <Link to="/admin/amenities" className={styles.navLink}>Manage Amenities</Link>
+          {isAdmin && <Link to="/dashboard/users" className={styles.navLink}>Manage Users</Link>}
+          <Link to="/dashboard/pricing-rules" className={styles.navLink}>Pricing Rules</Link>
+          {isAdmin && <Link to="/dashboard/reports" className={styles.navLink}>Analytics</Link>}
         </nav>
       </aside>
 
@@ -48,7 +53,7 @@ const AdminDashboard = () => {
             </p>
           </div>
           <div className={styles.quickActions}>
-            <Link to="/admin/hotels" className={styles.actionBtn}>
+            <Link to="/dashboard/hotels" className={styles.actionBtn}>
               <Plus size={16} /> Manage Hotels
             </Link>
           </div>
@@ -68,7 +73,7 @@ const AdminDashboard = () => {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Quick Links</h2>
           <div className={styles.quickLinksGrid}>
-            <Link to="/admin/hotels" className={styles.quickLink}>
+            <Link to="/dashboard/hotels" className={styles.quickLink}>
               <Hotel size={20} />
               <span>Manage Hotels</span>
               <p>View, create, edit, and manage all hotels</p>
@@ -78,6 +83,25 @@ const AdminDashboard = () => {
               <span>Manage Amenities</span>
               <p>Create and configure amenities for hotels and rooms</p>
             </Link>
+            {isAdmin && (
+              <Link to="/dashboard/users" className={styles.quickLink}>
+                <Users size={20} />
+                <span>Manage Users</span>
+                <p>Change roles, active status, and manager hotel access</p>
+              </Link>
+            )}
+            <Link to="/dashboard/pricing-rules" className={styles.quickLink}>
+              <Tag size={20} />
+              <span>Pricing Rules</span>
+              <p>Configure seasonal multipliers and price adjustments</p>
+            </Link>
+            {isAdmin && (
+              <Link to="/dashboard/reports" className={styles.quickLink}>
+                <BarChart2 size={20} />
+                <span>Analytics &amp; Reports</span>
+                <p>Revenue, occupancy, and booking insights per hotel</p>
+              </Link>
+            )}
           </div>
         </div>
       </main>

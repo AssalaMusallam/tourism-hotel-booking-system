@@ -1,0 +1,123 @@
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cardHeader { display: flex; flex-direction: column; gap: 4px; }
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.icon { color: #0284c7; }
+
+.title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.monthBadge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* ── SVG gauge ── */
+.svgWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.svg {
+  width: 200px;
+  max-width: 100%;
+}
+
+.gaugeValue {
+  font-size: 28px;
+  font-weight: 900;
+  font-family: var(--font-body);
+}
+
+.gaugeLabel {
+  font-size: 11px;
+  fill: #9ca3af;
+  font-family: var(--font-body);
+}
+
+.qualityLabel {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* ── Footer ── */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.footerItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footerLabel { color: var(--color-text-muted); }
+.footerItem strong { color: var(--color-text-main); }
+
+/* ── Skeleton gauge ── */
+.skeletonGauge {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+/* ── Empty / Error ── */
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 110px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: var(--color-danger, #dc2626);
+}

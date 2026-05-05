@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class WaitingListResponseDTO {
 
     private final Long              id;
+    private final Long              hotelId;
     private final Long              roomTypeId;
     private final String            roomTypeName;
     private final String            hotelName;
@@ -22,13 +23,14 @@ public class WaitingListResponseDTO {
     // كم شخص قبلك في القائمة — مفيد للـ guest
     private final Integer           positionInQueue;
 
-    public WaitingListResponseDTO(Long id, Long roomTypeId, String roomTypeName,
+    public WaitingListResponseDTO(Long id, Long hotelId, Long roomTypeId, String roomTypeName,
                                   String hotelName, String guestEmail,
                                   String guestName, LocalDate checkIn,
                                   LocalDate checkOut, WaitingListStatus status,
                                   LocalDateTime createdAt, LocalDateTime notifiedAt,
                                   Integer positionInQueue) {
         this.id              = id;
+        this.hotelId         = hotelId;
         this.roomTypeId      = roomTypeId;
         this.roomTypeName    = roomTypeName;
         this.hotelName       = hotelName;
@@ -43,6 +45,7 @@ public class WaitingListResponseDTO {
     }
 
     public Long              getId()              { return id; }
+    public Long              getHotelId()         { return hotelId; }
     public Long              getRoomTypeId()      { return roomTypeId; }
     public String            getRoomTypeName()    { return roomTypeName; }
     public String            getHotelName()       { return hotelName; }

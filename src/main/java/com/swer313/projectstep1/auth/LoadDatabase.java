@@ -6,6 +6,8 @@ import com.swer313.projectstep1.booking.BookingStatus;
 import com.swer313.projectstep1.catalog.amenities.Amenity;
 import com.swer313.projectstep1.catalog.amenities.AmenityRepository;
 import com.swer313.projectstep1.catalog.hotel.Hotel;
+import com.swer313.projectstep1.catalog.hotel.HotelImage;
+import com.swer313.projectstep1.catalog.hotel.HotelImageRepository;
 import com.swer313.projectstep1.catalog.hotel.HotelRepository;
 import com.swer313.projectstep1.catalog.room.BedType;
 import com.swer313.projectstep1.catalog.room.RoomType;
@@ -123,6 +125,7 @@ public class LoadDatabase implements CommandLineRunner {
     // ── Dependencies ──────────────────────────────────────────────────────────
     private final UserRepository         userRepository;
     private final HotelRepository        hotelRepository;
+    private final HotelImageRepository   hotelImageRepository;
     private final AmenityRepository      amenityRepository;
     private final RoomTypeRepository     roomTypeRepository;
     private final BookingRepository      bookingRepository;
@@ -135,6 +138,7 @@ public class LoadDatabase implements CommandLineRunner {
 
     public LoadDatabase(UserRepository userRepository,
                       HotelRepository hotelRepository,
+                      HotelImageRepository hotelImageRepository,
                       AmenityRepository amenityRepository,
                       RoomTypeRepository roomTypeRepository,
                       BookingRepository bookingRepository,
@@ -146,6 +150,7 @@ public class LoadDatabase implements CommandLineRunner {
                       PasswordEncoder passwordEncoder) {
         this.userRepository         = userRepository;
         this.hotelRepository        = hotelRepository;
+        this.hotelImageRepository   = hotelImageRepository;
         this.amenityRepository      = amenityRepository;
         this.roomTypeRepository     = roomTypeRepository;
         this.bookingRepository      = bookingRepository;
@@ -172,6 +177,7 @@ public class LoadDatabase implements CommandLineRunner {
         List<User>      users       = seedUsers();
         List<Amenity>   amenities   = seedAmenities();
         List<Hotel>     hotels      = seedHotels(users, amenities);
+        seedHotelImages(hotels);
         List<RoomType>  roomTypes   = seedRoomTypes(hotels, amenities);
         seedPricingRules();
         List<Booking>   bookings    = seedBookings(roomTypes);
@@ -306,6 +312,65 @@ public class LoadDatabase implements CommandLineRunner {
                 parking, safe, oldGym));
         log.info("✅ Amenities created: {} (12 active, 1 inactive)", saved.size());
         return saved;
+    }
+
+    private void seedHotelImages(List<Hotel> hotels) {
+        int added = 0;
+
+        for (Hotel hotel : hotels) {
+            if (hotel == null || hotel.getId() == null) {
+                continue;
+            }
+
+            if (!hotelImageRepository.findByHotelId(hotel.getId()).isEmpty()) {
+                continue;
+            }
+
+            List<HotelImage> images = demoHotelImages(hotel.getName()).stream()
+                    .map(url -> hotelImage(hotel, url))
+                    .toList();
+
+            hotelImageRepository.saveAll(images);
+            added += images.size();
+        }
+
+        log.info("✅ Hotel demo images seeded/verified. Added {} image(s).", added);
+    }
+
+    private HotelImage hotelImage(Hotel hotel, String imageUrl) {
+        HotelImage image = new HotelImage();
+        image.setHotel(hotel);
+        image.setImageUrl(imageUrl);
+        image.setFileName(imageUrl.substring(imageUrl.lastIndexOf('/') + 1));
+        return image;
+    }
+
+    private List<String> demoHotelImages(String hotelName) {
+        if ("The Grand Amman Palace".equals(hotelName)) {
+            return List.of(
+                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
+            );
+        }
+
+        if ("Petra Desert Lodge".equals(hotelName)) {
+            return List.of(
+                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80"
+            );
+        }
+
+        if ("Dead Sea Horizon Resort".equals(hotelName)) {
+            return List.of(
+                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80"
+            );
+        }
+
+        return List.of();
     }
 
     private Amenity amenity(String name, String desc,

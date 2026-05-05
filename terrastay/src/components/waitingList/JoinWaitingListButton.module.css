@@ -1,0 +1,23 @@
+.modal {
+  display: grid;
+  gap: 16px;
+}
+
+.modal div {
+  display: grid;
+  gap: 2px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.modal strong {
+  font-size: 17px;
+  color: var(--color-text-main);
+}
+
+.modal span,
+.modal p {
+  color: var(--color-text-secondary);
+}

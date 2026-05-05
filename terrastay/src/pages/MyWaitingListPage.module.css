@@ -1,0 +1,42 @@
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 40px 18px 64px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  gap: 16px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 11px 18px;
+  border-bottom: 1px solid #f59e0b;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 14px;
+}

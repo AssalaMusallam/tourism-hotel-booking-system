@@ -1,0 +1,42 @@
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  pointer-events: none;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  background: var(--color-text-primary);
+  color: var(--color-bg);
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--transition), transform var(--transition);
+  z-index: 250;
+}
+
+.toggle:hover .tooltip,
+.toggle:focus-visible .tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}

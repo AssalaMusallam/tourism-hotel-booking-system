@@ -8,9 +8,9 @@ const Footer = () => {
       <div className={styles.container}>
         <div className={styles.grid}>
           <div className={styles.col}>
-            <Link to="/" className={styles.logo}>TerraStay</Link>
+            <Link to="/" className={styles.logo}>PinkFlow</Link>
             <p className={styles.tagline}>
-              Connecting Pilgrims & Travelers to the Heart of Palestine
+              Hotel Search &amp; Booking Platform
             </p>
             <div className={styles.socials}>
               <a href="#" aria-label="Facebook" className={styles.social}><Share2 size={18} /></a>
@@ -42,7 +42,7 @@ const Footer = () => {
         </div>
 
         <div className={styles.bottom}>
-          <span>© 2025 TerraStay. Made with ♥ in Bethlehem, Palestine.</span>
+          <span>© 2026 PinkFlow. All rights reserved.</span>
         </div>
       </div>
     </footer>

@@ -1,0 +1,165 @@
+.card {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.headerLine {
+  margin-bottom: 10px;
+}
+
+.nightsSummary {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 10px 0;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  padding: 5px 0;
+}
+
+.line strong {
+  color: var(--color-text-main);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.converted {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  text-decoration: underline;
+}
+
+/* ── expanded table ── */
+.tableWrap {
+  margin-top: 12px;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 8px 10px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.nightRow {
+  background: transparent;
+}
+
+/* weekend tint = light blue */
+.rowWeekend {
+  background: #eff6ff;
+}
+
+/* season tint = light amber */
+.rowSeason {
+  background: #fffbeb;
+}
+
+/* both = alternating gradient via diagonal stripe */
+.rowBoth {
+  background: linear-gradient(135deg, #fffbeb 50%, #eff6ff 50%);
+}
+
+.nightTotal {
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-align: right;
+}
+
+/* inline badge styles */
+.seasonTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.weekendTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.standardTag {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}

@@ -156,6 +156,10 @@
   border-radius: var(--radius-md);
 }
 
+.cardTall {
+  max-width: 480px;
+}
+
 @media (max-width: 480px) {
   .card { padding: 28px 20px; }
   .rowFields { grid-template-columns: 1fr; }

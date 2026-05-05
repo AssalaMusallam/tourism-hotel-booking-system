@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, BedDouble, Eye, Image as ImageIcon, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, BedDouble, Eye, Search, UserCog } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   useAdminHotels, useCreateHotel, useUpdateHotel, useDeleteHotel,
@@ -16,6 +16,8 @@ import EmptyState from '../../components/ui/EmptyState';
 import Input from '../../components/ui/Input';
 import styles from './ManageHotels.module.css';
 
+const HotelMap = lazy(() => import('../../components/map/HotelMap'));
+
 const ManageHotels = () => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,6 +25,8 @@ const ManageHotels = () => {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [view, setView] = useState('table');
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
 
   const params = {
     page,
@@ -76,6 +80,7 @@ const ManageHotels = () => {
           <Link to="/admin" className={styles.navLink}>Dashboard</Link>
           <Link to="/admin/hotels" className={`${styles.navLink} ${styles.active}`}>Manage Hotels</Link>
           <Link to="/admin/amenities" className={styles.navLink}>Manage Amenities</Link>
+          <Link to="/dashboard/users" className={styles.navLink}>Manage Users</Link>
         </nav>
       </aside>
 
@@ -85,6 +90,21 @@ const ManageHotels = () => {
           <Button variant="primary" icon={Plus} onClick={() => { setEditHotel(null); setModalOpen(true); }}>
             Add Hotel
           </Button>
+        </div>
+
+        <div className={styles.tabs}>
+          <button
+            className={view === 'table' ? styles.tabActive : ''}
+            onClick={() => setView('table')}
+          >
+            Table
+          </button>
+          <button
+            className={view === 'map' ? styles.tabActive : ''}
+            onClick={() => setView('map')}
+          >
+            Map
+          </button>
         </div>
 
         {/* Filters */}
@@ -116,6 +136,15 @@ const ManageHotels = () => {
             description="Create your first hotel to get started."
             action={{ label: 'Add Hotel', onClick: () => setModalOpen(true) }}
           />
+        ) : view === 'map' ? (
+          <Suspense fallback={<div className={`skeleton ${styles.mapSkeleton}`} />}>
+            <HotelMap
+              hotels={hotels}
+              selectedId={selectedHotelId}
+              onMarkerClick={(id) => setSelectedHotelId(id)}
+              height="620px"
+            />
+          </Suspense>
         ) : (
           <>
             <div className={styles.tableWrap}>
@@ -159,11 +188,18 @@ const ManageHotels = () => {
                             <Edit size={15} />
                           </button>
                           <Link
-                            to={`/admin/hotels/${hotel.id}/rooms`}
+                            to={`/dashboard/hotels/${hotel.id}/rooms`}
                             className={styles.actionBtn}
                             title="Manage Rooms"
                           >
                             <BedDouble size={15} />
+                          </Link>
+                          <Link
+                            to={`/dashboard/hotels/${hotel.id}/managers`}
+                            className={styles.actionBtn}
+                            title="Manage Managers"
+                          >
+                            <UserCog size={15} />
                           </Link>
                           <button
                             className={`${styles.actionBtn} ${styles.deleteBtn}`}

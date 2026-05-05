@@ -2,6 +2,10 @@ import { CheckCircle2, Snowflake, Users, Wifi, Building2, BadgeCheck } from 'luc
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Button from '../ui/Button';
 import PriceBreakdown from './PriceBreakdown';
+import PriceBreakdownCard from '../pricing/PriceBreakdownCard';
+import JoinWaitingListButton from '../waitingList/JoinWaitingListButton';
+import PriceDisplay from '../PriceDisplay';
+import { useRoomPricePreview } from '../../hooks/usePricingRules';
 import styles from './RoomCard.module.css';
 
 const money = (value) =>
@@ -19,12 +23,16 @@ const getRoomId = (room) => room.roomTypeId || room.id;
 const RoomCard = ({ room, checkIn, checkOut, onBook }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const roomTypeId = getRoomId(room);
+  const { data: priceBreakdown, isLoading: priceLoading, isError: priceError } = useRoomPricePreview(
+    roomTypeId, checkIn, checkOut
+  );
   const amenities = room.amenities?.length
     ? room.amenities.map((label) => ({ label, icon: BadgeCheck }))
     : DEFAULT_AMENITIES;
 
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} ${!room.available ? styles.full : ''}`}>
       <div className={styles.main}>
         <div className={styles.top}>
           <div>
@@ -35,14 +43,18 @@ const RoomCard = ({ room, checkIn, checkOut, onBook }) => {
                 Capacity: {room.capacity} guest{room.capacity === 1 ? '' : 's'}
               </span>
               <span className={styles.metaItem}>
-                {money(room.basePrice)}/night
+                <PriceDisplay usdAmount={room.basePrice} size="sm" suffix="/night" />
               </span>
             </div>
           </div>
-          <span className={styles.available}>
-            <CheckCircle2 size={15} />
-            {room.remainingUnits} available
-          </span>
+          {room.available ? (
+            <span className={styles.available}>
+              <CheckCircle2 size={15} />
+              {room.remainingUnits} available
+            </span>
+          ) : (
+            <span className={styles.fullBadge}>Fully Booked</span>
+          )}
         </div>
 
         <div className={styles.amenities}>
@@ -55,29 +67,50 @@ const RoomCard = ({ room, checkIn, checkOut, onBook }) => {
         </div>
 
         <p className={styles.description}>
-          Sleeps up to {room.capacity} guests with {room.remainingUnits} unit{room.remainingUnits === 1 ? '' : 's'} available for your selected dates.
+          {room.available
+            ? `Sleeps up to ${room.capacity} guests with ${room.remainingUnits} unit${room.remainingUnits === 1 ? '' : 's'} available for your selected dates.`
+            : `Sleeps up to ${room.capacity} guests. Join the waiting list and we will notify you if a spot opens.`}
         </p>
       </div>
 
       <div className={styles.side}>
-        <PriceBreakdown roomType={room} checkIn={checkIn} checkOut={checkOut} />
-        <Button
-          className={styles.cta}
-          variant="primary"
-          size="lg"
-          onClick={() => {
-            if (onBook) {
-              onBook(room);
-              return;
-            }
-            const params = new URLSearchParams(searchParams);
-            if (checkIn) params.set('checkIn', checkIn);
-            if (checkOut) params.set('checkOut', checkOut);
-            navigate(`/hotels/${room.hotelId}/rooms/${getRoomId(room)}/book?${params.toString()}`);
-          }}
-        >
-          Book Now
-        </Button>
+        {priceLoading ? (
+          <div className="skeleton" style={{ height: 140, width: '100%', borderRadius: 8 }} />
+        ) : priceError ? (
+          <PriceBreakdown roomType={room} checkIn={checkIn} checkOut={checkOut} />
+        ) : priceBreakdown ? (
+          <PriceBreakdownCard breakdown={priceBreakdown} />
+        ) : (
+          <PriceBreakdown roomType={room} checkIn={checkIn} checkOut={checkOut} />
+        )}
+        {room.available ? (
+          <Button
+            className={styles.cta}
+            variant="primary"
+            size="lg"
+            onClick={() => {
+              if (onBook) {
+                onBook(room);
+                return;
+              }
+              const params = new URLSearchParams(searchParams);
+              if (checkIn) params.set('checkIn', checkIn);
+              if (checkOut) params.set('checkOut', checkOut);
+              navigate(`/hotels/${room.hotelId}/rooms/${getRoomId(room)}/book?${params.toString()}`);
+            }}
+          >
+            Book Now
+          </Button>
+        ) : (
+          <JoinWaitingListButton
+            roomTypeId={getRoomId(room)}
+            roomTypeName={getRoomName(room)}
+            hotelName={room.hotelName}
+            checkIn={checkIn}
+            checkOut={checkOut}
+            onBookAvailable={() => onBook?.({ ...room, available: true })}
+          />
+        )}
       </div>
     </article>
   );

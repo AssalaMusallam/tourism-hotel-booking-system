@@ -8,11 +8,9 @@ public class WaitingListRequestDTO {
     @NotNull(message = "roomTypeId is required")
     private Long roomTypeId;
 
-    @NotBlank(message = "guestEmail is required")
     @Email(message = "guestEmail must be valid")
     private String guestEmail;
 
-    @NotBlank(message = "guestName is required")
     @Size(min = 2, max = 150)
     private String guestName;
 

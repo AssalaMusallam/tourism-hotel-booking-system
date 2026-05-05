@@ -59,29 +59,80 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px minmax(320px, 40%) minmax(0, 60%);
   gap: 28px;
   align-items: start;
 }
 
-.sidebar {}
+.sidebar {
+  display: block;
+}
 
 .results {}
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 20px;
 }
 
+.mapPane {
+  position: sticky;
+  top: calc(var(--navbar-height) + 16px);
+}
+
+.mapSkeleton {
+  height: calc(100vh - 150px);
+  border-radius: var(--radius-lg);
+}
+
+.selectedCard {
+  border-radius: var(--radius-lg);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.mobileMapToggle {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.mobileMapToggle button {
+  min-height: 40px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-weight: 800;
+}
+
+.toggleActive {
+  background: #fff;
+  color: var(--color-primary) !important;
+  box-shadow: var(--shadow-card);
+}
+
+:root.dark .toggleActive {
+  background: var(--color-surface-alt);
+}
+
 @media (max-width: 1024px) {
-  .layout { grid-template-columns: 220px 1fr; }
-  .grid { grid-template-columns: repeat(2, 1fr); }
+  .layout { grid-template-columns: minmax(260px, 42%) minmax(0, 58%); }
+  .sidebar {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 768px) {
   .mobileFilterBtn { display: flex; }
+  .mobileMapToggle { display: grid; }
   .layout { grid-template-columns: 1fr; }
+  .mapPane { position: static; }
+  .mobileHidden { display: none; }
   .sidebar {
     display: none;
   }

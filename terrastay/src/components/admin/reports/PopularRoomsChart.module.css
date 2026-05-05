@@ -1,0 +1,115 @@
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cardHeader { display: flex; flex-direction: column; gap: 4px; }
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon { color: #f59e0b; }
+
+.title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* ── Bars ── */
+.barsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 180px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.roomName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackWrap {
+  min-width: 0;
+}
+
+.track {
+  background: var(--color-surface);
+  border-radius: 999px;
+  height: 28px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 4px;
+}
+
+.count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.rankBadge {
+  font-size: 12px;
+  font-weight: 900;
+  width: 28px;
+  text-align: center;
+}
+
+/* ── Empty / Error ── */
+.emptyState {
+  padding: 30px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: var(--color-danger, #dc2626);
+}
+
+/* ── Responsive ── */
+@media (max-width: 560px) {
+  .row {
+    grid-template-columns: 120px 1fr auto auto;
+    gap: 8px;
+  }
+}

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PriceDisplay from '../PriceDisplay';
+import { getImageUrl } from '../../lib/imageUrl';
 import styles from './HotelCard.module.css';
 
 // HotelResponseDto shape:
@@ -8,8 +10,9 @@ import styles from './HotelCard.module.css';
 //   images: [{id, url}], status }
 
 const HotelCard = ({ hotel, index = 0 }) => {
-  // Backend returns images[].url
-  const imgSrc = hotel.images?.[0]?.url || null;
+  const imgSrc = getImageUrl(
+    hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName
+  );
   const amenityNames = hotel.amenityNames
     ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames])
     : [];
@@ -24,13 +27,13 @@ const HotelCard = ({ hotel, index = 0 }) => {
     >
       <Link to={`/hotels/${hotel.id}`} className={styles.imageLink}>
         <div className={styles.imageWrap}>
-          {imgSrc ? (
-            <img src={imgSrc} alt={hotel.name} className={styles.image} loading="lazy" />
-          ) : (
-            <div className={styles.imagePlaceholder}>
-              <span>{hotel.city?.[0] || hotel.name?.[0]}</span>
-            </div>
-          )}
+          <img
+            src={imgSrc}
+            alt={hotel.name}
+            className={styles.image}
+            loading="lazy"
+            onError={(e) => { e.currentTarget.src = '/placeholder-hotel.jpg'; }}
+          />
         </div>
       </Link>
 
@@ -63,6 +66,11 @@ const HotelCard = ({ hotel, index = 0 }) => {
         )}
 
         <div className={styles.footer}>
+          {(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice) && (
+            <div className={styles.fromPrice}>
+              from <PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice} size="sm" suffix="/night" />
+            </div>
+          )}
           <Link to={`/hotels/${hotel.id}`} className={styles.viewBtn}>
             View Hotel
           </Link>

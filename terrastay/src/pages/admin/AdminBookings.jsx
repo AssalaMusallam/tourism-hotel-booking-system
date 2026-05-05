@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getAllBookings } from '../../api/bookings';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { completeBooking, confirmBooking, friendlyBookingError, getAllBookings } from '../../api/bookings';
 import BookingRow from '../../components/admin/BookingRow';
 import Spinner from '../../components/ui/Spinner';
 import Select from '../../components/ui/Select';
@@ -18,13 +19,32 @@ const STATUS_OPTIONS = [
 const AdminBookings = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [expandedRow, setExpandedRow] = useState(null);
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-bookings', statusFilter],
     queryFn: () => getAllBookings({ status: statusFilter || undefined }),
   });
 
-  const bookings = data?.data || [];
+  const bookings = data?.content || data?.data || [];
+
+  const confirmMutation = useMutation({
+    mutationFn: confirmBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
+      toast.success('Booking confirmed');
+    },
+    onError: (error) => toast.error(friendlyBookingError(error)),
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: completeBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-bookings'] });
+      toast.success('Booking completed');
+    },
+    onError: (error) => toast.error(friendlyBookingError(error)),
+  });
 
   return (
     <div className={styles.page}>
@@ -67,6 +87,7 @@ const AdminBookings = () => {
                   <th>Check-out</th>
                   <th>Total</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,6 +97,9 @@ const AdminBookings = () => {
                     booking={b}
                     expanded={expandedRow === b.id}
                     onClick={() => setExpandedRow(expandedRow === b.id ? null : b.id)}
+                    onConfirm={(id) => confirmMutation.mutate(id)}
+                    onComplete={(id) => completeMutation.mutate(id)}
+                    busy={confirmMutation.isPending || completeMutation.isPending}
                   />
                 ))}
               </tbody>

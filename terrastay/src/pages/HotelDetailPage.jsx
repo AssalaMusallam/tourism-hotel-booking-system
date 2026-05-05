@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, Mail, Globe, Clock, Users, BedDouble, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,7 +12,10 @@ import Spinner from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
 import HotelReviewsList from '../components/review/HotelReviewsList';
 import RatingSummaryWidget from '../components/review/RatingSummaryWidget';
+import PriceDisplay from '../components/PriceDisplay';
 import styles from './HotelDetailPage.module.css';
+
+const HotelMap = lazy(() => import('../components/map/HotelMap'));
 
 // Format "HH:mm:ss" → "HH:mm" for display
 const displayTime = (t) => t ? t.substring(0, 5) : '';
@@ -31,6 +34,12 @@ const HotelDetailPage = () => {
   const { data: hotel, isLoading, error } = useHotel(id);
   const { data: roomsData } = useRoomsByHotel(id, { page: 0, size: 50 });
   const rooms = roomsData?.content || [];
+
+  useEffect(() => {
+    if (hotel?.name) document.title = `${hotel.name} – PinkFlow`;
+    else document.title = 'PinkFlow – Hotel Booking';
+    return () => { document.title = 'PinkFlow – Hotel Booking'; };
+  }, [hotel?.name]);
 
   if (isLoading) return <Spinner centered />;
   if (error || !hotel) return (
@@ -81,6 +90,14 @@ const HotelDetailPage = () => {
         <div className={styles.galleryWrap}>
           <ImageGallery images={hotel.images} name={hotel.name} />
         </div>
+
+        {hotel.latitude != null && hotel.longitude != null && (
+          <div className={styles.embeddedMap}>
+            <Suspense fallback={<div className={`skeleton ${styles.mapSkeleton}`} />}>
+              <HotelMap hotels={[hotel]} selectedId={hotel.id} height="320px" />
+            </Suspense>
+          </div>
+        )}
 
         {/* Hotel Header */}
         <motion.div
@@ -208,7 +225,7 @@ const HotelDetailPage = () => {
                   </div>
                   <div className={styles.roomAction}>
                     <div className={styles.roomPrice}>
-                      <span className={styles.priceAmount}>${Number(room.basePrice).toFixed(0)}</span>
+                      <span className={styles.priceAmount}><PriceDisplay usdAmount={room.basePrice} size="md" /></span>
                       <span className={styles.priceNight}>/night</span>
                     </div>
                     <span className={styles.roomUnits}>{room.totalUnits} unit{room.totalUnits !== 1 ? 's' : ''}</span>

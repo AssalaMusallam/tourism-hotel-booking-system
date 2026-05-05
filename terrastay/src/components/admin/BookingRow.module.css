@@ -41,3 +41,9 @@
 .details div {
   color: var(--color-text-secondary);
 }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

@@ -37,3 +37,9 @@ export const cancelBooking = (id, reason) =>
 
 export const getAllBookings = (params = {}) =>
   api.get('/api/bookings', { params }).then((response) => response.data);
+
+export const confirmBooking = (id) =>
+  api.patch(`/api/bookings/${id}/confirm`).then((response) => response.data);
+
+export const completeBooking = (id) =>
+  api.patch(`/api/bookings/${id}/complete`).then((response) => response.data);

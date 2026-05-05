@@ -1,0 +1,35 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.filled {
+  color: var(--color-text-main);
+}
+
+.empty {
+  color: var(--color-text-muted);
+  opacity: 0.35;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.green {
+  color: #065f46;
+}
+
+.amber {
+  color: #92400e;
+}

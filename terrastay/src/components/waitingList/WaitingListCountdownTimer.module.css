@@ -1,0 +1,14 @@
+.timer {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  color: #b45309;
+}
+
+.urgent {
+  color: #dc2626;
+}
+
+.expired {
+  color: #6b7280;
+}

@@ -1,13 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, CalendarCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, CalendarCheck, UserCircle, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuth from '../../hooks/useAuth';
+import RoleBadge from '../ui/RoleBadge';
+import { useMyWaitingList } from '../../hooks/useWaitingList';
+import CurrencySelector from '../CurrencySelector';
+import ThemeToggle from '../ui/ThemeToggle';
 import toast from 'react-hot-toast';
 import styles from './Navbar.module.css';
 
 const Navbar = () => {
   const { isAuthenticated, isAdmin, isManager, user, logout } = useAuth();
+  const waitingListQuery = useMyWaitingList(0);
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -43,13 +48,20 @@ const Navbar = () => {
   ];
 
   const displayName = user?.fullName || user?.name || 'User';
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('') || 'U';
+  const hasWaitingNotification = (waitingListQuery.data?.content || []).some((entry) => entry.status === 'NOTIFIED');
 
   return (
     <>
       <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <Link to="/" className={styles.logo}>
-            <span className={styles.logoText}>TerraStay</span>
+            <span className={styles.logoText}>PinkFlow</span>
           </Link>
 
           <div className={styles.links}>
@@ -72,15 +84,19 @@ const Navbar = () => {
             )}
             {isManager && (
               <NavLink
-                to="/admin"
+                to="/dashboard"
                 className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
               >
-                Admin Panel
+                Dashboard
               </NavLink>
             )}
           </div>
 
           <div className={styles.actions}>
+            <div className={styles.currencySlot}>
+              <CurrencySelector />
+            </div>
+            <ThemeToggle />
             {!isAuthenticated ? (
               <>
                 <Link to="/login" className={styles.loginBtn}>Login</Link>
@@ -94,9 +110,10 @@ const Navbar = () => {
                   aria-expanded={dropdownOpen}
                 >
                   <span className={styles.avatarInitial}>
-                    {displayName[0]?.toUpperCase() || 'U'}
+                    {initials}
                   </span>
                   <span className={styles.avatarName}>{displayName.split(' ')[0]}</span>
+                  {hasWaitingNotification && <span className={styles.notificationDot} aria-label="Waiting list notification" />}
                   <ChevronDown size={14} />
                 </button>
                 <AnimatePresence>
@@ -111,16 +128,25 @@ const Navbar = () => {
                       <div className={styles.dropdownHeader}>
                         <strong>{displayName}</strong>
                         <span>{user?.email}</span>
-                        <span className={styles.roleBadge}>{user?.role}</span>
+                        <RoleBadge role={user?.role} />
                       </div>
                       <div className={styles.dropdownDivider} />
+                      <Link to="/profile" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                        <UserCircle size={15} /> Profile
+                      </Link>
                       {isManager ? (
-                        <Link to="/admin" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                        <Link to="/dashboard" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
                           <LayoutDashboard size={15} /> Dashboard
                         </Link>
                       ) : (
                         <Link to="/my-bookings" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
                           <CalendarCheck size={15} /> My Bookings
+                        </Link>
+                      )}
+                      {!isManager && (
+                        <Link to="/my-waiting-list" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                          <Bell size={15} /> My Waiting List
+                          {hasWaitingNotification && <span className={styles.menuDot} />}
                         </Link>
                       )}
                       <button className={`${styles.dropdownItem} ${styles.logoutItem}`} onClick={handleLogout}>
@@ -162,12 +188,17 @@ const Navbar = () => {
               transition={{ type: 'tween', duration: 0.25 }}
             >
               <div className={styles.drawerHeader}>
-                <span className={styles.logoText}>TerraStay</span>
+                <span className={styles.logoText}>PinkFlow</span>
                 <button onClick={() => setDrawerOpen(false)} aria-label="Close menu">
                   <X size={22} />
                 </button>
               </div>
               <div className={styles.drawerLinks}>
+                <CurrencySelector mobile />
+                <div className={styles.drawerTheme}>
+                  <ThemeToggle />
+                  <span>Theme</span>
+                </div>
                 {navLinks.map((l) => (
                   <NavLink
                     key={l.to}
@@ -183,9 +214,14 @@ const Navbar = () => {
                     My Bookings
                   </NavLink>
                 )}
+                {isAuthenticated && !isManager && (
+                  <NavLink to="/my-waiting-list" className={styles.drawerLink} onClick={() => setDrawerOpen(false)}>
+                    My Waiting List
+                  </NavLink>
+                )}
                 {isManager && (
-                  <NavLink to="/admin" className={styles.drawerLink} onClick={() => setDrawerOpen(false)}>
-                    Admin Panel
+                  <NavLink to="/dashboard" className={styles.drawerLink} onClick={() => setDrawerOpen(false)}>
+                    Dashboard
                   </NavLink>
                 )}
               </div>

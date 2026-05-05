@@ -1,12 +1,13 @@
 import { MapPin, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Badge from '../ui/Badge';
+import { getImageUrl } from '../../lib/imageUrl';
 import styles from './HotelCard.module.css';
 
 // HotelResponseDto: { id, name, city, country, rating, amenityNames: Set<String>,
 //   images: [{id, imageUrl, fileName}], status }
 const HotelCard = ({ hotel, onClick, showStatus = false }) => {
-  const img = hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url;
+  const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName);
   const amenityNames = hotel.amenityNames
     ? Array.from(hotel.amenityNames)
     : [];
@@ -19,10 +20,13 @@ const HotelCard = ({ hotel, onClick, showStatus = false }) => {
       transition={{ duration: 0.18 }}
     >
       <div className={styles.imgWrap}>
-        {img
-          ? <img src={img} alt={hotel.name} className={styles.img} loading="lazy" />
-          : <div className={styles.imgPlaceholder}>{hotel.name?.[0]}</div>
-        }
+        <img
+          src={img}
+          alt={hotel.name}
+          className={styles.img}
+          loading="lazy"
+          onError={(e) => { e.currentTarget.src = '/placeholder-hotel.jpg'; }}
+        />
         {showStatus && (
           <div className={styles.statusBadge}>
             <Badge variant={hotel.status === 'ACTIVE' ? 'active' : 'inactive'}>

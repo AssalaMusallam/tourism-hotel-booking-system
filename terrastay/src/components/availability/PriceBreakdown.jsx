@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import usePriceBreakdown from '../../hooks/usePriceBreakdown';
+import { CURRENCY_META } from '../../constants/currencies';
+import { useCurrencyContext } from '../../context/CurrencyContext';
+import { useRoomPriceInCurrency } from '../../hooks/useCurrency';
 import styles from './PriceBreakdown.module.css';
 
 const money = (value) =>
@@ -8,9 +11,14 @@ const money = (value) =>
 
 const PriceBreakdown = ({ roomType, checkIn, checkOut }) => {
   const [open, setOpen] = useState(false);
+  const { selectedCurrency, formatPrice } = useCurrencyContext();
   const breakdown = usePriceBreakdown(roomType, checkIn, checkOut);
+  const roomTypeId = roomType?.roomTypeId || roomType?.id;
+  const convertedQuery = useRoomPriceInCurrency(roomTypeId, checkIn, checkOut, selectedCurrency);
   const hasNightBreakdown = breakdown.breakdown.length > 1;
   const taxPercent = Math.round((breakdown.taxRate || 0.10) * 100);
+  const converted = convertedQuery.data;
+  const symbol = CURRENCY_META[selectedCurrency]?.symbol || selectedCurrency;
 
   return (
     <section className={styles.card} aria-label="Price breakdown">
@@ -29,6 +37,32 @@ const PriceBreakdown = ({ roomType, checkIn, checkOut }) => {
       <div className={styles.total}>
         <span>Total</span>
         <span>{money(breakdown.total)}</span>
+      </div>
+
+      <div className={styles.currencyBox}>
+        {convertedQuery.isFetching ? (
+          <div className="skeleton" style={{ height: 24, width: '72%' }} />
+        ) : converted ? (
+          <>
+            <div className={styles.line}>
+              <span>Total (USD)</span>
+              <strong>{money(converted.originalTotalUSD)}</strong>
+            </div>
+            <div className={styles.line}>
+              <span>Total ({converted.currency})</span>
+              <strong className={styles.converted}>
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: converted.currency,
+                  maximumFractionDigits: 2,
+                }).format(Number(converted.convertedTotal || 0))}
+              </strong>
+            </div>
+            <p>1 USD = {Number(converted.exchangeRate || 1).toFixed(4)} {symbol} · Rates updated periodically</p>
+          </>
+        ) : (
+          <p>{selectedCurrency === 'USD' ? 'Final charge processed in USD.' : `Estimated total: ${formatPrice(breakdown.total)}`}</p>
+        )}
       </div>
 
       {hasNightBreakdown && (

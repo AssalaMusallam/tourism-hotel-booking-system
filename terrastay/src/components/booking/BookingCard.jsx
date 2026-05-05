@@ -1,10 +1,8 @@
 import { CalendarDays, Hotel, Moon, Star, X } from 'lucide-react';
 import Button from '../ui/Button';
 import StatusBadge from './StatusBadge';
+import PriceDisplay from '../PriceDisplay';
 import styles from './BookingCard.module.css';
-
-const money = (value) =>
-  Number(value || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
 const BookingCard = ({ booking, onCancel, onReview }) => {
   const canCancel = booking.status === 'PENDING' || booking.status === 'CONFIRMED';
@@ -26,7 +24,7 @@ const BookingCard = ({ booking, onCancel, onReview }) => {
           </div>
         </div>
         <div className={styles.summary}>
-          <span className={styles.price}>{money(booking.totalPrice)}</span>
+          <span className={styles.price}><PriceDisplay usdAmount={booking.totalPrice} showOriginal size="md" /></span>
           {canCancel && (
             <Button variant="danger" size="sm" onClick={() => onCancel(booking)}>
               <X size={14} /> Cancel

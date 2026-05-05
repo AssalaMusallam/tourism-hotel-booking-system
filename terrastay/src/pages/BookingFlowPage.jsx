@@ -10,10 +10,14 @@ import { Minus, Plus } from 'lucide-react';
 import { getRoomTypeById } from '../api/roomsApi';
 import { friendlyBookingError } from '../api/bookings';
 import { useCreateBooking } from '../hooks/useBookingQueries';
+import { useCurrencyContext } from '../context/CurrencyContext';
+import { useRoomPriceInCurrency } from '../hooks/useCurrency';
+import { useRoomPricePreview } from '../hooks/usePricingRules';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
+import PriceBreakdownCard from '../components/pricing/PriceBreakdownCard';
 import styles from './BookingFlowPage.module.css';
 
 const today = format(new Date(), 'yyyy-MM-dd');
@@ -59,6 +63,7 @@ const BookingFlowPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { selectedCurrency, formatPrice } = useCurrencyContext();
   const createMutation = useCreateBooking();
 
   const { data: roomType, isLoading } = useQuery({
@@ -95,6 +100,8 @@ const BookingFlowPage = () => {
     const subtotal = nights * pricePerNight;
     return { nights, pricePerNight, totalPrice: subtotal };
   }, [roomType?.basePrice, watched.checkIn, watched.checkOut]);
+  const convertedPrice = useRoomPriceInCurrency(roomTypeId, watched.checkIn, watched.checkOut, selectedCurrency);
+  const { data: priceBreakdown } = useRoomPricePreview(roomTypeId, watched.checkIn, watched.checkOut);
 
   const submit = (values) => {
     const payload = {
@@ -174,16 +181,38 @@ const BookingFlowPage = () => {
             </div>
             <div className={styles.summaryLine}>
               <span>Price per night</span>
-              <strong>{money(pricePreview.pricePerNight)}</strong>
+              <strong>{formatPrice(pricePreview.pricePerNight)}</strong>
             </div>
             <div className={styles.summaryLine}>
               <span>{money(pricePreview.pricePerNight)} x {pricePreview.nights} night{pricePreview.nights === 1 ? '' : 's'}</span>
               <strong>{money(pricePreview.totalPrice)}</strong>
             </div>
-            <div className={styles.totalLine}>
-              <span>Total preview</span>
-              <strong>{money(pricePreview.totalPrice)}</strong>
+            <div className={styles.summaryLine}>
+              <span>Currency selected</span>
+              <strong>{selectedCurrency}</strong>
             </div>
+            {convertedPrice.data && (
+              <div className={styles.summaryLine}>
+                <span>Rate</span>
+                <strong>1 USD = {Number(convertedPrice.data.exchangeRate || 1).toFixed(4)} {selectedCurrency}</strong>
+              </div>
+            )}
+            <div className={styles.totalLine}>
+              <span>Total to pay</span>
+              <strong>
+                {convertedPrice.isFetching
+                  ? 'Loading...'
+                  : convertedPrice.data
+                    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: selectedCurrency, maximumFractionDigits: 2 }).format(Number(convertedPrice.data.convertedTotal || 0))
+                    : formatPrice(pricePreview.totalPrice)}
+              </strong>
+            </div>
+            <p className={styles.currencyNote}>* Final charge processed in USD. Converted amount shown for reference only.</p>
+            {priceBreakdown && (
+              <div className={styles.breakdownSection}>
+                <PriceBreakdownCard breakdown={priceBreakdown} />
+              </div>
+            )}
           </aside>
         </div>
       </div>

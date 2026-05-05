@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { addDays, format } from 'date-fns';
 import { Plus, Edit, Trash2, ChevronLeft, Settings, BedDouble, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -12,6 +13,8 @@ import Spinner from '../../components/ui/Spinner';
 import Pagination from '../../components/ui/Pagination';
 import Badge, { StatusBadge } from '../../components/ui/Badge';
 import EmptyState from '../../components/ui/EmptyState';
+import AdminWaitingListPanel from '../../components/waitingList/AdminWaitingListPanel';
+import { useWaitingListCount } from '../../hooks/useWaitingList';
 import styles from './ManageHotels.module.css';
 
 const BED_LABELS = {
@@ -20,12 +23,25 @@ const BED_LABELS = {
   KING: 'King',
 };
 
+const today = format(new Date(), 'yyyy-MM-dd');
+const tomorrow = format(addDays(new Date(), 1), 'yyyy-MM-dd');
+
+const WaitingCountBadge = ({ roomTypeId, onClick }) => {
+  const { data } = useWaitingListCount(roomTypeId, today, tomorrow);
+  return (
+    <button className={styles.waitingBadge} onClick={onClick} title="Open waiting list">
+      Waiting: {data?.waitingCount ?? 0}
+    </button>
+  );
+};
+
 const ManageRooms = () => {
   const { hotelId } = useParams();
   const [modalOpen, setModalOpen] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
   const [statusModal, setStatusModal] = useState(null);
   const [newStatus, setNewStatus] = useState('ACTIVE');
+  const [waitingRoom, setWaitingRoom] = useState(null);
   const [page, setPage] = useState(0);
 
   // Fetch hotel name via admin hook
@@ -122,6 +138,7 @@ const ManageRooms = () => {
                     <th>Capacity</th>
                     <th>Price/Night</th>
                     <th>Units</th>
+                    <th>Waiting</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -148,6 +165,9 @@ const ManageRooms = () => {
                         ${Number(room.basePrice).toFixed(0)}
                       </td>
                       <td>{room.totalUnits}</td>
+                      <td>
+                        <WaitingCountBadge roomTypeId={room.id} onClick={() => setWaitingRoom(room)} />
+                      </td>
                       <td><StatusBadge status={room.status} /></td>
                       <td>
                         <div className={styles.actions}>
@@ -220,6 +240,14 @@ const ManageRooms = () => {
           </Button>
         </div>
       </Modal>
+
+      {waitingRoom && (
+        <AdminWaitingListPanel
+          roomTypeId={waitingRoom.id}
+          roomTypeName={waitingRoom.name}
+          onClose={() => setWaitingRoom(null)}
+        />
+      )}
     </div>
   );
 };

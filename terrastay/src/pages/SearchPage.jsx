@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, lazy, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
@@ -9,6 +9,8 @@ import HotelCard, { HotelCardSkeleton } from '../components/hotel/HotelCard';
 import Pagination from '../components/ui/Pagination';
 import EmptyState from '../components/ui/EmptyState';
 import styles from './SearchPage.module.css';
+
+const HotelMap = lazy(() => import('../components/map/HotelMap'));
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,6 +33,9 @@ const SearchPage = () => {
   });
 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
+  const [mobileView, setMobileView] = useState('list');
+  const cardRefs = useRef({});
 
   // Build API params — all matching /api/hotels query params
   const apiParams = {
@@ -83,6 +88,11 @@ const SearchPage = () => {
     setSearchParams(params);
   };
 
+  const handleMarkerClick = (hotelId) => {
+    setSelectedHotelId(hotelId);
+    cardRefs.current[hotelId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   return (
     <div>
       <div className={styles.searchBarWrap}>
@@ -109,6 +119,21 @@ const SearchPage = () => {
           </button>
         </div>
 
+        <div className={styles.mobileMapToggle}>
+          <button
+            className={mobileView === 'list' ? styles.toggleActive : ''}
+            onClick={() => setMobileView('list')}
+          >
+            List
+          </button>
+          <button
+            className={mobileView === 'map' ? styles.toggleActive : ''}
+            onClick={() => setMobileView('map')}
+          >
+            Map ({hotels.length} hotels)
+          </button>
+        </div>
+
         <div className={styles.layout}>
           <aside className={`${styles.sidebar} ${mobileFiltersOpen ? styles.sidebarOpen : ''}`}>
             <SearchFilters
@@ -119,7 +144,7 @@ const SearchPage = () => {
             />
           </aside>
 
-          <div className={styles.results}>
+          <div className={`${styles.results} ${mobileView === 'map' ? styles.mobileHidden : ''}`}>
             {isLoading ? (
               <div className={styles.grid}>
                 {Array.from({ length: 6 }).map((_, i) => <HotelCardSkeleton key={i} />)}
@@ -134,11 +159,18 @@ const SearchPage = () => {
               <>
                 <div className={styles.grid}>
                   {hotels.map((hotel) => (
-                    <HotelCard
+                    <div
                       key={hotel.id}
-                      hotel={hotel}
-                      onClick={() => navigate(`/hotels/${hotel.id}`)}
-                    />
+                      ref={(node) => { cardRefs.current[hotel.id] = node; }}
+                      className={Number(selectedHotelId) === Number(hotel.id) ? styles.selectedCard : ''}
+                      onMouseEnter={() => setSelectedHotelId(hotel.id)}
+                      onMouseLeave={() => setSelectedHotelId(null)}
+                    >
+                      <HotelCard
+                        hotel={hotel}
+                        onClick={() => navigate(`/hotels/${hotel.id}`)}
+                      />
+                    </div>
                   ))}
                 </div>
                 <Pagination
@@ -149,6 +181,17 @@ const SearchPage = () => {
               </>
             )}
           </div>
+
+          <aside className={`${styles.mapPane} ${mobileView === 'list' ? styles.mobileHidden : ''}`}>
+            <Suspense fallback={<div className={`skeleton ${styles.mapSkeleton}`} />}>
+              <HotelMap
+                hotels={hotels}
+                selectedId={selectedHotelId}
+                onMarkerClick={handleMarkerClick}
+                height="calc(100vh - 150px)"
+              />
+            </Suspense>
+          </aside>
         </div>
       </div>
     </div>

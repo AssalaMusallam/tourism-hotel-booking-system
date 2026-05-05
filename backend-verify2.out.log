@@ -1,0 +1,572 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.5)
+
+2026-05-06T02:58:43.150+03:00  INFO 26276 --- [           main] com.swer313.RestApplication              : Starting RestApplication using Java 21.0.8 with PID 26276 (C:\Users\actc\project-step-1-pinkfloww\target\classes started by actc in C:\Users\actc\project-step-1-pinkfloww)
+2026-05-06T02:58:43.153+03:00  INFO 26276 --- [           main] com.swer313.RestApplication              : The following 1 profile is active: "dev"
+2026-05-06T02:58:45.526+03:00  INFO 26276 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-06T02:58:45.771+03:00  INFO 26276 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 233 ms. Found 14 JPA repository interfaces.
+2026-05-06T02:58:55.651+03:00  INFO 26276 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-06T02:58:55.673+03:00  INFO 26276 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-06T02:58:55.674+03:00  INFO 26276 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-06T02:58:55.802+03:00  INFO 26276 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-06T02:58:55.804+03:00  INFO 26276 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 12574 ms
+2026-05-06T02:58:56.528+03:00  INFO 26276 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-06T02:58:56.661+03:00  INFO 26276 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-05-06T02:58:56.743+03:00  INFO 26276 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-06T02:58:57.244+03:00  INFO 26276 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-06T02:58:57.293+03:00  INFO 26276 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-06T02:58:57.614+03:00  INFO 26276 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@30b9728f
+2026-05-06T02:58:57.618+03:00  INFO 26276 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-06T02:58:57.723+03:00  WARN 26276 --- [           main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.0 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2026-05-06T02:58:59.962+03:00  INFO 26276 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-06T02:59:00.245+03:00  INFO 26276 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-06T02:59:01.099+03:00  INFO 26276 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-06T02:59:04.268+03:00  WARN 26276 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-06T02:59:05.158+03:00  INFO 26276 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2026-05-06T02:59:05.319+03:00  INFO 26276 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@129e58fa, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@617bb321, org.springframework.security.web.context.SecurityContextHolderFilter@2a1dabb6, org.springframework.security.web.header.HeaderWriterFilter@14568116, org.springframework.web.filter.CorsFilter@90b779d, org.springframework.security.web.authentication.logout.LogoutFilter@1d0ed7d8, com.swer313.projectstep1.security.JwtAuthFilter@3c5797c6, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4bd35f3f, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5d589727, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1c1023e1, org.springframework.security.web.session.SessionManagementFilter@7aa9b038, org.springframework.security.web.access.ExceptionTranslationFilter@477f3b7d, org.springframework.security.web.access.intercept.AuthorizationFilter@de7336d]
+2026-05-06T02:59:06.335+03:00  INFO 26276 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-05-06T02:59:06.362+03:00  INFO 26276 --- [           main] com.swer313.RestApplication              : Started RestApplication in 23.734 seconds (process running for 24.156)
+Hibernate: 
+    select
+        count(*) 
+    from
+        exchange_rates er1_0
+Hibernate: 
+    select
+        n1_0.id,
+        n1_0.body,
+        n1_0.created_at,
+        n1_0.error_message,
+        n1_0.next_retry_at,
+        n1_0.recipient_email,
+        n1_0.recipient_name,
+        n1_0.reference_id,
+        n1_0.reference_type,
+        n1_0.retry_count,
+        n1_0.sent_at,
+        n1_0.status,
+        n1_0.subject,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.status='RETRY_SCHEDULED' 
+        and n1_0.next_retry_at<=?
+2026-05-06T02:59:06.591+03:00  INFO 26276 --- [           main] c.s.p.a.c.LoadExchangeRateDatabase       : Exchange rates already seeded — skipping.
+2026-05-06T02:59:06.594+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ╔══════════════════════════════════════════╗
+2026-05-06T02:59:06.594+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ║        PinkFlow Data Seeder START        ║
+2026-05-06T02:59:06.594+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ╚══════════════════════════════════════════╝
+Hibernate: 
+    select
+        wle1_0.id,
+        wle1_0.check_in,
+        wle1_0.check_out,
+        wle1_0.created_at,
+        wle1_0.guest_email,
+        wle1_0.guest_name,
+        wle1_0.hotel_id,
+        wle1_0.hotel_name,
+        wle1_0.notified_at,
+        wle1_0.room_type_id,
+        wle1_0.room_type_name,
+        wle1_0.status 
+    from
+        waiting_list wle1_0 
+    where
+        wle1_0.status='NOTIFIED' 
+        and wle1_0.notified_at<=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+2026-05-06T02:59:06.946+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ✅ Users seeded/verified individually.
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.active,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.full_name,
+        u1_0.password_hash,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        amenities a1_0
+2026-05-06T02:59:06.967+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  Amenities already exist — skipping.
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.category,
+        a1_0.created_at,
+        a1_0.description,
+        a1_0.is_active,
+        a1_0.is_premium,
+        a1_0.name,
+        a1_0.updated_at 
+    from
+        amenities a1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        hotels h1_0
+2026-05-06T02:59:06.983+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  Hotels already exist — skipping.
+Hibernate: 
+    select
+        h1_0.id,
+        h1_0.address,
+        h1_0.cancellation_policy_summary,
+        h1_0.check_in_time,
+        h1_0.check_out_time,
+        h1_0.city,
+        h1_0.country,
+        h1_0.description,
+        h1_0.email,
+        h1_0.latitude,
+        h1_0.longitude,
+        h1_0.name,
+        h1_0.phone_number,
+        h1_0.policies,
+        h1_0.rating,
+        h1_0.status,
+        h1_0.website_url 
+    from
+        hotels h1_0
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        hi1_0.id,
+        hi1_0.file_name,
+        hi1_0.hotel_id,
+        hi1_0.image_url 
+    from
+        hotel_images hi1_0 
+    join
+        hotels h1_0 
+            on h1_0.id=hi1_0.hotel_id 
+    where
+        h1_0.id=?
+2026-05-06T02:59:07.067+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ✅ Hotel demo images seeded/verified. Added 0 image(s).
+Hibernate: 
+    select
+        count(*) 
+    from
+        room_types rt1_0
+2026-05-06T02:59:07.074+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  RoomTypes already exist — skipping.
+Hibernate: 
+    select
+        rt1_0.id,
+        rt1_0.base_price,
+        rt1_0.bed_count,
+        rt1_0.bed_type,
+        rt1_0.capacity,
+        rt1_0.description,
+        rt1_0.hotel_id,
+        rt1_0.max_adults,
+        rt1_0.max_children,
+        rt1_0.name,
+        rt1_0.policies,
+        rt1_0.status,
+        rt1_0.total_units 
+    from
+        room_types rt1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        pricing_rules pr1_0
+2026-05-06T02:59:07.088+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  PricingRules already exist — skipping.
+Hibernate: 
+    select
+        count(*) 
+    from
+        bookings b1_0
+2026-05-06T02:59:07.094+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  Bookings already exist — skipping.
+Hibernate: 
+    select
+        b1_0.id,
+        b1_0.adults,
+        b1_0.cancellation_reason,
+        b1_0.cancelled_at,
+        b1_0.check_in,
+        b1_0.check_out,
+        b1_0.children,
+        b1_0.created_at,
+        b1_0.guest_email,
+        b1_0.guest_name,
+        b1_0.guest_notes,
+        b1_0.guest_phone,
+        b1_0.price_per_night,
+        b1_0.refund_amount,
+        b1_0.room_type_id,
+        b1_0.status,
+        b1_0.total_guests,
+        b1_0.total_price,
+        b1_0.updated_at 
+    from
+        bookings b1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        payments p1_0
+2026-05-06T02:59:07.128+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  Payments already exist — skipping.
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.amount,
+        p1_0.booking_id,
+        p1_0.created_at,
+        p1_0.currency,
+        p1_0.failure_reason,
+        p1_0.method,
+        p1_0.paid_at,
+        p1_0.provider_name,
+        p1_0.refund_reason,
+        p1_0.refunded_at,
+        p1_0.status,
+        p1_0.transaction_reference,
+        p1_0.updated_at 
+    from
+        payments p1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        reviews r1_0
+2026-05-06T02:59:07.148+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  Reviews already exist — skipping.
+Hibernate: 
+    select
+        count(*) 
+    from
+        waiting_list wle1_0
+2026-05-06T02:59:07.155+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  WaitingList already exist — skipping.
+Hibernate: 
+    select
+        count(*) 
+    from
+        notifications n1_0
+2026-05-06T02:59:07.161+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ⏭  Notifications already exist — skipping.
+2026-05-06T02:59:07.162+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ╔══════════════════════════════════════════╗
+2026-05-06T02:59:07.162+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ║        PinkFlow Data Seeder DONE ✅       ║
+2026-05-06T02:59:07.162+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : ╚══════════════════════════════════════════╝
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-05-06T02:59:07.216+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : Admin user already exists — skipping seed.
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-05-06T02:59:07.219+03:00  INFO 26276 --- [           main] c.swer313.projectstep1.auth.DataSeeder   : Manager user already exists — skipping seed.
+2026-05-06T02:59:07.545+03:00  INFO 26276 --- [0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-06T02:59:07.545+03:00  INFO 26276 --- [0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-06T02:59:07.546+03:00  INFO 26276 --- [0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Hibernate: 
+    select
+        h1_0.id,
+        h1_0.address,
+        h1_0.cancellation_policy_summary,
+        h1_0.check_in_time,
+        h1_0.check_out_time,
+        h1_0.city,
+        h1_0.country,
+        h1_0.description,
+        h1_0.email,
+        h1_0.latitude,
+        h1_0.longitude,
+        h1_0.name,
+        h1_0.phone_number,
+        h1_0.policies,
+        h1_0.rating,
+        h1_0.status,
+        h1_0.website_url 
+    from
+        hotels h1_0 
+    where
+        h1_0.id=?
+Hibernate: 
+    select
+        a1_0.hotel_id,
+        a1_1.id,
+        a1_1.category,
+        a1_1.created_at,
+        a1_1.description,
+        a1_1.is_active,
+        a1_1.is_premium,
+        a1_1.name,
+        a1_1.updated_at 
+    from
+        hotel_amenities a1_0 
+    join
+        amenities a1_1 
+            on a1_1.id=a1_0.amenity_id 
+    where
+        a1_0.hotel_id=?
+Hibernate: 
+    select
+        i1_0.hotel_id,
+        i1_0.id,
+        i1_0.file_name,
+        i1_0.image_url 
+    from
+        hotel_images i1_0 
+    where
+        i1_0.hotel_id=?

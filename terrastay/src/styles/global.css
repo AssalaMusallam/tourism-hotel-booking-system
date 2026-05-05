@@ -70,3 +70,56 @@ input, select, textarea { font: inherit; }
 ::-webkit-scrollbar-track { background: var(--color-surface); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+.pf-hotel-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  font-size: 12px;
+  font-weight: 800;
+  transform-origin: bottom center;
+}
+
+.pf-hotel-marker-selected {
+  background: #2563eb;
+  transform: scale(1.18);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.34);
+}
+
+.pf-map-popup {
+  display: grid;
+  gap: 7px;
+  min-width: 210px;
+  color: var(--color-text-main);
+}
+
+.pf-map-popup-title {
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.pf-map-popup-meta,
+.pf-map-popup-place {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.pf-map-popup-button {
+  margin-top: 4px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+:root.dark .leaflet-popup-content-wrapper,
+:root.dark .leaflet-popup-tip {
+  background: var(--color-surface);
+  color: var(--color-text-main);
+}

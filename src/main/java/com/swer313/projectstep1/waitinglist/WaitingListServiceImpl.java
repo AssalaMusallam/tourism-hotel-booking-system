@@ -315,6 +315,7 @@ public class WaitingListServiceImpl implements WaitingListService {
     private WaitingListResponseDTO toDto(WaitingListEntry entry, int position) {
         return new WaitingListResponseDTO(
                 entry.getId(),
+                entry.getHotelId(),
                 entry.getRoomTypeId(),
                 entry.getRoomTypeName(),
                 entry.getHotelName(),

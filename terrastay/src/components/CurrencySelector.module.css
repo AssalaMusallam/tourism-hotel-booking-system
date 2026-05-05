@@ -1,0 +1,64 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-text-main);
+  font-size: 14px;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 240;
+  width: 240px;
+  padding: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.option {
+  display: grid;
+  grid-template-columns: 24px 44px 1fr 18px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-main);
+  text-align: left;
+}
+
+.option:hover {
+  background: var(--color-surface);
+}
+
+.option small {
+  color: var(--color-text-muted);
+}
+
+.mobile {
+  width: 100%;
+}
+
+.mobile .trigger {
+  width: 100%;
+  justify-content: center;
+}
+
+.mobile .menu {
+  position: static;
+  width: 100%;
+  margin-top: 8px;
+}

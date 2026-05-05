@@ -12,7 +12,7 @@ const AboutPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className={styles.heroContent}
           >
-            <h1>About TerraStay</h1>
+            <h1>About PinkFlow</h1>
             <p>Connecting the world to the heart and soul of Palestine since 2020</p>
           </motion.div>
         </div>
@@ -23,7 +23,7 @@ const AboutPage = () => {
           <div>
             <h2>Our Mission</h2>
             <p>
-              TerraStay was born from a simple belief: that Palestine's rich history, vibrant culture,
+              PinkFlow was born from a simple belief: that Palestine's rich history, vibrant culture,
               and warm hospitality deserve to be experienced by travelers from around the world.
               We partner with authentic local hotels to bring you meaningful stays in Jerusalem,
               Bethlehem, Nazareth, Hebron, and beyond.

@@ -24,6 +24,15 @@
   overflow: hidden;
 }
 
+.embeddedMap {
+  margin: 0 0 28px;
+}
+
+.mapSkeleton {
+  height: 320px;
+  border-radius: var(--radius-lg);
+}
+
 .hotelHeader {
   display: flex;
   justify-content: space-between;

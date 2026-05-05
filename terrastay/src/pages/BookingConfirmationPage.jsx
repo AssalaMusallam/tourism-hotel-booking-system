@@ -5,6 +5,7 @@ import { useBooking } from '../hooks/useBookingQueries';
 import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
 import StatusBadge from '../components/booking/StatusBadge';
+import PriceDisplay from '../components/PriceDisplay';
 import styles from './BookingConfirmationPage.module.css';
 
 const money = (value) =>
@@ -71,12 +72,13 @@ const BookingConfirmationPage = () => {
         <div className={styles.breakdown}>
           <div>
             <span>{money(booking.pricePerNight)} x {booking.nights} night{booking.nights === 1 ? '' : 's'}</span>
-            <strong>{money(Number(booking.pricePerNight) * Number(booking.nights || 0))}</strong>
+            <strong><PriceDisplay usdAmount={Number(booking.pricePerNight) * Number(booking.nights || 0)} showOriginal size="sm" /></strong>
           </div>
           <div className={styles.total}>
             <span>Total</span>
-            <strong>{money(booking.totalPrice)}</strong>
+            <strong><PriceDisplay usdAmount={booking.totalPrice} showOriginal size="md" /></strong>
           </div>
+          <p className={styles.currencyNote}>Exchange rate note: converted prices use the currently selected display currency. Final payment remains in USD.</p>
         </div>
 
         <Link to="/bookings/my">

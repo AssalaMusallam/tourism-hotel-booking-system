@@ -1,0 +1,51 @@
+.card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+
+.notified {
+  border-color: #f59e0b;
+  box-shadow: 0 10px 30px rgba(217, 119, 6, 0.16);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.top h2 {
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.top p,
+.meta {
+  color: var(--color-text-secondary);
+}
+
+.meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.actNow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  color: #b45309;
+  font-weight: 900;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

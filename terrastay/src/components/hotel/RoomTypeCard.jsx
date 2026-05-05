@@ -1,6 +1,6 @@
 import { Users, BedDouble } from 'lucide-react';
-import { formatPrice } from '../../utils/formatPrice';
 import Button from '../ui/Button';
+import PriceDisplay from '../PriceDisplay';
 import styles from './RoomTypeCard.module.css';
 
 const RoomTypeCard = ({ room, onSelect, selected = false }) => {
@@ -15,7 +15,7 @@ const RoomTypeCard = ({ room, onSelect, selected = false }) => {
       </div>
       <div className={styles.priceCol}>
         <div className={styles.price}>
-          <span className={styles.priceAmount}>{formatPrice(room.pricePerNight)}</span>
+          <span className={styles.priceAmount}><PriceDisplay usdAmount={room.pricePerNight || room.basePrice} size="sm" /></span>
           <span className={styles.priceLabel}>/night</span>
         </div>
         {room.available ? (

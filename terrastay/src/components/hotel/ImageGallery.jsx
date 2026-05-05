@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getImageUrl } from '../../lib/imageUrl';
 import styles from './ImageGallery.module.css';
 
 const ImageGallery = ({ images = [], name = '' }) => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
-  const safeImages = images.length > 0 ? images.map(img => typeof img === 'string' ? img : img.imageUrl) : [];
+  const safeImages = images.map((img) =>
+    getImageUrl(typeof img === 'string' ? img : (img.imageUrl || img.url || img.fileName))
+  );
 
   const openLightbox = (i) => {
     if (safeImages[i]) setLightboxIndex(i);

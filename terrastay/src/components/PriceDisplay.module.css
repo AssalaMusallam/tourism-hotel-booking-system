@@ -1,0 +1,25 @@
+.price {
+  display: inline-grid;
+  gap: 1px;
+  color: inherit;
+}
+
+.price > span {
+  font-weight: 800;
+}
+
+.price small {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.sm > span { font-size: 14px; }
+.md > span { font-size: 17px; }
+.lg > span { font-size: 25px; }
+
+.suffix {
+  color: var(--color-text-muted);
+  font-size: 0.75em;
+  font-weight: 700;
+}

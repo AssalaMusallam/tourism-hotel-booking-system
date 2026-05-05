@@ -9,7 +9,9 @@ import useAvailability from '../hooks/useAvailability';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import SectionError from '../components/ui/SectionError';
 import RoomCard, { RoomCardSkeleton, getAvailabilityRoomId } from '../components/availability/RoomCard';
+import { parseApiError } from '../lib/parseApiError';
 import styles from './AvailabilityPage.module.css';
 
 const today = format(new Date(), 'yyyy-MM-dd');
@@ -46,14 +48,14 @@ const AvailabilityPage = () => {
     guests: Number(guests || 1),
   }), [checkIn, checkOut, guests]);
 
-  const { data, isLoading, isError, error } = useAvailability(
+  const { data, isLoading, isError, error, refetch } = useAvailability(
     hotelId,
     params.checkIn,
     params.checkOut,
     params.guests
   );
 
-  const rooms = (data?.content || []).filter((room) => room.available);
+  const rooms = data?.content || [];
 
   const submitSearch = (values) => {
     const next = new URLSearchParams(searchParams);
@@ -146,9 +148,7 @@ const AvailabilityPage = () => {
         )}
 
         {!isLoading && isError && (
-          <div className={styles.error}>
-            {error?.response?.data?.message || 'Unable to load availability. Please adjust your dates and try again.'}
-          </div>
+          <SectionError message={parseApiError(error).message} onRetry={refetch} />
         )}
 
         {!isLoading && !isError && rooms.length === 0 && (

@@ -1,0 +1,39 @@
+.section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.content {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+
+.title {
+  margin: 0;
+  color: #991b1b;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.message {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.action {
+  justify-self: start;
+}

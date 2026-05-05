@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, Award, Tag, Headphones, MapPin } from 'lucide-react';
@@ -13,6 +14,7 @@ const fadeUp = {
 
 const HomePage = () => {
   const navigate = useNavigate();
+  useEffect(() => { document.title = 'PinkFlow – Find Your Perfect Stay'; }, []);
   const { data: citiesList } = useCities();
   const cities = citiesList || [];
 
@@ -128,7 +130,7 @@ const HomePage = () => {
       {/* WHY CHOOSE US */}
       <section className={`${styles.section} container`}>
         <div className={styles.sectionTitle}>
-          <h2>Why Choose TerraStay</h2>
+          <h2>Why Choose PinkFlow</h2>
           <p>The trusted platform for pilgrims and travelers visiting the Holy Land</p>
         </div>
         <div className={styles.featuresGrid}>
@@ -156,7 +158,7 @@ const HomePage = () => {
         <div className={styles.ctaBg} />
         <div className={`container ${styles.ctaContent}`}>
           <h2>Ready to Experience Palestine?</h2>
-          <p>Join thousands of travelers who have discovered the magic of the Holy Land with TerraStay.</p>
+          <p>Join thousands of travelers who have discovered the magic of the Holy Land with PinkFlow.</p>
           <button className={styles.ctaBtn} onClick={() => navigate('/search')}>
             Find Your Perfect Hotel
           </button>
