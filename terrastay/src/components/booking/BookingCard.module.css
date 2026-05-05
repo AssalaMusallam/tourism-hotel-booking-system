@@ -1,0 +1,123 @@
+.card {
+  background: var(--color-ivory);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-base);
+}
+
+.card:hover {
+  border-color: var(--color-terracotta-light);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  cursor: pointer;
+}
+
+.mainInfo { flex: 1; }
+
+.hotelName {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ref {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-family: monospace;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.dates {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-terracotta);
+}
+
+.expandBtn {
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.details {
+  border-top: 1px solid var(--color-beige);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-ivory-dark);
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.detailRow span:first-child {
+  color: var(--color-text-muted);
+}
+
+.detailRow span:last-child {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.cancelBtn {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+.cancelText {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.cancelText strong {
+  color: var(--color-text-primary);
+}
+
+.cancelActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .header { flex-wrap: wrap; gap: 12px; }
+  .summary { align-items: flex-start; }
+}

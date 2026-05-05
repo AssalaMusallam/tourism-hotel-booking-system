@@ -1,0 +1,62 @@
+.row:hover { background: var(--color-ivory-dark); }
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionLink, .editBtn, .deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-base), color var(--transition-base);
+  text-decoration: none;
+}
+
+.actionLink {
+  background: var(--color-beige-light);
+  color: var(--color-text-secondary);
+}
+
+.actionLink:hover {
+  background: var(--color-terracotta);
+  color: var(--color-text-on-dark);
+}
+
+.editBtn {
+  background: rgba(166, 90, 58, 0.1);
+  color: var(--color-terracotta);
+}
+
+.editBtn:hover {
+  background: var(--color-terracotta);
+  color: var(--color-text-on-dark);
+}
+
+.deleteBtn {
+  background: rgba(122, 30, 30, 0.1);
+  color: var(--color-red);
+}
+
+.deleteBtn:hover {
+  background: var(--color-red);
+  color: var(--color-text-on-dark);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+.backLink:hover { color: var(--color-terracotta); }

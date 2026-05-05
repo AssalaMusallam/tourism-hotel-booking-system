@@ -1,0 +1,43 @@
+.row {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.row:hover { background: var(--color-ivory-dark); }
+
+.row.active { background: rgba(166, 90, 58, 0.05); }
+
+.row td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-beige);
+  vertical-align: middle;
+}
+
+.id { font-family: monospace; color: var(--color-text-muted); }
+.hotel { color: var(--color-text-primary); font-weight: 500; }
+.price { font-weight: 600; color: var(--color-terracotta); }
+
+.detailRow td {
+  padding: 0;
+  border-bottom: 1px solid var(--color-beige);
+}
+
+.details {
+  display: flex;
+  gap: 24px;
+  padding: 12px 16px 16px;
+  background: var(--color-ivory-dark);
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.details span {
+  color: var(--color-text-muted);
+  margin-right: 4px;
+}
+
+.details div {
+  color: var(--color-text-secondary);
+}

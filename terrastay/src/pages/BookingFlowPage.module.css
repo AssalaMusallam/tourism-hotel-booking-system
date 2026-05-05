@@ -1,0 +1,230 @@
+.page {
+  padding: 40px 0 80px;
+  min-height: 80vh;
+}
+
+/* Steps */
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--color-beige-light);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-beige);
+  transition: all var(--transition-base);
+}
+
+.stepLabel {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stepActive .stepCircle {
+  background: var(--color-terracotta);
+  border-color: var(--color-terracotta);
+  color: var(--color-text-on-dark);
+}
+
+.stepActive .stepLabel {
+  color: var(--color-terracotta);
+  font-weight: 600;
+}
+
+.stepDone .stepCircle {
+  background: rgba(166, 90, 58, 0.15);
+  border-color: var(--color-terracotta);
+  color: var(--color-terracotta);
+}
+
+.stepArrow {
+  color: var(--color-beige);
+  flex-shrink: 0;
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+
+.formSection {}
+
+.stepTitle {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 24px;
+  font-family: var(--font-heading);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.textarea {
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: #fff;
+  border: 1.5px solid var(--color-beige);
+  border-radius: var(--radius-md);
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--transition-base);
+}
+
+.textarea:focus {
+  border-color: var(--color-terracotta);
+  box-shadow: 0 0 0 3px rgba(166, 90, 58, 0.15);
+}
+
+.securityBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-terracotta);
+  background: rgba(166, 90, 58, 0.08);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.btnRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Confirmation */
+.confirmation {
+  grid-column: 1 / -1;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px;
+  background: var(--color-ivory);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius-xl);
+}
+
+.successIcon {
+  color: var(--color-terracotta);
+}
+
+.confirmTitle {
+  font-size: 32px;
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+}
+
+.confirmSub {
+  color: var(--color-text-muted);
+  font-size: 16px;
+}
+
+.bookingRef {
+  background: var(--color-beige-light);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  color: var(--color-text-secondary);
+}
+
+.bookingRef strong {
+  color: var(--color-terracotta);
+  font-size: 18px;
+  font-family: monospace;
+}
+
+.confirmDetails {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.confirmRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  font-size: 15px;
+  border-bottom: 1px solid var(--color-beige);
+}
+
+.confirmRow:last-child { border-bottom: none; }
+
+.confirmRow span { color: var(--color-text-muted); }
+
+.confirmRow strong { color: var(--color-text-primary); }
+
+.totalPaid { color: var(--color-terracotta) !important; font-size: 18px; }
+
+.confirmBtns {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .row { grid-template-columns: 1fr; }
+  .steps { gap: 6px; }
+  .stepLabel { font-size: 12px; }
+}

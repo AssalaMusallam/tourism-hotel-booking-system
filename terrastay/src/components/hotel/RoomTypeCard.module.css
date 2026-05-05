@@ -1,0 +1,88 @@
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--color-ivory);
+  border: 1.5px solid var(--color-beige);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.card:not(.unavailable):hover {
+  border-color: var(--color-terracotta);
+  box-shadow: var(--shadow-md);
+}
+
+.selected {
+  border-color: var(--color-terracotta);
+  background: rgba(166, 90, 58, 0.04);
+  box-shadow: 0 0 0 3px rgba(166, 90, 58, 0.15);
+}
+
+.unavailable {
+  opacity: 0.55;
+}
+
+.info { flex: 1; }
+
+.type {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.details {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.priceCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.priceAmount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-terracotta);
+}
+
+.priceLabel {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.soldOut {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-red);
+  background: rgba(122, 30, 30, 0.1);
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 480px) {
+  .card { flex-direction: column; align-items: flex-start; }
+  .priceCol { align-items: flex-start; }
+}

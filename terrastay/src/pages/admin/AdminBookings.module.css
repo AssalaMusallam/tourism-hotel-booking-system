@@ -1,0 +1,17 @@
+.filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.summary {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.summary strong {
+  color: var(--color-text-primary);
+}

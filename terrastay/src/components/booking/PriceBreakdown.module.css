@@ -1,0 +1,73 @@
+.card {
+  background: var(--color-ivory);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: sticky;
+  top: calc(var(--navbar-height) + 16px);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+  font-family: var(--font-heading);
+}
+
+.hotelInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.hotelInfo strong {
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+
+.hotelInfo span, .roomInfo span {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.dates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 8px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-beige);
+  margin: 14px 0;
+}
+
+.lineItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lineItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.total span:last-child {
+  color: var(--color-terracotta);
+}

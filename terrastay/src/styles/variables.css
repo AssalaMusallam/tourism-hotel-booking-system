@@ -1,0 +1,39 @@
+:root {
+  --color-terracotta: #A65A3A;
+  --color-terracotta-dark: #8B4A2E;
+  --color-terracotta-light: #C4784F;
+  --color-beige: #D8C3A5;
+  --color-beige-light: #EDE0CE;
+  --color-ivory: #F5F0E6;
+  --color-ivory-dark: #EDE5D5;
+  --color-red: #7A1E1E;
+  --color-red-light: #9B2626;
+
+  --color-text-primary: #2C1810;
+  --color-text-secondary: #6B4C3B;
+  --color-text-muted: #9E7E6B;
+  --color-text-on-dark: #F5F0E6;
+
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(44, 24, 16, 0.08);
+  --shadow-md: 0 4px 12px rgba(44, 24, 16, 0.10);
+  --shadow-lg: 0 4px 20px rgba(166, 90, 58, 0.12);
+  --shadow-xl: 0 8px 32px rgba(44, 24, 16, 0.14);
+
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  --container-max: 1280px;
+  --container-padding: 1.5rem;
+
+  --navbar-height: 72px;
+}
