@@ -1,37 +1,27 @@
 import styles from './Button.module.css';
-import { cn } from '../../utils/cn';
 
 const Button = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  disabled = false,
-  loading = false,
-  type = 'button',
-  onClick,
-  className,
-  fullWidth = false,
-  ...props
-}) => {
-  return (
-    <button
-      type={type}
-      disabled={disabled || loading}
-      onClick={onClick}
-      className={cn(
-        styles.btn,
-        styles[variant],
-        styles[size],
-        fullWidth && styles.fullWidth,
-        loading && styles.loading,
-        className
-      )}
-      {...props}
-    >
-      {loading ? <span className={styles.spinner} /> : null}
-      {children}
-    </button>
-  );
-};
+  children, variant = 'primary', size = 'md',
+  disabled, loading, icon: Icon, fullWidth,
+  type = 'button', onClick, className, ...rest
+}) => (
+  <button
+    type={type}
+    disabled={disabled || loading}
+    onClick={onClick}
+    className={[
+      styles.btn,
+      styles[variant],
+      styles[size],
+      fullWidth ? styles.fullWidth : '',
+      className || '',
+    ].filter(Boolean).join(' ')}
+    {...rest}
+  >
+    {loading && <span className={styles.spinner} />}
+    {Icon && !loading && <Icon size={16} />}
+    {children}
+  </button>
+);
 
 export default Button;

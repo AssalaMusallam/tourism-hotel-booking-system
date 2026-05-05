@@ -1,0 +1,5 @@
+.stars { display: flex; gap: 2px; }
+.star { background: none; border: none; padding: 1px; cursor: default; display: flex; }
+.interactive .star { cursor: pointer; transition: transform 0.1s; }
+.interactive .star:hover { transform: scale(1.15); }
+.interactive .star:disabled { cursor: default; }

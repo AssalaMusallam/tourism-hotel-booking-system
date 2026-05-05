@@ -1,61 +1,85 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, ChevronLeft } from 'lucide-react';
+import { Plus, Edit, Trash2, ChevronLeft, Settings, BedDouble, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getHotelById, createRoom, updateRoom, deleteRoom } from '../../api/hotels';
-import RoomForm from '../../components/admin/RoomForm';
+import {
+  useRoomsByHotel, useCreateRoom, useUpdateRoom, useDeleteRoom, useChangeRoomStatus, useAdminHotel
+} from '../../hooks/useCatalogQueries';
+import RoomTypeForm from '../../components/hotel/RoomTypeForm';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
-import { formatPrice } from '../../utils/formatPrice';
-import styles from './AdminDashboard.module.css';
-import tableStyles from './ManageHotels.module.css';
+import Pagination from '../../components/ui/Pagination';
+import Badge, { StatusBadge } from '../../components/ui/Badge';
+import EmptyState from '../../components/ui/EmptyState';
+import styles from './ManageHotels.module.css';
+
+const BED_LABELS = {
+  TWIN: 'Twin',
+  QUEEN: 'Queen',
+  KING: 'King',
+};
 
 const ManageRooms = () => {
-  const { id: hotelId } = useParams();
-  const queryClient = useQueryClient();
+  const { hotelId } = useParams();
   const [modalOpen, setModalOpen] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
+  const [statusModal, setStatusModal] = useState(null);
+  const [newStatus, setNewStatus] = useState('ACTIVE');
+  const [page, setPage] = useState(0);
 
-  const { data: hotel, isLoading } = useQuery({
-    queryKey: ['hotel', hotelId],
-    queryFn: () => getHotelById(hotelId),
-  });
+  // Fetch hotel name via admin hook
+  const { data: hotel } = useAdminHotel(hotelId);
 
-  const createMutation = useMutation({
-    mutationFn: (data) => createRoom(hotelId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel', hotelId] });
-      toast.success('Room type added');
-      setModalOpen(false);
-    },
-  });
+  // No status filter for admin — show all rooms
+  const { data, isLoading } = useRoomsByHotel(hotelId, { page, size: 20 });
+  const rooms = data?.content || [];
+  const totalPages = data?.totalPages || 0;
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, ...data }) => updateRoom(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel', hotelId] });
-      toast.success('Room updated');
-      setModalOpen(false);
-      setEditRoom(null);
-    },
-  });
+  const createMutation = useCreateRoom();
+  const updateMutation = useUpdateRoom();
+  const deleteMutation = useDeleteRoom();
+  const statusMutation = useChangeRoomStatus();
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteRoom,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hotel', hotelId] });
-      toast.success('Room deleted');
-    },
-  });
-
-  const handleSubmit = (data) => {
+  const handleSubmit = (formData) => {
     if (editRoom) {
-      updateMutation.mutate({ id: editRoom.id, ...data });
+      updateMutation.mutate({ hotelId, id: editRoom.id, data: formData }, {
+        onSuccess: () => {
+          toast.success('Room updated');
+          setModalOpen(false);
+          setEditRoom(null);
+        },
+        onError: (e) => toast.error(e.response?.data?.message || 'Failed to update'),
+      });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate({ hotelId, data: formData }, {
+        onSuccess: () => {
+          toast.success('Room type added');
+          setModalOpen(false);
+        },
+        onError: (e) => toast.error(e.response?.data?.message || 'Failed to create'),
+      });
     }
+  };
+
+  const handleDelete = (room) => {
+    if (window.confirm(`Delete "${room.name}"?`)) {
+      deleteMutation.mutate({ hotelId, id: room.id }, {
+        onSuccess: () => toast.success('Room deleted'),
+        onError: () => toast.error('Failed to delete'),
+      });
+    }
+  };
+
+  const handleStatusChange = () => {
+    if (!statusModal) return;
+    statusMutation.mutate({ hotelId, id: statusModal.id, status: newStatus }, {
+      onSuccess: () => {
+        toast.success('Status updated');
+        setStatusModal(null);
+      },
+      onError: () => toast.error('Failed to change status'),
+    });
   };
 
   return (
@@ -64,77 +88,137 @@ const ManageRooms = () => {
         <nav className={styles.nav}>
           <Link to="/admin" className={styles.navLink}>Dashboard</Link>
           <Link to="/admin/hotels" className={`${styles.navLink} ${styles.active}`}>Manage Hotels</Link>
-          <Link to="/admin/bookings" className={styles.navLink}>All Bookings</Link>
+          <Link to="/admin/amenities" className={styles.navLink}>Manage Amenities</Link>
         </nav>
       </aside>
 
       <main className={styles.main}>
         <div className={styles.header}>
           <div>
-            <Link to="/admin/hotels" className={tableStyles.backLink}>
+            <Link to="/admin/hotels" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--color-terracotta)', marginBottom: 8, textDecoration: 'none' }}>
               <ChevronLeft size={16} /> Back to Hotels
             </Link>
             <h1>{hotel?.name || 'Hotel'} — Rooms</h1>
           </div>
-          <Button variant="primary" onClick={() => { setEditRoom(null); setModalOpen(true); }}>
-            <Plus size={16} /> Add Room Type
+          <Button variant="primary" icon={Plus} onClick={() => { setEditRoom(null); setModalOpen(true); }}>
+            Add Room Type
           </Button>
         </div>
 
-        {isLoading ? <Spinner centered /> : (
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Room Type</th>
-                  <th>Bed Type</th>
-                  <th>Capacity</th>
-                  <th>Price/Night</th>
-                  <th>Available</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(hotel?.rooms || []).map((room) => (
-                  <tr key={room.id}>
-                    <td className={styles.hotelCell}>{room.type}</td>
-                    <td>{room.bedType}</td>
-                    <td>{room.capacity} guests</td>
-                    <td className={styles.price}>{formatPrice(room.pricePerNight)}</td>
-                    <td>{room.available ? '✓ Yes' : '✗ No'}</td>
-                    <td>
-                      <div className={tableStyles.actions}>
-                        <button className={tableStyles.editBtn} onClick={() => { setEditRoom(room); setModalOpen(true); }}>
-                          <Edit size={15} />
-                        </button>
-                        <button
-                          className={tableStyles.deleteBtn}
-                          onClick={() => {
-                            if (window.confirm('Delete this room type?')) deleteMutation.mutate(room.id);
-                          }}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
+        {isLoading ? <Spinner centered /> : rooms.length === 0 ? (
+          <EmptyState
+            title="No room types yet"
+            description="Add your first room type for this hotel."
+            action={{ label: 'Add Room', onClick: () => setModalOpen(true) }}
+          />
+        ) : (
+          <>
+            <div className={styles.tableWrap}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Room Name</th>
+                    <th>Bed Type</th>
+                    <th>Capacity</th>
+                    <th>Price/Night</th>
+                    <th>Units</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {rooms.map((room) => (
+                    <tr key={room.id} className={styles.row}>
+                      <td className={styles.nameCell}>
+                        <span className={styles.hotelNameText}>{room.name}</span>
+                      </td>
+                      <td>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <BedDouble size={14} />
+                          {room.bedCount}x {BED_LABELS[room.bedType] || room.bedType}
+                        </span>
+                      </td>
+                      <td>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Users size={14} />
+                          {room.maxAdults}A{room.maxChildren > 0 ? ` + ${room.maxChildren}C` : ''} (cap: {room.capacity})
+                        </span>
+                      </td>
+                      <td style={{ fontWeight: 600, color: 'var(--color-terracotta)' }}>
+                        ${Number(room.basePrice).toFixed(0)}
+                      </td>
+                      <td>{room.totalUnits}</td>
+                      <td><StatusBadge status={room.status} /></td>
+                      <td>
+                        <div className={styles.actions}>
+                          <button
+                            className={styles.actionBtn}
+                            onClick={() => { setEditRoom(room); setModalOpen(true); }}
+                            title="Edit"
+                          >
+                            <Edit size={15} />
+                          </button>
+                          <button
+                            className={styles.actionBtn}
+                            onClick={() => { setStatusModal(room); setNewStatus(room.status); }}
+                            title="Change Status"
+                          >
+                            <Settings size={15} />
+                          </button>
+                          <button
+                            className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                            onClick={() => handleDelete(room)}
+                            title="Delete"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          </>
         )}
       </main>
 
+      {/* Add/Edit Room Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => { setModalOpen(false); setEditRoom(null); }}
         title={editRoom ? 'Edit Room Type' : 'Add Room Type'}
+        size="lg"
       >
-        <RoomForm
+        <RoomTypeForm
+          hotelId={hotelId}
           room={editRoom}
           onSubmit={handleSubmit}
           loading={createMutation.isPending || updateMutation.isPending}
         />
+      </Modal>
+
+      {/* Status Change Modal */}
+      <Modal
+        isOpen={!!statusModal}
+        onClose={() => setStatusModal(null)}
+        title={`Change Status — ${statusModal?.name || ''}`}
+        size="sm"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <select
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value)}
+            style={{ padding: '10px 14px', borderRadius: 8, border: '1.5px solid var(--color-beige)', fontSize: 14, fontFamily: 'var(--font-body)' }}
+          >
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+          <Button variant="primary" onClick={handleStatusChange} loading={statusMutation.isPending}>
+            Update Status
+          </Button>
+        </div>
       </Modal>
     </div>
   );

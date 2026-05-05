@@ -6,20 +6,19 @@ import { z } from 'zod';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { login } from '../api/auth';
+import { login as loginApi } from '../api/authApi';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import styles from './AuthPage.module.css';
 
 const schema = z.object({
-  email: z.string().email('Please enter a valid email / أدخل بريدًا إلكترونيًا صحيحًا'),
-  password: z.string().min(6, 'Password must be at least 6 characters / كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
-  remember: z.boolean().optional(),
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 const LoginPage = () => {
-  const { setAuth } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || '/';
@@ -31,25 +30,29 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await login(data);
-      setAuth(res.user, res.token);
+      const res = await loginApi({ email: data.email, password: data.password });
+      // AuthResponse: { token, type, user: { id, fullName, email, role, phone } }
+      login(res.token, res.user);
 
+      // Check for pendingBooking in sessionStorage
       const pending = sessionStorage.getItem('pendingBooking');
       if (pending) {
         const { hotelId } = JSON.parse(pending);
-        navigate(`/booking/${hotelId}`, { replace: true });
+        sessionStorage.removeItem('pendingBooking');
+        navigate(`/hotels/${hotelId}`, { replace: true });
       } else {
         navigate(from, { replace: true });
       }
-      toast.success(`Welcome back, ${res.user.name.split(' ')[0]}!`);
+      toast.success(`Welcome back, ${res.user.fullName?.split(' ')[0] || 'User'}!`);
     } catch (err) {
-      toast.error(err.message || 'Login failed. Please try again.');
+      const msg = err.response?.data?.message || err.message || 'Login failed. Please try again.';
+      toast.error(msg);
     }
   };
 
   return (
     <div className={styles.page}>
-      <div className={`${styles.bg} embroidery-pattern`} />
+      <div className={styles.bg} />
       <motion.div
         className={styles.card}
         initial={{ opacity: 0, y: 20 }}
@@ -59,7 +62,7 @@ const LoginPage = () => {
         <div className={styles.header}>
           <Link to="/" className={styles.logo}>TerraStay</Link>
           <h1 className={styles.title}>Welcome Back</h1>
-          <p className={styles.subtitle}>مرحباً بعودتك — Sign in to your account</p>
+          <p className={styles.subtitle}>Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
@@ -67,7 +70,7 @@ const LoginPage = () => {
             label="Email Address"
             type="email"
             autoComplete="email"
-            leftIcon={Mail}
+            icon={Mail}
             error={errors.email?.message}
             placeholder="you@example.com"
             {...register('email')}
@@ -77,7 +80,7 @@ const LoginPage = () => {
             label="Password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
-            leftIcon={Lock}
+            icon={Lock}
             error={errors.password?.message}
             placeholder="••••••••"
             rightElement={
@@ -88,14 +91,6 @@ const LoginPage = () => {
             {...register('password')}
           />
 
-          <div className={styles.formMeta}>
-            <label className={styles.rememberLabel}>
-              <input type="checkbox" {...register('remember')} className={styles.checkbox} />
-              Remember me
-            </label>
-            <Link to="/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
-          </div>
-
           <Button type="submit" variant="primary" fullWidth loading={isSubmitting} size="lg">
             Sign In
           </Button>
@@ -104,10 +99,6 @@ const LoginPage = () => {
         <div className={styles.footer}>
           <span>Don't have an account?</span>
           <Link to="/register" className={styles.switchLink}>Create Account</Link>
-        </div>
-
-        <div className={styles.hint}>
-          <small>Demo: any email + "password" | Admin: admin@terrastay.ps / admin123</small>
         </div>
       </motion.div>
     </div>

@@ -1,44 +1,27 @@
 import { forwardRef } from 'react';
 import styles from './Select.module.css';
-import { cn } from '../../utils/cn';
 
 const Select = forwardRef(({
-  label,
-  error,
-  id,
-  options = [],
-  placeholder,
-  className,
-  containerClassName,
-  ...props
+  label, error, options = [], placeholder, id, className, containerClass, ...rest
 }, ref) => {
-  const selectId = id || label?.toLowerCase().replace(/\s+/g, '-');
-
+  const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   return (
-    <div className={cn(styles.container, containerClassName)}>
-      {label && (
-        <label htmlFor={selectId} className={styles.label}>
-          {label}
-        </label>
-      )}
+    <div className={[styles.wrap, containerClass].filter(Boolean).join(' ')}>
+      {label && <label htmlFor={selectId} className={styles.label}>{label}</label>}
       <select
         ref={ref}
         id={selectId}
-        className={cn(styles.select, error && styles.error, className)}
-        {...props}
+        className={[styles.select, error ? styles.error : '', className || ''].filter(Boolean).join(' ')}
+        {...rest}
       >
         {placeholder && <option value="">{placeholder}</option>}
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
-      {error && <span className={styles.errorMsg}>{error}</span>}
+      {error && <span className={styles.err}>{error}</span>}
     </div>
   );
 });
-
 Select.displayName = 'Select';
-
 export default Select;

@@ -1,34 +1,14 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, SlidersHorizontal } from 'lucide-react';
-import { AMENITIES } from '../../constants/amenities';
+import StarRating from '../ui/StarRating';
 import Button from '../ui/Button';
 import styles from './SearchFilters.module.css';
 
-const SearchFilters = ({ filters, onChange }) => {
+const SearchFilters = ({ filters, onChange, onApply, onReset }) => {
   const [expanded, setExpanded] = useState(true);
 
   const updateFilter = (key, value) => {
     onChange({ ...filters, [key]: value });
-  };
-
-  const toggleStar = (star) => {
-    const current = filters.stars || [];
-    const next = current.includes(star)
-      ? current.filter((s) => s !== star)
-      : [...current, star];
-    updateFilter('stars', next);
-  };
-
-  const toggleAmenity = (amenity) => {
-    const current = filters.amenities || [];
-    const next = current.includes(amenity)
-      ? current.filter((a) => a !== amenity)
-      : [...current, amenity];
-    updateFilter('amenities', next);
-  };
-
-  const resetFilters = () => {
-    onChange({ minPrice: 50, maxPrice: 500, stars: [], amenities: [] });
   };
 
   return (
@@ -49,64 +29,53 @@ const SearchFilters = ({ filters, onChange }) => {
 
       {expanded && (
         <div className={styles.body}>
-          {/* Price Range */}
+          {/* Min Rating */}
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Price per Night</h4>
-            <div className={styles.priceLabels}>
-              <span>${filters.minPrice || 50}</span>
-              <span>${filters.maxPrice || 500}</span>
-            </div>
+            <h4 className={styles.sectionTitle}>Minimum Rating</h4>
+            <StarRating
+              value={filters.minRating || 0}
+              interactive
+              onChange={(v) => updateFilter('minRating', v)}
+              size={20}
+            />
+            {filters.minRating > 0 && (
+              <span className={styles.filterLabel}>{filters.minRating}+ stars</span>
+            )}
+          </div>
+
+          {/* Amenity filter */}
+          <div className={styles.section}>
+            <h4 className={styles.sectionTitle}>Amenity</h4>
             <input
-              type="range"
-              min={50}
-              max={500}
-              step={10}
-              value={filters.maxPrice || 500}
-              onChange={(e) => updateFilter('maxPrice', Number(e.target.value))}
-              className={styles.range}
-              aria-label="Max price"
+              type="text"
+              value={filters.amenity || ''}
+              onChange={(e) => updateFilter('amenity', e.target.value)}
+              placeholder="e.g. Wi-Fi, Pool..."
+              className={styles.filterInput}
             />
           </div>
 
-          {/* Star Rating */}
+          {/* Has Image */}
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Star Rating</h4>
-            <div className={styles.stars}>
-              {[5, 4, 3, 2].map((star) => (
-                <label key={star} className={styles.checkLabel}>
-                  <input
-                    type="checkbox"
-                    checked={(filters.stars || []).includes(star)}
-                    onChange={() => toggleStar(star)}
-                    className={styles.checkbox}
-                  />
-                  <span>{'★'.repeat(star)}</span>
-                </label>
-              ))}
-            </div>
+            <label className={styles.checkLabel}>
+              <input
+                type="checkbox"
+                checked={filters.hasImage || false}
+                onChange={(e) => updateFilter('hasImage', e.target.checked || undefined)}
+                className={styles.checkbox}
+              />
+              <span>Has photos only</span>
+            </label>
           </div>
 
-          {/* Amenities */}
-          <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Amenities</h4>
-            <div className={styles.amenities}>
-              {AMENITIES.map((a) => (
-                <label key={a.value} className={styles.checkLabel}>
-                  <input
-                    type="checkbox"
-                    checked={(filters.amenities || []).includes(a.value)}
-                    onChange={() => toggleAmenity(a.value)}
-                    className={styles.checkbox}
-                  />
-                  <span>{a.label}</span>
-                </label>
-              ))}
-            </div>
+          <div className={styles.buttonRow}>
+            <Button variant="primary" size="sm" onClick={onApply} fullWidth>
+              Apply Filters
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onReset} fullWidth>
+              Reset
+            </Button>
           </div>
-
-          <Button variant="ghost" onClick={resetFilters} fullWidth size="sm">
-            Clear All Filters
-          </Button>
         </div>
       )}
     </aside>

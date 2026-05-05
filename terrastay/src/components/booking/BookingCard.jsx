@@ -1,98 +1,45 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
-import { formatDate } from '../../utils/formatDate';
-import { formatPrice } from '../../utils/formatPrice';
-import Badge from '../ui/Badge';
+import { CalendarDays, Hotel, Moon, Star, X } from 'lucide-react';
 import Button from '../ui/Button';
-import Modal from '../ui/Modal';
+import StatusBadge from './StatusBadge';
 import styles from './BookingCard.module.css';
 
-const BookingCard = ({ booking, onCancel }) => {
-  const [expanded, setExpanded] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+const money = (value) =>
+  Number(value || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
-  const canCancel = booking.status === 'CONFIRMED' || booking.status === 'PENDING';
+const BookingCard = ({ booking, onCancel, onReview }) => {
+  const canCancel = booking.status === 'PENDING' || booking.status === 'CONFIRMED';
+  const canReview = booking.status === 'COMPLETED';
 
   return (
-    <>
-      <div className={styles.card}>
-        <div className={styles.header} onClick={() => setExpanded((v) => !v)}>
-          <div className={styles.mainInfo}>
-            <h4 className={styles.hotelName}>{booking.hotelName}</h4>
-            <div className={styles.meta}>
-              <span className={styles.ref}>#{booking.id}</span>
-              <Badge status={booking.status} />
-            </div>
+    <article className={styles.card}>
+      <div className={styles.header}>
+        <div className={styles.mainInfo}>
+          <div className={styles.titleRow}>
+            <h3 className={styles.hotelName}>{booking.hotelName}</h3>
+            <StatusBadge status={booking.status} />
           </div>
-          <div className={styles.summary}>
-            <div className={styles.dates}>
-              <span>{formatDate(booking.checkIn)}</span>
-              <span>→</span>
-              <span>{formatDate(booking.checkOut)}</span>
-            </div>
-            <span className={styles.price}>{formatPrice(booking.totalPrice)}</span>
+          <p className={styles.roomName}>{booking.roomTypeName}</p>
+          <div className={styles.meta}>
+            <span><Hotel size={15} /> Booking #{booking.id}</span>
+            <span><CalendarDays size={15} /> {booking.checkIn} to {booking.checkOut}</span>
+            <span><Moon size={15} /> {booking.nights} night{booking.nights === 1 ? '' : 's'}</span>
           </div>
-          <button className={styles.expandBtn} aria-label="Toggle details">
-            {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
         </div>
-
-        {expanded && (
-          <div className={styles.details}>
-            <div className={styles.detailRow}>
-              <span>Room Type</span>
-              <span>{booking.roomType}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span>Nights</span>
-              <span>{booking.nights}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span>City</span>
-              <span>{booking.city}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span>Booked On</span>
-              <span>{formatDate(booking.createdAt)}</span>
-            </div>
-            {canCancel && (
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => setShowCancelModal(true)}
-                className={styles.cancelBtn}
-              >
-                <X size={14} /> Cancel Booking
-              </Button>
-            )}
-          </div>
-        )}
+        <div className={styles.summary}>
+          <span className={styles.price}>{money(booking.totalPrice)}</span>
+          {canCancel && (
+            <Button variant="danger" size="sm" onClick={() => onCancel(booking)}>
+              <X size={14} /> Cancel
+            </Button>
+          )}
+          {canReview && (
+            <Button variant="secondary" size="sm" onClick={() => onReview(booking)}>
+              <Star size={14} /> Write a Review
+            </Button>
+          )}
+        </div>
       </div>
-
-      <Modal
-        isOpen={showCancelModal}
-        onClose={() => setShowCancelModal(false)}
-        title="Cancel Booking"
-        size="sm"
-      >
-        <p className={styles.cancelText}>
-          Are you sure you want to cancel booking <strong>#{booking.id}</strong> at{' '}
-          <strong>{booking.hotelName}</strong>? This action cannot be undone.
-        </p>
-        <div className={styles.cancelActions}>
-          <Button variant="ghost" onClick={() => setShowCancelModal(false)}>Keep Booking</Button>
-          <Button
-            variant="danger"
-            onClick={() => {
-              onCancel(booking.id);
-              setShowCancelModal(false);
-            }}
-          >
-            Yes, Cancel
-          </Button>
-        </div>
-      </Modal>
-    </>
+    </article>
   );
 };
 

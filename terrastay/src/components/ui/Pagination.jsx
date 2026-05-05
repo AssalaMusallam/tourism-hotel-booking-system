@@ -1,55 +1,53 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './Pagination.module.css';
 
+// page is 0-indexed (backend), displayed as 1-indexed
 const Pagination = ({ page, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
+  const current = page; // 0-indexed
 
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-  const visiblePages = pages.filter(
-    (p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1
-  );
-
-  const renderPages = [];
-  let prev = null;
-  for (const p of visiblePages) {
-    if (prev && p - prev > 1) {
-      renderPages.push(<span key={`ellipsis-${p}`} className={styles.ellipsis}>…</span>);
+  const pages = [];
+  for (let i = 0; i < totalPages; i++) {
+    if (i === 0 || i === totalPages - 1 || Math.abs(i - current) <= 1) {
+      pages.push(i);
+    } else if (pages[pages.length - 1] !== '...') {
+      pages.push('...');
     }
-    renderPages.push(
-      <button
-        key={p}
-        className={`${styles.pageBtn} ${p === page ? styles.active : ''}`}
-        onClick={() => onPageChange(p)}
-        aria-label={`Page ${p}`}
-        aria-current={p === page ? 'page' : undefined}
-      >
-        {p}
-      </button>
-    );
-    prev = p;
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.wrap}>
       <button
-        className={styles.navBtn}
-        onClick={() => onPageChange(page - 1)}
-        disabled={page === 1}
-        aria-label="Previous page"
+        className={styles.nav}
+        disabled={current === 0}
+        onClick={() => onPageChange(current - 1)}
+        aria-label="Previous"
       >
-        <ChevronLeft size={18} />
+        <ChevronLeft size={16} />
       </button>
-      {renderPages}
+      {pages.map((p, i) =>
+        p === '...' ? (
+          <span key={`e${i}`} className={styles.ellipsis}>…</span>
+        ) : (
+          <button
+            key={p}
+            className={[styles.page, p === current ? styles.active : ''].join(' ')}
+            onClick={() => onPageChange(p)}
+            aria-current={p === current ? 'page' : undefined}
+          >
+            {p + 1}
+          </button>
+        )
+      )}
       <button
-        className={styles.navBtn}
-        onClick={() => onPageChange(page + 1)}
-        disabled={page === totalPages}
-        aria-label="Next page"
+        className={styles.nav}
+        disabled={current === totalPages - 1}
+        onClick={() => onPageChange(current + 1)}
+        aria-label="Next"
       >
-        <ChevronRight size={18} />
+        <ChevronRight size={16} />
       </button>
     </div>
   );
 };
-
 export default Pagination;

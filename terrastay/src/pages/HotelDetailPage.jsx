@@ -1,36 +1,36 @@
 import { useState } from 'react';
-import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { MapPin, Star, Phone, Mail } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { MapPin, Phone, Mail, Globe, Clock, Users, BedDouble, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { getHotelById } from '../api/hotels';
+import { useHotel, useRoomsByHotel } from '../hooks/useCatalogQueries';
 import useAuth from '../hooks/useAuth';
 import ImageGallery from '../components/hotel/ImageGallery';
-import AmenitiesList from '../components/hotel/AmenitiesList';
-import PoliciesSection from '../components/hotel/PoliciesSection';
-import RoomTypeCard from '../components/hotel/RoomTypeCard';
+import StarRating from '../components/ui/StarRating';
+import Badge, { StatusBadge } from '../components/ui/Badge';
 import Spinner from '../components/ui/Spinner';
+import Button from '../components/ui/Button';
+import HotelReviewsList from '../components/review/HotelReviewsList';
+import RatingSummaryWidget from '../components/review/RatingSummaryWidget';
 import styles from './HotelDetailPage.module.css';
 
-const TABS = ['Overview', 'Rooms', 'Amenities', 'Policies'];
+// Format "HH:mm:ss" → "HH:mm" for display
+const displayTime = (t) => t ? t.substring(0, 5) : '';
+
+const BED_LABELS = {
+  SINGLE: 'Single Bed', DOUBLE: 'Double Bed', TWIN: 'Twin Beds',
+  QUEEN: 'Queen Bed', KING: 'King Bed', BUNK: 'Bunk Bed',
+  SOFA_BED: 'Sofa Bed', FUTON: 'Futon',
+};
 
 const HotelDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState('Overview');
-  const [selectedRoom, setSelectedRoom] = useState(null);
 
-  const checkIn = searchParams.get('checkIn') || '';
-  const checkOut = searchParams.get('checkOut') || '';
-  const guests = searchParams.get('guests') || '2';
-
-  const { data: hotel, isLoading, error } = useQuery({
-    queryKey: ['hotel', id],
-    queryFn: () => getHotelById(id),
-  });
+  const { data: hotel, isLoading, error } = useHotel(id);
+  const { data: roomsData } = useRoomsByHotel(id, { page: 0, size: 50 });
+  const rooms = roomsData?.content || [];
 
   if (isLoading) return <Spinner centered />;
   if (error || !hotel) return (
@@ -42,19 +42,26 @@ const HotelDetailPage = () => {
 
   const handleBookRoom = (room) => {
     if (!isAuthenticated) {
-      sessionStorage.setItem('pendingBooking', JSON.stringify({ hotelId: id, roomId: room.id }));
+      sessionStorage.setItem('pendingBooking', JSON.stringify({
+        hotelId: id,
+        roomTypeId: room.id,
+        roomName: room.name,
+      }));
       toast('Please log in to complete your booking', { icon: '🔒' });
-      navigate('/login', { state: { from: `/booking/${id}` } });
+      navigate('/login', { state: { from: `/hotels/${id}` } });
       return;
     }
-    const params = new URLSearchParams();
-    if (checkIn) params.set('checkIn', checkIn);
-    if (checkOut) params.set('checkOut', checkOut);
-    if (guests) params.set('guests', guests);
-    navigate(`/booking/${id}?${params.toString()}`, { state: { room, hotel } });
+    const query = new URLSearchParams({
+      checkIn: new Date().toISOString().slice(0, 10),
+      checkOut: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      guests: String(Math.max(1, room.maxAdults || 1)),
+    });
+    navigate(`/hotels/${id}/availability?${query.toString()}`, { state: { room, hotel } });
   };
 
-  const starsArr = Array.from({ length: hotel.stars }, (_, i) => i);
+  const amenityNames = hotel.amenityNames
+    ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames])
+    : [];
 
   return (
     <div>
@@ -85,22 +92,19 @@ const HotelDetailPage = () => {
           <div className={styles.hotelMeta}>
             <div className={styles.location}>
               <MapPin size={16} />
-              <span>{hotel.address}</span>
+              <span>{hotel.address} — {hotel.city}, {hotel.country}</span>
             </div>
             <h1 className={styles.hotelName}>{hotel.name}</h1>
-            <div className={styles.metaRow}>
-              <div className={styles.stars}>
-                {starsArr.map((i) => <Star key={i} size={16} fill="currentColor" />)}
+            {hotel.rating != null && (
+              <div className={styles.metaRow}>
+                <StarRating value={hotel.rating} size={16} />
+                <span className={styles.ratingText}>{Number(hotel.rating).toFixed(1)}</span>
               </div>
-              <div className={styles.rating}>
-                <strong>{hotel.rating}</strong>
-                <span>({hotel.reviewCount} reviews)</span>
-              </div>
-            </div>
+            )}
             <div className={styles.contact}>
-              {hotel.phone && (
-                <a href={`tel:${hotel.phone}`} className={styles.contactLink}>
-                  <Phone size={14} /> {hotel.phone}
+              {hotel.phoneNumber && (
+                <a href={`tel:${hotel.phoneNumber}`} className={styles.contactLink}>
+                  <Phone size={14} /> {hotel.phoneNumber}
                 </a>
               )}
               {hotel.email && (
@@ -108,69 +112,122 @@ const HotelDetailPage = () => {
                   <Mail size={14} /> {hotel.email}
                 </a>
               )}
+              {hotel.websiteUrl && (
+                <a href={hotel.websiteUrl} target="_blank" rel="noreferrer" className={styles.contactLink}>
+                  <Globe size={14} /> Website
+                </a>
+              )}
             </div>
-          </div>
-          <div className={styles.priceTag}>
-            <span className={styles.priceFrom}>From</span>
-            <span className={styles.price}>${hotel.pricePerNight}</span>
-            <span className={styles.priceNight}>/night</span>
           </div>
         </motion.div>
 
-        {/* Tab Navigation */}
-        <div className={styles.tabs}>
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              className={`${styles.tab} ${activeTab === tab ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        {/* Check-in / Check-out times */}
+        {(hotel.checkInTime || hotel.checkOutTime) && (
+          <div className={styles.timesRow}>
+            {hotel.checkInTime && (
+              <div className={styles.timeBlock}>
+                <Clock size={14} />
+                <span>Check-in: <strong>{displayTime(hotel.checkInTime)}</strong></span>
+              </div>
+            )}
+            {hotel.checkOutTime && (
+              <div className={styles.timeBlock}>
+                <Clock size={14} />
+                <span>Check-out: <strong>{displayTime(hotel.checkOutTime)}</strong></span>
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* Tab Content */}
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className={styles.tabContent}
-        >
-          {activeTab === 'Overview' && (
-            <div className={styles.overview}>
-              <p className={styles.description}>{hotel.description}</p>
+        {/* Description */}
+        {hotel.description && (
+          <div className={styles.descSection}>
+            <h2>About This Hotel</h2>
+            <p className={styles.description}>{hotel.description}</p>
+          </div>
+        )}
+
+        {/* Amenities */}
+        {amenityNames.length > 0 && (
+          <div className={styles.amenitiesSection}>
+            <h2>Amenities</h2>
+            <div className={styles.amenityPills}>
+              {amenityNames.map((a) => (
+                <Badge key={a} variant="category">{a}</Badge>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === 'Rooms' && (
-            <div className={styles.rooms}>
-              <p className={styles.roomsHint}>
-                Select a room to book your stay
-              </p>
-              {(hotel.rooms || []).map((room) => (
-                <RoomTypeCard
+        {/* Policies */}
+        {(hotel.policies || hotel.cancellationPolicySummary) && (
+          <div className={styles.policiesSection}>
+            <h2>Policies</h2>
+            {hotel.policies && <p>{hotel.policies}</p>}
+            {hotel.cancellationPolicySummary && (
+              <div className={styles.cancelPolicy}>
+                <strong>Cancellation:</strong> {hotel.cancellationPolicySummary}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Room Types */}
+        <div className={styles.roomsSection}>
+          <h2>Available Rooms</h2>
+          {rooms.length === 0 ? (
+            <p className={styles.noRooms}>No rooms available at this time.</p>
+          ) : (
+            <div className={styles.roomsList}>
+              {rooms.filter(r => r.status === 'ACTIVE').map((room) => (
+                <motion.div
                   key={room.id}
-                  room={room}
-                  selected={selectedRoom?.id === room.id}
-                  onSelect={(r) => {
-                    setSelectedRoom(r);
-                    handleBookRoom(r);
-                  }}
-                />
+                  className={styles.roomCard}
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className={styles.roomInfo}>
+                    <h3 className={styles.roomName}>{room.name}</h3>
+                    <div className={styles.roomDetails}>
+                      <span className={styles.roomDetail}>
+                        <BedDouble size={14} />
+                        {room.bedCount}x {BED_LABELS[room.bedType] || room.bedType}
+                      </span>
+                      <span className={styles.roomDetail}>
+                        <Users size={14} />
+                        {room.maxAdults} adult{room.maxAdults !== 1 ? 's' : ''}
+                        {room.maxChildren > 0 && `, ${room.maxChildren} child${room.maxChildren !== 1 ? 'ren' : ''}`}
+                      </span>
+                      <span className={styles.roomDetail}>
+                        Capacity: {room.capacity}
+                      </span>
+                    </div>
+                    {room.description && <p className={styles.roomDesc}>{room.description}</p>}
+                  </div>
+                  <div className={styles.roomAction}>
+                    <div className={styles.roomPrice}>
+                      <span className={styles.priceAmount}>${Number(room.basePrice).toFixed(0)}</span>
+                      <span className={styles.priceNight}>/night</span>
+                    </div>
+                    <span className={styles.roomUnits}>{room.totalUnits} unit{room.totalUnits !== 1 ? 's' : ''}</span>
+                    <Button variant="primary" size="sm" onClick={() => handleBookRoom(room)}>
+                      Select Room
+                    </Button>
+                  </div>
+                </motion.div>
               ))}
             </div>
           )}
+        </div>
 
-          {activeTab === 'Amenities' && (
-            <AmenitiesList amenities={hotel.amenities} />
-          )}
-
-          {activeTab === 'Policies' && (
-            <PoliciesSection policies={hotel.policies} />
-          )}
-        </motion.div>
+        {/* Rating Summary */}
+        <div className={styles.reviewsSection}>
+          <h2>Guest Reviews</h2>
+          <RatingSummaryWidget hotelId={id} />
+          <HotelReviewsList hotelId={id} />
+        </div>
       </div>
     </div>
   );

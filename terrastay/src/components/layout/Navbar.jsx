@@ -1,25 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LogOut, User, LayoutDashboard, CalendarCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, CalendarCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAuth from '../../hooks/useAuth';
-import { logout } from '../../api/auth';
 import toast from 'react-hot-toast';
 import styles from './Navbar.module.css';
 
-const TerraStayLogo = () => (
-  <Link to="/" className={styles.logo}>
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="4" width="20" height="20" rx="4" fill="var(--color-terracotta)" opacity="0.15"/>
-      <path d="M14 5L9 10h4v3H9l5 5 5-5h-4v-3h4L14 5z" fill="var(--color-terracotta)"/>
-      <path d="M6 18l4-4 4 4 4-4 4 4" stroke="var(--color-terracotta)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-    <span>TerraStay</span>
-  </Link>
-);
-
 const Navbar = () => {
-  const { isAuthenticated, isAdmin, user, clearAuth } = useAuth();
+  const { isAuthenticated, isAdmin, isManager, user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -42,9 +30,8 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    clearAuth();
+  const handleLogout = () => {
+    logout();
     setDropdownOpen(false);
     setDrawerOpen(false);
     navigate('/');
@@ -53,14 +40,17 @@ const Navbar = () => {
 
   const navLinks = [
     { to: '/search', label: 'Search Hotels' },
-    { to: '/about', label: 'About' },
   ];
+
+  const displayName = user?.fullName || user?.name || 'User';
 
   return (
     <>
       <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
-          <TerraStayLogo />
+          <Link to="/" className={styles.logo}>
+            <span className={styles.logoText}>TerraStay</span>
+          </Link>
 
           <div className={styles.links}>
             {navLinks.map((l) => (
@@ -72,7 +62,7 @@ const Navbar = () => {
                 {l.label}
               </NavLink>
             ))}
-            {isAuthenticated && !isAdmin && (
+            {isAuthenticated && !isManager && (
               <NavLink
                 to="/my-bookings"
                 className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
@@ -80,12 +70,12 @@ const Navbar = () => {
                 My Bookings
               </NavLink>
             )}
-            {isAdmin && (
+            {isManager && (
               <NavLink
                 to="/admin"
                 className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
               >
-                Admin Dashboard
+                Admin Panel
               </NavLink>
             )}
           </div>
@@ -94,7 +84,7 @@ const Navbar = () => {
             {!isAuthenticated ? (
               <>
                 <Link to="/login" className={styles.loginBtn}>Login</Link>
-                <Link to="/register" className={styles.registerBtn}>Register as Manager</Link>
+                <Link to="/register" className={styles.registerBtn}>Register</Link>
               </>
             ) : (
               <div className={styles.userMenu} ref={dropdownRef}>
@@ -104,9 +94,9 @@ const Navbar = () => {
                   aria-expanded={dropdownOpen}
                 >
                   <span className={styles.avatarInitial}>
-                    {user?.name?.[0]?.toUpperCase() || 'U'}
+                    {displayName[0]?.toUpperCase() || 'U'}
                   </span>
-                  <span className={styles.avatarName}>{user?.name?.split(' ')[0]}</span>
+                  <span className={styles.avatarName}>{displayName.split(' ')[0]}</span>
                   <ChevronDown size={14} />
                 </button>
                 <AnimatePresence>
@@ -119,11 +109,12 @@ const Navbar = () => {
                       transition={{ duration: 0.15 }}
                     >
                       <div className={styles.dropdownHeader}>
-                        <strong>{user?.name}</strong>
+                        <strong>{displayName}</strong>
                         <span>{user?.email}</span>
+                        <span className={styles.roleBadge}>{user?.role}</span>
                       </div>
                       <div className={styles.dropdownDivider} />
-                      {isAdmin ? (
+                      {isManager ? (
                         <Link to="/admin" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
                           <LayoutDashboard size={15} /> Dashboard
                         </Link>
@@ -171,7 +162,7 @@ const Navbar = () => {
               transition={{ type: 'tween', duration: 0.25 }}
             >
               <div className={styles.drawerHeader}>
-                <TerraStayLogo />
+                <span className={styles.logoText}>TerraStay</span>
                 <button onClick={() => setDrawerOpen(false)} aria-label="Close menu">
                   <X size={22} />
                 </button>
@@ -187,14 +178,14 @@ const Navbar = () => {
                     {l.label}
                   </NavLink>
                 ))}
-                {isAuthenticated && !isAdmin && (
+                {isAuthenticated && !isManager && (
                   <NavLink to="/my-bookings" className={styles.drawerLink} onClick={() => setDrawerOpen(false)}>
                     My Bookings
                   </NavLink>
                 )}
-                {isAdmin && (
+                {isManager && (
                   <NavLink to="/admin" className={styles.drawerLink} onClick={() => setDrawerOpen(false)}>
-                    Admin Dashboard
+                    Admin Panel
                   </NavLink>
                 )}
               </div>
@@ -202,7 +193,7 @@ const Navbar = () => {
                 {!isAuthenticated ? (
                   <>
                     <Link to="/login" className={styles.drawerLoginBtn} onClick={() => setDrawerOpen(false)}>Login</Link>
-                    <Link to="/register" className={styles.drawerRegisterBtn} onClick={() => setDrawerOpen(false)}>Register as Manager</Link>
+                    <Link to="/register" className={styles.drawerRegisterBtn} onClick={() => setDrawerOpen(false)}>Register</Link>
                   </>
                 ) : (
                   <button className={styles.drawerLogout} onClick={handleLogout}>

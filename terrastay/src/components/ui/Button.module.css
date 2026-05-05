@@ -1,18 +1,20 @@
+/* Button.module.css */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  font-family: var(--font-body);
+  border: none;
   cursor: pointer;
-  transition: all var(--transition-base);
-  border: 1.5px solid transparent;
+  font-family: var(--font-body);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
   min-height: 44px;
   white-space: nowrap;
+  position: relative;
+  text-decoration: none;
 }
-
 .btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -22,17 +24,15 @@
 .primary {
   background: var(--color-terracotta);
   color: var(--color-text-on-dark);
-  border-color: var(--color-terracotta);
 }
 .primary:hover:not(:disabled) {
   background: var(--color-terracotta-dark);
-  border-color: var(--color-terracotta-dark);
 }
 
 .secondary {
   background: transparent;
   color: var(--color-terracotta);
-  border-color: var(--color-terracotta);
+  border: 1.5px solid var(--color-terracotta);
 }
 .secondary:hover:not(:disabled) {
   background: var(--color-terracotta);
@@ -42,56 +42,49 @@
 .danger {
   background: var(--color-red);
   color: var(--color-text-on-dark);
-  border-color: var(--color-red);
 }
 .danger:hover:not(:disabled) {
   background: var(--color-red-light);
-  border-color: var(--color-red-light);
 }
 
 .ghost {
   background: transparent;
-  color: var(--color-terracotta);
-  border-color: transparent;
+  color: var(--color-text-secondary);
+  border: none;
 }
 .ghost:hover:not(:disabled) {
-  background: var(--color-beige-light);
+  background: var(--color-ivory);
+  color: var(--color-terracotta);
 }
 
 /* Sizes */
 .sm {
-  padding: 6px 14px;
   font-size: 13px;
+  padding: 6px 14px;
   min-height: 36px;
 }
 .md {
-  padding: 10px 24px;
-  font-size: 15px;
+  font-size: 14px;
+  padding: 8px 20px;
 }
 .lg {
-  padding: 14px 32px;
-  font-size: 16px;
-  min-height: 52px;
+  font-size: 15px;
+  padding: 12px 28px;
+  min-height: 48px;
 }
 
 .fullWidth {
   width: 100%;
 }
 
-.loading {
-  position: relative;
-}
-
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(245, 240, 230, 0.3);
+  border: 2px solid rgba(255,255,255,0.3);
   border-top-color: currentColor;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  display: inline-block;
+  animation: spin 0.6s linear infinite;
 }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

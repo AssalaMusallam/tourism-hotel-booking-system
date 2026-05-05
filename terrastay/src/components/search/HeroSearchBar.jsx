@@ -1,26 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, Users, Search } from 'lucide-react';
-import { CITIES } from '../../constants/cities';
-import { toInputDate } from '../../utils/formatDate';
-import { addDays } from 'date-fns';
+import { useCities } from '../../hooks/useCatalogQueries';
+import { addDays, format } from 'date-fns';
 import styles from './HeroSearchBar.module.css';
 
-const HeroSearchBar = ({ compact = false, initialValues = {} }) => {
+const toInputDate = (d) => format(d, 'yyyy-MM-dd');
+
+const HeroSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
   const navigate = useNavigate();
-  const [city, setCity] = useState(initialValues.city || '');
-  const [checkIn, setCheckIn] = useState(initialValues.checkIn || toInputDate(addDays(new Date(), 1)));
-  const [checkOut, setCheckOut] = useState(initialValues.checkOut || toInputDate(addDays(new Date(), 4)));
-  const [guests, setGuests] = useState(initialValues.guests || 2);
+  const { data: citiesList } = useCities();
+  const cities = citiesList || [];
+
+  const [city, setCity] = useState(defaultValues.city || '');
+  const [checkIn, setCheckIn] = useState(defaultValues.checkIn || toInputDate(addDays(new Date(), 1)));
+  const [checkOut, setCheckOut] = useState(defaultValues.checkOut || toInputDate(addDays(new Date(), 4)));
+  const [guests, setGuests] = useState(defaultValues.guests || 2);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (suggestRef.current && !suggestRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleCityInput = (val) => {
+    setCity(val);
+    if (val.trim() && cities.length) {
+      const filtered = cities.filter((c) => c.toLowerCase().includes(val.toLowerCase())).slice(0, 8);
+      setSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (checkOut && checkIn && checkOut <= checkIn) return;
+
     const params = new URLSearchParams();
     if (city) params.set('city', city);
     if (checkIn) params.set('checkIn', checkIn);
     if (checkOut) params.set('checkOut', checkOut);
     if (guests) params.set('guests', guests);
-    navigate(`/search?${params.toString()}`);
+
+    if (onSearch) {
+      onSearch({ city, checkIn, checkOut, guests });
+    } else {
+      navigate(`/search?${params.toString()}`);
+    }
   };
 
   return (
@@ -28,19 +63,31 @@ const HeroSearchBar = ({ compact = false, initialValues = {} }) => {
       onSubmit={handleSearch}
       className={`${styles.form} ${compact ? styles.compact : ''}`}
     >
-      <div className={styles.field}>
+      <div className={styles.field} ref={suggestRef}>
         <MapPin size={16} className={styles.icon} />
-        <select
+        <input
+          type="text"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className={styles.select}
+          onChange={(e) => handleCityInput(e.target.value)}
+          onFocus={() => city && suggestions.length && setShowSuggestions(true)}
+          className={styles.textInput}
+          placeholder="City or destination"
           aria-label="City"
-        >
-          <option value="">All Cities</option>
-          {CITIES.map((c) => (
-            <option key={c.value} value={c.value}>{c.label}</option>
-          ))}
-        </select>
+        />
+        {showSuggestions && (
+          <div className={styles.suggestions}>
+            {suggestions.map((s) => (
+              <button
+                type="button"
+                key={s}
+                className={styles.suggestion}
+                onClick={() => { setCity(s); setShowSuggestions(false); }}
+              >
+                <MapPin size={12} /> {s}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.divider} />

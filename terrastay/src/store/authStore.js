@@ -1,33 +1,50 @@
 import { create } from 'zustand';
 
-const loadFromStorage = () => {
-  try {
-    const token = localStorage.getItem('terrastay_token');
-    const user = JSON.parse(localStorage.getItem('terrastay_user') || 'null');
-    return { token, user };
-  } catch {
-    return { token: null, user: null };
-  }
-};
-
-const { token: initialToken, user: initialUser } = loadFromStorage();
+const TOKEN_KEY = 'terrastay_token';
+const USER_KEY  = 'terrastay_user';
 
 const useAuthStore = create((set) => ({
-  user: initialUser,
-  token: initialToken,
-  isAuthenticated: !!initialToken,
+  token: null,
+  user: null,
+  isAuthenticated: false,
 
-  setAuth: (user, token) => {
-    localStorage.setItem('terrastay_token', token);
-    localStorage.setItem('terrastay_user', JSON.stringify(user));
-    set({ user, token, isAuthenticated: true });
+  initialize: () => {
+    try {
+      const token = localStorage.getItem(TOKEN_KEY);
+      const user  = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+      if (token && user) {
+        set({ token, user, isAuthenticated: true });
+      }
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+    }
   },
 
-  clearAuth: () => {
-    localStorage.removeItem('terrastay_token');
-    localStorage.removeItem('terrastay_user');
-    set({ user: null, token: null, isAuthenticated: false });
+  login: (token, user) => {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    set({ token, user, isAuthenticated: true });
+  },
+
+  logout: () => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    set({ token: null, user: null, isAuthenticated: false });
   },
 }));
 
+// Initialize immediately on store creation
+useAuthStore.getState().initialize();
+
+// Listen for 401 events from axios interceptor
+window.addEventListener('auth:logout', () => {
+  useAuthStore.getState().logout();
+});
+
 export default useAuthStore;
+
+// Selector hooks
+export const useAuth = () => useAuthStore();
+export const useIsAdmin   = () => useAuthStore((s) => s.user?.role === 'ADMIN');
+export const useIsManager = () => useAuthStore((s) => s.user?.role === 'MANAGER' || s.user?.role === 'ADMIN');

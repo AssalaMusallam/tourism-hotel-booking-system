@@ -1,0 +1,19 @@
+.wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+.thumb { position: relative; width: 80px; height: 80px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-beige); }
+.img { width: 100%; height: 100%; object-fit: cover; }
+.del {
+  position: absolute; top: 3px; right: 3px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--color-red); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer; opacity: 0.85;
+}
+.del:hover { opacity: 1; }
+.zone {
+  width: 80px; height: 80px; border-radius: var(--radius-md);
+  border: 1.5px dashed var(--color-beige);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; font-size: 11px; color: var(--color-text-muted);
+  cursor: pointer; transition: border-color var(--transition), background var(--transition);
+}
+.zone:hover { border-color: var(--color-terracotta); background: var(--color-ivory-dark); }

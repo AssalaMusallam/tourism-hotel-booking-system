@@ -2,15 +2,14 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--color-ivory);
+  background: #FFFFFF;
   border-bottom: 1px solid transparent;
-  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  transition: border-color var(--transition), box-shadow var(--transition);
   height: var(--navbar-height);
 }
-
 .navbar.scrolled {
   border-bottom-color: var(--color-beige);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
 }
 
 .container {
@@ -28,12 +27,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.logoText {
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 600;
-  color: var(--color-text-primary);
-  text-decoration: none;
-  flex-shrink: 0;
+  color: var(--color-terracotta);
 }
 
 .links {
@@ -42,7 +43,6 @@
   gap: 4px;
   flex: 1;
 }
-
 .link {
   padding: 6px 14px;
   font-size: 15px;
@@ -50,10 +50,9 @@
   color: var(--color-text-secondary);
   border-radius: var(--radius-md);
   text-decoration: none;
-  transition: color var(--transition-base), background var(--transition-base);
+  transition: color var(--transition), background var(--transition);
   position: relative;
 }
-
 .link::after {
   content: '';
   position: absolute;
@@ -64,20 +63,11 @@
   background: var(--color-terracotta);
   border-radius: 1px;
   transform: scaleX(0);
-  transition: transform var(--transition-base);
+  transition: transform var(--transition);
 }
-
-.link:hover {
-  color: var(--color-terracotta);
-}
-
-.link.active {
-  color: var(--color-terracotta);
-}
-
-.link.active::after {
-  transform: scaleX(1);
-}
+.link:hover { color: var(--color-terracotta); }
+.link.active { color: var(--color-terracotta); }
+.link.active::after { transform: scaleX(1); }
 
 .actions {
   display: flex;
@@ -93,12 +83,9 @@
   color: var(--color-terracotta);
   text-decoration: none;
   border-radius: var(--radius-md);
-  transition: background var(--transition-base);
+  transition: background var(--transition);
 }
-
-.loginBtn:hover {
-  background: var(--color-beige-light);
-}
+.loginBtn:hover { background: var(--color-beige-light); }
 
 .registerBtn {
   padding: 8px 18px;
@@ -108,36 +95,28 @@
   background: var(--color-terracotta);
   border-radius: var(--radius-md);
   text-decoration: none;
-  transition: background var(--transition-base);
+  transition: background var(--transition);
 }
-
-.registerBtn:hover {
-  background: var(--color-terracotta-dark);
-}
+.registerBtn:hover { background: var(--color-terracotta-dark); }
 
 /* User menu */
-.userMenu {
-  position: relative;
-}
+.userMenu { position: relative; }
 
 .avatar {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 6px 12px 6px 6px;
-  border-radius: var(--radius-full);
+  border-radius: 999px;
   border: 1.5px solid var(--color-beige);
   background: transparent;
   cursor: pointer;
-  transition: border-color var(--transition-base);
+  transition: border-color var(--transition);
   font-family: var(--font-body);
   font-size: 14px;
   color: var(--color-text-primary);
 }
-
-.avatar:hover {
-  border-color: var(--color-terracotta);
-}
+.avatar:hover { border-color: var(--color-terracotta); }
 
 .avatarInitial {
   width: 30px;
@@ -152,7 +131,6 @@
   font-weight: 600;
   flex-shrink: 0;
 }
-
 .avatarName {
   font-weight: 500;
   max-width: 80px;
@@ -166,36 +144,45 @@
   top: calc(100% + 8px);
   right: 0;
   min-width: 200px;
-  background: var(--color-ivory);
+  background: #fff;
   border: 1px solid var(--color-beige);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-card-hover);
   overflow: hidden;
   z-index: 200;
 }
-
 .dropdownHeader {
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-
 .dropdownHeader strong {
   font-size: 14px;
   color: var(--color-text-primary);
 }
-
 .dropdownHeader span {
   font-size: 12px;
   color: var(--color-text-muted);
+}
+.roleBadge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--color-terracotta);
+  color: var(--color-text-on-dark);
+  letter-spacing: 0.5px;
+  width: fit-content;
 }
 
 .dropdownDivider {
   height: 1px;
   background: var(--color-beige);
 }
-
 .dropdownItem {
   display: flex;
   align-items: center;
@@ -210,19 +197,14 @@
   cursor: pointer;
   text-align: left;
   text-decoration: none;
-  transition: background var(--transition-base), color var(--transition-base);
+  transition: background var(--transition), color var(--transition);
   font-family: var(--font-body);
 }
-
 .dropdownItem:hover {
   background: var(--color-beige-light);
   color: var(--color-text-primary);
 }
-
-.logoutItem {
-  color: var(--color-red);
-}
-
+.logoutItem { color: var(--color-red); }
 .logoutItem:hover {
   background: rgba(122, 30, 30, 0.08);
   color: var(--color-red);
@@ -240,12 +222,9 @@
   background: transparent;
   border: 1.5px solid var(--color-beige);
   cursor: pointer;
-  transition: background var(--transition-base);
+  transition: background var(--transition);
 }
-
-.hamburger:hover {
-  background: var(--color-beige-light);
-}
+.hamburger:hover { background: var(--color-beige-light); }
 
 /* Drawer */
 .drawerOverlay {
@@ -254,20 +233,18 @@
   background: rgba(44, 24, 16, 0.5);
   z-index: 200;
 }
-
 .drawer {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   width: 280px;
-  background: var(--color-ivory);
+  background: #fff;
   z-index: 201;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-card-hover);
 }
-
 .drawerHeader {
   display: flex;
   align-items: center;
@@ -275,7 +252,6 @@
   padding: 20px;
   border-bottom: 1px solid var(--color-beige);
 }
-
 .drawerHeader button {
   color: var(--color-text-secondary);
   background: transparent;
@@ -283,7 +259,6 @@
   cursor: pointer;
   display: flex;
 }
-
 .drawerLinks {
   display: flex;
   flex-direction: column;
@@ -291,7 +266,6 @@
   gap: 4px;
   flex: 1;
 }
-
 .drawerLink {
   display: block;
   padding: 12px 16px;
@@ -300,14 +274,12 @@
   color: var(--color-text-secondary);
   text-decoration: none;
   border-radius: var(--radius-md);
-  transition: background var(--transition-base), color var(--transition-base);
+  transition: background var(--transition), color var(--transition);
 }
-
 .drawerLink:hover, .drawerLink.active {
   background: var(--color-beige-light);
   color: var(--color-terracotta);
 }
-
 .drawerActions {
   padding: 16px;
   border-top: 1px solid var(--color-beige);
@@ -315,7 +287,6 @@
   flex-direction: column;
   gap: 10px;
 }
-
 .drawerLoginBtn, .drawerRegisterBtn {
   display: block;
   text-align: center;
@@ -324,28 +295,23 @@
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
-  transition: all var(--transition-base);
+  transition: all var(--transition);
 }
-
 .drawerLoginBtn {
   color: var(--color-terracotta);
   border: 1.5px solid var(--color-terracotta);
 }
-
 .drawerLoginBtn:hover {
   background: var(--color-terracotta);
   color: var(--color-text-on-dark);
 }
-
 .drawerRegisterBtn {
   background: var(--color-terracotta);
   color: var(--color-text-on-dark);
 }
-
 .drawerRegisterBtn:hover {
   background: var(--color-terracotta-dark);
 }
-
 .drawerLogout {
   display: flex;
   align-items: center;
@@ -368,7 +334,6 @@
   .registerBtn { display: none; }
   .hamburger { display: flex; }
 }
-
 @media (max-width: 640px) {
   .loginBtn { display: none; }
 }

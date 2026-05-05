@@ -1,39 +1,88 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CalendarCheck } from 'lucide-react';
-import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { getMyBookings, cancelBooking } from '../api/bookings';
+import { friendlyBookingError } from '../api/bookings';
+import { useCancelBooking, useMyBookings } from '../hooks/useBookingQueries';
 import BookingCard from '../components/booking/BookingCard';
+import CancelBookingModal from '../components/booking/CancelBookingModal';
 import EmptyState from '../components/ui/EmptyState';
+import Pagination from '../components/ui/Pagination';
 import Spinner from '../components/ui/Spinner';
-import { useNavigate } from 'react-router-dom';
 import styles from './MyBookingsPage.module.css';
+
+const tabs = [
+  { label: 'All', value: '' },
+  { label: 'Pending', value: 'PENDING' },
+  { label: 'Confirmed', value: 'CONFIRMED' },
+  { label: 'Cancelled', value: 'CANCELLED' },
+  { label: 'Completed', value: 'COMPLETED' },
+];
 
 const MyBookingsPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const status = searchParams.get('status') || '';
+  const page = Number(searchParams.get('page') || 0);
 
-  const { data: bookings = [], isLoading } = useQuery({
-    queryKey: ['my-bookings'],
-    queryFn: getMyBookings,
-  });
+  const params = {
+    page,
+    size: 10,
+    sort: 'checkIn,desc',
+    ...(status && { status }),
+  };
 
-  const cancelMutation = useMutation({
-    mutationFn: cancelBooking,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
-      toast.success('Booking cancelled successfully');
-    },
-    onError: () => {
-      toast.error('Failed to cancel booking. Please try again.');
-    },
-  });
+  const { data, isLoading } = useMyBookings(params);
+  const cancelMutation = useCancelBooking();
+  const bookings = data?.content || [];
+  const totalPages = data?.totalPages || 0;
+
+  const setFilter = (nextStatus) => {
+    const next = new URLSearchParams(searchParams);
+    if (nextStatus) next.set('status', nextStatus);
+    else next.delete('status');
+    next.set('page', '0');
+    setSearchParams(next);
+  };
+
+  const setPage = (nextPage) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('page', String(nextPage));
+    setSearchParams(next);
+  };
+
+  const confirmCancel = (reason, reset) => {
+    cancelMutation.mutate({ id: cancelTarget.id, reason }, {
+      onSuccess: (booking) => {
+        reset?.();
+        setCancelTarget(null);
+        const refund = booking.refundAmount
+          ? ` Refund: ${Number(booking.refundAmount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+          : '';
+        toast.success(`Booking cancelled.${refund}`);
+      },
+      onError: (error) => toast.error(friendlyBookingError(error)),
+    });
+  };
 
   return (
-    <div className="container">
+    <main className="container">
       <div className={styles.header}>
         <h1>My Bookings</h1>
-        <p>Manage your hotel reservations across Palestine</p>
+        <p>Review upcoming, completed, and cancelled reservations.</p>
+      </div>
+
+      <div className={styles.tabs}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.label}
+            className={[styles.tab, tab.value === status ? styles.activeTab : ''].filter(Boolean).join(' ')}
+            onClick={() => setFilter(tab.value)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
@@ -41,29 +90,34 @@ const MyBookingsPage = () => {
       ) : bookings.length === 0 ? (
         <EmptyState
           icon={CalendarCheck}
-          title="No bookings yet"
-          description="Start exploring amazing hotels across the Holy Land and make your first reservation."
-          actionLabel="Find Hotels"
-          onAction={() => navigate('/search')}
+          title="No bookings found"
+          description="When you book a room, it will appear here."
+          action={{ label: 'Find Hotels', onClick: () => navigate('/search') }}
         />
       ) : (
-        <div className={styles.list}>
-          {bookings.map((booking, i) => (
-            <motion.div
-              key={booking.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-            >
+        <>
+          <div className={styles.list}>
+            {bookings.map((booking) => (
               <BookingCard
+                key={booking.id}
                 booking={booking}
-                onCancel={(id) => cancelMutation.mutate(id)}
+                onCancel={setCancelTarget}
+                onReview={(item) => navigate(`/bookings/${item.id}/review`)}
               />
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
       )}
-    </div>
+
+      <CancelBookingModal
+        isOpen={Boolean(cancelTarget)}
+        booking={cancelTarget}
+        onClose={() => setCancelTarget(null)}
+        onConfirm={confirmCancel}
+        loading={cancelMutation.isPending}
+      />
+    </main>
   );
 };
 

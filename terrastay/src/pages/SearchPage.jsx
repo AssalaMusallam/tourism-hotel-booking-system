@@ -1,70 +1,93 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
-import { getHotels } from '../api/hotels';
+import { useHotels } from '../hooks/useCatalogQueries';
 import HeroSearchBar from '../components/search/HeroSearchBar';
 import SearchFilters from '../components/search/SearchFilters';
-import HotelCard, { HotelCardSkeleton } from '../components/search/HotelCard';
+import HotelCard, { HotelCardSkeleton } from '../components/hotel/HotelCard';
 import Pagination from '../components/ui/Pagination';
 import EmptyState from '../components/ui/EmptyState';
-import Select from '../components/ui/Select';
-import useSearchParamsHook from '../hooks/useSearchParams';
 import styles from './SearchPage.module.css';
 
-const SORT_OPTIONS = [
-  { value: 'recommended', label: 'Recommended' },
-  { value: 'price_asc', label: 'Price: Low to High' },
-  { value: 'price_desc', label: 'Price: High to Low' },
-  { value: 'rating', label: 'Top Rated' },
-];
-
 const SearchPage = () => {
-  const { getParam, setParam, setParams } = useSearchParamsHook();
-  const city = getParam('city');
-  const checkIn = getParam('checkIn');
-  const checkOut = getParam('checkOut');
-  const guests = getParam('guests', '2');
-  const page = Number(getParam('page', '1'));
-  const sort = getParam('sort', 'recommended');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  const [filters, setFilters] = useState({ minPrice: 50, maxPrice: 500, stars: [], amenities: [] });
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  // Read URL params
+  const city = searchParams.get('city') || '';
+  const q = searchParams.get('q') || '';
+  const page = Number(searchParams.get('page') || '0'); // 0-indexed
+  const minRating = searchParams.get('minRating') || '';
+  const maxRating = searchParams.get('maxRating') || '';
+  const amenity = searchParams.get('amenity') || '';
+  const hasImage = searchParams.get('hasImage') || '';
 
-  const queryParams = {
-    city: city || undefined,
-    checkIn: checkIn || undefined,
-    checkOut: checkOut || undefined,
-    guests: guests || undefined,
-    page,
-    limit: 9,
-    sort: sort !== 'recommended' ? sort : undefined,
-    minPrice: filters.minPrice !== 50 ? filters.minPrice : undefined,
-    maxPrice: filters.maxPrice !== 500 ? filters.maxPrice : undefined,
-    stars: filters.stars.length > 0 ? filters.stars : undefined,
-    amenities: filters.amenities.length > 0 ? filters.amenities : undefined,
-  };
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['hotels', 'search', queryParams],
-    queryFn: () => getHotels(queryParams),
-    staleTime: 5 * 60 * 1000,
+  // Local filter state
+  const [filters, setFilters] = useState({
+    minRating: minRating ? Number(minRating) : 0,
+    amenity: amenity || '',
+    hasImage: hasImage === 'true',
   });
 
-  const hotels = data?.data || [];
-  const total = data?.total || 0;
-  const totalPages = Math.ceil(total / 9);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-    setParam('page', '1');
+  // Build API params — all matching /api/hotels query params
+  const apiParams = {
+    ...(city && { city }),
+    ...(q && { q }),
+    ...(minRating && { minRating }),
+    ...(maxRating && { maxRating }),
+    ...(amenity && { amenity }),
+    ...(hasImage === 'true' && { hasImage: true }),
+    page,
+    size: 10,
+  };
+
+  const { data, isLoading } = useHotels(apiParams);
+  const hotels = data?.content || [];
+  const totalPages = data?.totalPages || 0;
+  const totalElements = data?.totalElements || 0;
+
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', String(newPage));
+    setSearchParams(params);
+  };
+
+  const handleApplyFilters = () => {
+    const params = new URLSearchParams(searchParams);
+    if (filters.minRating > 0) params.set('minRating', String(filters.minRating));
+    else params.delete('minRating');
+    if (filters.amenity) params.set('amenity', filters.amenity);
+    else params.delete('amenity');
+    if (filters.hasImage) params.set('hasImage', 'true');
+    else params.delete('hasImage');
+    params.set('page', '0');
+    setSearchParams(params);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({ minRating: 0, amenity: '', hasImage: false });
+    const params = new URLSearchParams();
+    if (city) params.set('city', city);
+    params.set('page', '0');
+    setSearchParams(params);
+  };
+
+  const handleSearch = ({ city: newCity }) => {
+    const params = new URLSearchParams(searchParams);
+    if (newCity) params.set('city', newCity);
+    else params.delete('city');
+    params.set('page', '0');
+    setSearchParams(params);
   };
 
   return (
     <div>
       <div className={styles.searchBarWrap}>
         <div className={styles.searchBarInner}>
-          <HeroSearchBar compact initialValues={{ city, checkIn, checkOut, guests: Number(guests) }} />
+          <HeroSearchBar compact onSearch={handleSearch} defaultValues={{ city }} />
         </div>
       </div>
 
@@ -73,31 +96,27 @@ const SearchPage = () => {
           <div className={styles.resultCount}>
             {isLoading ? 'Searching...' : (
               <span>
-                <strong>{total}</strong> hotel{total !== 1 ? 's' : ''} found
+                <strong>{totalElements}</strong> hotel{totalElements !== 1 ? 's' : ''} found
                 {city ? ` in ${city}` : ''}
               </span>
             )}
           </div>
-          <div className={styles.toolbarRight}>
-            <button
-              className={styles.mobileFilterBtn}
-              onClick={() => setMobileFiltersOpen((v) => !v)}
-            >
-              <SlidersHorizontal size={16} /> Filters
-            </button>
-            <Select
-              options={SORT_OPTIONS}
-              value={sort}
-              onChange={(e) => setParams({ sort: e.target.value, page: '1' })}
-              containerClassName={styles.sortSelect}
-              aria-label="Sort hotels"
-            />
-          </div>
+          <button
+            className={styles.mobileFilterBtn}
+            onClick={() => setMobileFiltersOpen((v) => !v)}
+          >
+            <SlidersHorizontal size={16} /> Filters
+          </button>
         </div>
 
         <div className={styles.layout}>
           <aside className={`${styles.sidebar} ${mobileFiltersOpen ? styles.sidebarOpen : ''}`}>
-            <SearchFilters filters={filters} onChange={handleFilterChange} />
+            <SearchFilters
+              filters={filters}
+              onChange={setFilters}
+              onApply={handleApplyFilters}
+              onReset={handleResetFilters}
+            />
           </aside>
 
           <div className={styles.results}>
@@ -108,24 +127,24 @@ const SearchPage = () => {
             ) : hotels.length === 0 ? (
               <EmptyState
                 title="No hotels found"
-                description="Try adjusting your search or filters. We have great hotels across all Palestinian cities."
-                actionLabel="Clear Filters"
-                onAction={() => {
-                  setFilters({ minPrice: 50, maxPrice: 500, stars: [], amenities: [] });
-                  setParams({ city: '', page: '1' });
-                }}
+                description="Try adjusting your search or filters."
+                action={{ label: 'Clear Filters', onClick: handleResetFilters }}
               />
             ) : (
               <>
                 <div className={styles.grid}>
-                  {hotels.map((hotel, i) => (
-                    <HotelCard key={hotel.id} hotel={hotel} index={i} />
+                  {hotels.map((hotel) => (
+                    <HotelCard
+                      key={hotel.id}
+                      hotel={hotel}
+                      onClick={() => navigate(`/hotels/${hotel.id}`)}
+                    />
                   ))}
                 </div>
                 <Pagination
                   page={page}
                   totalPages={totalPages}
-                  onPageChange={(p) => setParam('page', String(p))}
+                  onPageChange={handlePageChange}
                 />
               </>
             )}

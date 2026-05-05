@@ -1,64 +1,39 @@
 import api from './axios';
-import { mockBookings } from './mockData';
 
-const simulateDelay = (ms = 600) => new Promise((r) => setTimeout(r, ms));
-
-export const createBooking = async (bookingData) => {
-  try {
-    const { data } = await api.post('/bookings', bookingData);
-    return data;
-  } catch {
-    await simulateDelay(1000);
-    const ref = 'BK' + String(Date.now()).slice(-6);
-    return {
-      id: ref,
-      ...bookingData,
-      status: 'CONFIRMED',
-      createdAt: new Date().toISOString(),
-    };
-  }
+export const bookingKeys = {
+  all: ['bookings'],
+  mine: (params = {}) => ['bookings', 'mine', params],
+  detail: (id) => ['bookings', 'detail', id],
 };
 
-export const getMyBookings = async () => {
-  try {
-    const { data } = await api.get('/bookings/my');
-    return data;
-  } catch {
-    await simulateDelay();
-    const user = JSON.parse(localStorage.getItem('terrastay_user') || '{}');
-    return mockBookings.filter((b) => !user.email || b.guestEmail === user.email).slice(0, 5);
-  }
+export const friendlyBookingError = (error) => {
+  const message =
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    'Something went wrong';
+
+  if (message.includes('roomTypeId is required')) return 'Please select a room';
+  if (message.includes('Requested') && message.includes('guests exceeds capacity')) return message;
+  if (message.includes('checkOut must be a future date')) return 'Check-out date must be in the future';
+  if (message.includes('is not available from')) return 'Room not available for these dates';
+  if (message.includes('Cannot transition booking')) return 'Action not allowed for this booking';
+  if (message.includes('Cancellation reason is required')) return 'Please enter a cancellation reason';
+  if (message.includes('Booking with id') && message.includes('was not found')) return 'Booking not found';
+  return message;
 };
 
-export const getBookingById = async (id) => {
-  try {
-    const { data } = await api.get(`/bookings/${id}`);
-    return data;
-  } catch {
-    await simulateDelay(300);
-    const booking = mockBookings.find((b) => b.id === id);
-    if (!booking) throw new Error('Booking not found');
-    return booking;
-  }
-};
+export const createBooking = (bookingData) =>
+  api.post('/api/bookings', bookingData).then((response) => response.data);
 
-export const cancelBooking = async (id) => {
-  try {
-    await api.delete(`/bookings/${id}`);
-  } catch {
-    await simulateDelay();
-  }
-};
+export const getMyBookings = (params = {}) =>
+  api.get('/api/bookings/my', { params }).then((response) => response.data);
 
-export const getAllBookings = async (params = {}) => {
-  try {
-    const { data } = await api.get('/admin/bookings', { params });
-    return data;
-  } catch {
-    await simulateDelay();
-    let results = [...mockBookings];
-    if (params.status) results = results.filter((b) => b.status === params.status);
-    if (params.city) results = results.filter((b) => b.city === params.city);
-    return { data: results, total: results.length };
-  }
-};
+export const getBookingById = (id) =>
+  api.get(`/api/bookings/${id}`).then((response) => response.data);
+
+export const cancelBooking = (id, reason) =>
+  api.patch(`/api/bookings/${id}/cancel`, { reason }).then((response) => response.data);
+
+export const getAllBookings = (params = {}) =>
+  api.get('/api/bookings', { params }).then((response) => response.data);

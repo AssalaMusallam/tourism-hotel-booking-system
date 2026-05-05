@@ -1,36 +1,33 @@
+/* Badge.module.css */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  font-family: var(--font-body);
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  line-height: 1.4;
 }
 
-.default {
+.active, .default {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.inactive {
+  background: var(--color-ivory-dark);
+  color: var(--color-text-muted);
+}
+.maintenance {
   background: var(--color-beige-light);
-  color: var(--color-text-secondary);
-}
-
-.confirmed {
-  background: rgba(166, 90, 58, 0.15);
   color: var(--color-terracotta-dark);
 }
-
-.pending {
-  background: rgba(216, 195, 165, 0.5);
-  color: var(--color-text-secondary);
-}
-
-.cancelled {
-  background: rgba(122, 30, 30, 0.12);
-  color: var(--color-red);
-}
-
-.primary {
+.premium {
   background: var(--color-terracotta);
   color: var(--color-text-on-dark);
+}
+.category {
+  background: var(--color-beige-light);
+  color: var(--color-text-secondary);
 }

@@ -1,0 +1,60 @@
+/* AmenityForm.module.css */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--color-beige);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  resize: vertical;
+  transition: border var(--transition);
+  background: #fff;
+}
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-terracotta);
+  box-shadow: 0 0 0 3px rgba(166,90,58,0.1);
+}
+.textareaError {
+  border-color: var(--color-red);
+}
+.err {
+  font-size: 12px;
+  color: var(--color-red);
+}
+.checkRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.checkLabel input[type="checkbox"] {
+  accent-color: var(--color-terracotta);
+  width: 16px;
+  height: 16px;
+}
+.actions {
+  padding-top: 8px;
+}

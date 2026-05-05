@@ -5,9 +5,11 @@ import styles from './ImageGallery.module.css';
 
 const ImageGallery = ({ images = [], name = '' }) => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
-  const safeImages = images.length > 0 ? images : [''];
+  const safeImages = images.length > 0 ? images.map(img => typeof img === 'string' ? img : img.imageUrl) : [];
 
-  const openLightbox = (i) => setLightboxIndex(i);
+  const openLightbox = (i) => {
+    if (safeImages[i]) setLightboxIndex(i);
+  };
   const closeLightbox = () => setLightboxIndex(null);
   const prev = () => setLightboxIndex((i) => (i - 1 + safeImages.length) % safeImages.length);
   const next = () => setLightboxIndex((i) => (i + 1) % safeImages.length);

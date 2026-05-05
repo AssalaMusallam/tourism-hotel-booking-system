@@ -1,0 +1,46 @@
+.card {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 34px;
+  text-align: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.icon {
+  color: var(--color-success);
+  margin-bottom: 14px;
+}
+
+.hotel {
+  color: var(--color-text-muted);
+  margin-top: 6px;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 18px 0;
+}
+
+.comment {
+  color: var(--color-text-main);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  line-height: 1.7;
+}
+
+.created {
+  color: var(--color-text-muted);
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: 900;
+}
