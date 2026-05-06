@@ -28,6 +28,8 @@ public class UserResponseDTO {
     @Schema(description = "Account creation time", example = "2026-04-07T10:30:00Z")
     private Instant createdAt;
 
+    private Long managedHotelId;
+
     public UserResponseDTO() {}
 
     public UserResponseDTO(User u) {
@@ -38,6 +40,10 @@ public class UserResponseDTO {
         this.role = u.getRole();
         this.active = u.isActive();
         this.createdAt = u.getCreatedAt();
+        this.managedHotelId = (u.getManagedHotels() != null
+                && !u.getManagedHotels().isEmpty())
+                ? u.getManagedHotels().iterator().next().getId()
+                : null;
     }
 
     public Long getId() { return id; }
@@ -47,4 +53,5 @@ public class UserResponseDTO {
     public UserRole getRole() { return role; }
     public boolean isActive() { return active; }
     public Instant getCreatedAt() { return createdAt; }
+    public Long getManagedHotelId() { return managedHotelId; }
 }

@@ -196,6 +196,12 @@
   font-weight: 800;
 }
 
+.loading {
+  padding: 28px;
+  color: #4a7784;
+  font-weight: 900;
+}
+
 @media (max-width: 900px) {
   .grid,
   .form {
