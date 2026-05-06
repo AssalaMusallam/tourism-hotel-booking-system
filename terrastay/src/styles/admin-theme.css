@@ -1,0 +1,12 @@
+.admin-layout {
+  --admin-primary: #1A3C5E;
+  --admin-primary-light: #2A5C8E;
+  --admin-accent: #2ECC71;
+  --admin-accent-warn: #F39C12;
+  --admin-accent-danger: #E74C3C;
+  --admin-sidebar-bg: #0F2235;
+  --admin-sidebar-text: #A8C0D6;
+  --admin-sidebar-active: #FFFFFF;
+  --admin-card-bg: #FFFFFF;
+  --admin-surface: #F4F7FA;
+}

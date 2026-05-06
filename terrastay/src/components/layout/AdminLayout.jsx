@@ -4,13 +4,14 @@ import ThemeToggle from '../ui/ThemeToggle';
 import LanguageToggle from '../ui/LanguageToggle';
 import CurrencySelector from '../CurrencySelector';
 import AdminSidebar from './AdminSidebar';
+import '../../styles/admin-theme.css';
 import styles from './AdminLayout.module.css';
 
 const AdminLayout = ({ title = 'لوحة التحكم', children }) => {
   const { user } = useAuth();
 
   return (
-    <div className={styles.shell}>
+    <div className={`admin-layout ${styles.shell}`}>
       <AdminSidebar />
       <div className={styles.content}>
         <header className={styles.topbar}>

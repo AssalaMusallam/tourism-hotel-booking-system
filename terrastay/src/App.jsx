@@ -45,6 +45,7 @@ import AdminReportsPage from './pages/admin/AdminReportsPage';
 import NotificationsPage from './pages/admin/notifications/NotificationsPage';
 import NotificationDetailPage from './pages/admin/notifications/NotificationDetailPage';
 import RoleRequestsPage from './pages/admin/RoleRequestsPage';
+import AdminPlaceholder from './pages/admin/placeholders/AdminPlaceholder';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 
 const queryClient = new QueryClient({
@@ -160,6 +161,13 @@ const App = () => {
             <Route path="/unauthorized" element={<PageLayout><UnauthorizedPage /></PageLayout>} />
 
             {/* Admin pages (ADMIN or MANAGER required) */}
+            <Route path="/admin/hotels/new" element={<AdminRoute><AdminLayout title="إضافة فندق"><AdminPlaceholder title="إضافة فندق" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/room-types" element={<AdminRoute><AdminLayout title="أنواع الغرف"><AdminPlaceholder title="أنواع الغرف" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/room-types/new" element={<AdminRoute><AdminLayout title="إضافة غرفة"><AdminPlaceholder title="إضافة غرفة" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/waiting-list" element={<AdminRoute><AdminLayout title="قائمة الانتظار"><AdminPlaceholder title="قائمة الانتظار" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/payments" element={<AdminRoute><AdminLayout title="المدفوعات"><AdminPlaceholder title="المدفوعات" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/reviews" element={<AdminRoute><AdminLayout title="التقييمات"><AdminPlaceholder title="التقييمات" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/settings" element={<AdminRoute><AdminLayout title="الإعدادات"><SettingsPage /></AdminLayout></AdminRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminLayout title="لوحة التحكم"><AdminDashboard /></AdminLayout></AdminRoute>} />
             <Route path="/admin/hotels" element={<AdminRoute><AdminLayout title="الفنادق"><ManageHotels /></AdminLayout></AdminRoute>} />
             <Route path="/admin/hotels/:hotelId/rooms" element={<AdminRoute><AdminLayout title="أنواع الغرف"><ManageRooms /></AdminLayout></AdminRoute>} />

@@ -1,111 +1,162 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Hotel, Sparkles, Plus, Users, Tag, BarChart2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useAdminHotels, useAmenities } from '../../hooks/useCatalogQueries';
+import { useNavigate } from 'react-router-dom';
+import { BarChart3, CalendarClock, DollarSign, Hotel, Percent, Plus, Tag } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
-import Spinner from '../../components/ui/Spinner';
+import {
+  useAdminBookingStatus,
+  useAdminPopularRooms,
+  useAdminRecentBookings,
+  useAdminRevenue,
+  useAdminSummary,
+} from '../../hooks/useAdminQueries';
+import api from '../../api/axios';
+import '../../styles/admin-theme.css';
 import styles from './AdminDashboard.module.css';
 
-const StatCard = ({ title, value, icon: Icon, color = 'terracotta' }) => (
-  <div className={styles.statCard} style={{ borderLeftColor: `var(--color-${color})` }}>
-    <div className={styles.statIcon}>
-      <Icon size={22} />
-    </div>
+const number = (value) => Number(value || 0);
+
+const KpiCard = ({ title, value, icon: Icon, tone = 'primary' }) => (
+  <article className={`${styles.kpiCard} ${styles[tone]}`}>
+    <Icon size={22} />
     <div>
-      <div className={styles.statValue}>{value}</div>
-      <div className={styles.statTitle}>{title}</div>
+      <strong>{value}</strong>
+      <span>{title}</span>
     </div>
-  </div>
+  </article>
 );
 
+const statusClass = (status) => ({
+  CONFIRMED: styles.confirmed,
+  PENDING: styles.pending,
+  CANCELLED: styles.cancelled,
+  COMPLETED: styles.completed,
+}[status] || styles.completed);
+
 const AdminDashboard = () => {
-  const { user, isAdmin } = useAuth();
-  useEffect(() => { document.title = 'Dashboard – PinkFlow'; }, []);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const summaryQuery = useAdminSummary();
+  const revenueQuery = useAdminRevenue();
+  const statusQuery = useAdminBookingStatus();
+  const bookingsQuery = useAdminRecentBookings();
+  const roomsQuery = useAdminPopularRooms();
 
-  const { data: hotelsData, isLoading: hotelsLoading } = useAdminHotels({ page: 0, size: 1 });
-  const { data: amenitiesData, isLoading: amenitiesLoading } = useAmenities({ page: 0, size: 1 });
+  useEffect(() => {
+    document.title = 'لوحة التحكم - TerraStay';
+  }, []);
 
-  const totalHotels = hotelsData?.totalElements || 0;
-  const totalAmenities = amenitiesData?.totalElements || 0;
+  const summary = summaryQuery.data || {};
+  const revenue = Array.isArray(revenueQuery.data) ? revenueQuery.data : [];
+  const statuses = Array.isArray(statusQuery.data) ? statusQuery.data : [];
+  const bookings = bookingsQuery.data?.content || bookingsQuery.data || [];
+  const rooms = Array.isArray(roomsQuery.data) ? roomsQuery.data : [];
+  const maxRevenue = Math.max(...revenue.map((item) => number(item.revenue || item.totalRevenue || item.amount)), 1);
+  const statusTotal = Math.max(statuses.reduce((sum, item) => sum + number(item.count || item.value), 0), 1);
 
-  const isLoading = hotelsLoading || amenitiesLoading;
+  const exportReport = async () => {
+    const response = await api.get('/api/admin/reports/export', { responseType: 'blob' });
+    const blob = response.data;
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'terrastay-admin-report';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <div className={styles.page}>
-      <aside className={styles.sidebar}>
-        <nav className={styles.nav}>
-          <Link to="/dashboard" className={`${styles.navLink} ${styles.active}`}>Dashboard</Link>
-          <Link to="/dashboard/hotels" className={styles.navLink}>Manage Hotels</Link>
-          <Link to="/admin/amenities" className={styles.navLink}>Manage Amenities</Link>
-          {isAdmin && <Link to="/dashboard/users" className={styles.navLink}>Manage Users</Link>}
-          <Link to="/dashboard/pricing-rules" className={styles.navLink}>Pricing Rules</Link>
-          {isAdmin && <Link to="/dashboard/reports" className={styles.navLink}>Analytics</Link>}
-        </nav>
-      </aside>
-
-      <main className={styles.main}>
-        <div className={styles.header}>
-          <div>
-            <h1>Welcome, {user?.fullName?.split(' ')[0] || 'Admin'}</h1>
-            <p style={{ color: 'var(--color-text-muted)', marginTop: 4 }}>
-              Manage your hotels, rooms, and amenities
-            </p>
-          </div>
-          <div className={styles.quickActions}>
-            <Link to="/dashboard/hotels" className={styles.actionBtn}>
-              <Plus size={16} /> Manage Hotels
-            </Link>
-          </div>
+    <section className={`admin-layout ${styles.dashboard}`}>
+      <header className={styles.header}>
+        <div>
+          <h1>لوحة التحكم</h1>
+          <p>مرحباً، {user?.name || user?.fullName || 'Admin'}</p>
         </div>
+      </header>
 
-        {isLoading ? <Spinner centered /> : (
-          <div className={styles.statsGrid}>
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-              <StatCard title="Total Hotels" value={totalHotels} icon={Hotel} />
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-              <StatCard title="Amenities" value={totalAmenities} icon={Sparkles} color="beige" />
-            </motion.div>
-          </div>
-        )}
+      <div className={styles.kpiGrid}>
+        <KpiCard title="إجمالي الحجوزات هذا الشهر" value={number(summary.monthlyBookings || summary.totalBookingsThisMonth)} icon={CalendarClock} />
+        <KpiCard title="إجمالي الإيرادات ($)" value={`$${number(summary.totalRevenue || summary.monthlyRevenue).toLocaleString()}`} icon={DollarSign} tone="success" />
+        <KpiCard title="نسبة الإشغال (%)" value={`${number(summary.occupancyRate).toFixed(0)}%`} icon={Percent} tone="warn" />
+        <KpiCard title="الحجوزات المعلقة" value={number(summary.pendingBookings)} icon={Hotel} tone="danger" />
+      </div>
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Quick Links</h2>
-          <div className={styles.quickLinksGrid}>
-            <Link to="/dashboard/hotels" className={styles.quickLink}>
-              <Hotel size={20} />
-              <span>Manage Hotels</span>
-              <p>View, create, edit, and manage all hotels</p>
-            </Link>
-            <Link to="/admin/amenities" className={styles.quickLink}>
-              <Sparkles size={20} />
-              <span>Manage Amenities</span>
-              <p>Create and configure amenities for hotels and rooms</p>
-            </Link>
-            {isAdmin && (
-              <Link to="/dashboard/users" className={styles.quickLink}>
-                <Users size={20} />
-                <span>Manage Users</span>
-                <p>Change roles, active status, and manager hotel access</p>
-              </Link>
-            )}
-            <Link to="/dashboard/pricing-rules" className={styles.quickLink}>
-              <Tag size={20} />
-              <span>Pricing Rules</span>
-              <p>Configure seasonal multipliers and price adjustments</p>
-            </Link>
-            {isAdmin && (
-              <Link to="/dashboard/reports" className={styles.quickLink}>
-                <BarChart2 size={20} />
-                <span>Analytics &amp; Reports</span>
-                <p>Revenue, occupancy, and booking insights per hotel</p>
-              </Link>
-            )}
+      <div className={styles.actions}>
+        <button onClick={() => navigate('/admin/hotels/new')}><Plus size={16} /> إضافة فندق</button>
+        <button onClick={() => navigate('/admin/room-types/new')}><Plus size={16} /> إضافة غرفة</button>
+        <button onClick={exportReport}><BarChart3 size={16} /> تصدير التقرير</button>
+        <button onClick={() => navigate('/admin/pricing-rules')}><Tag size={16} /> قواعد التسعير</button>
+      </div>
+
+      <div className={styles.chartGrid}>
+        <article className={styles.panel}>
+          <h2>الإيرادات حسب الشهر</h2>
+          <div className={styles.barChart}>
+            {(revenue.length ? revenue : Array.from({ length: 6 }, (_, index) => ({ month: `M${index + 1}`, revenue: 0 }))).slice(-6).map((item) => {
+              const value = number(item.revenue || item.totalRevenue || item.amount);
+              return (
+                <div key={item.month || item.label} className={styles.barItem}>
+                  <span style={{ height: `${Math.max(6, (value / maxRevenue) * 100)}%` }} />
+                  <small>{item.month || item.label}</small>
+                </div>
+              );
+            })}
           </div>
-        </div>
-      </main>
-    </div>
+        </article>
+
+        <article className={styles.panel}>
+          <h2>حالة الحجوزات</h2>
+          <div className={styles.donutList}>
+            {(statuses.length ? statuses : ['CONFIRMED', 'PENDING', 'CANCELLED', 'WAITING'].map((status) => ({ status, count: 0 }))).map((item) => {
+              const count = number(item.count || item.value);
+              return (
+                <div key={item.status || item.name} className={styles.statusRow}>
+                  <span className={`${styles.statusDot} ${statusClass(item.status || item.name)}`} />
+                  <strong>{item.status || item.name}</strong>
+                  <small>{Math.round((count / statusTotal) * 100)}%</small>
+                </div>
+              );
+            })}
+          </div>
+        </article>
+      </div>
+
+      <div className={styles.tableGrid}>
+        <article className={styles.panel}>
+          <h2>أحدث الحجوزات</h2>
+          <table className={styles.table}>
+            <thead><tr><th>اسم الضيف</th><th>رقم الغرفة / الغرفة</th><th>تاريخ الدخول</th><th>الحالة</th></tr></thead>
+            <tbody>
+              {(Array.isArray(bookings) ? bookings : []).slice(0, 10).map((booking) => (
+                <tr key={booking.id}>
+                  <td>{booking.guestName || booking.guest?.name || booking.guestEmail || '-'}</td>
+                  <td>{booking.roomNumber || booking.roomTypeName || booking.room?.name || '-'}</td>
+                  <td>{booking.checkInDate || booking.checkIn || '-'}</td>
+                  <td><span className={`${styles.badge} ${statusClass(booking.status)}`}>{booking.status || '-'}</span></td>
+                </tr>
+              ))}
+              {(!Array.isArray(bookings) || bookings.length === 0) && <tr><td colSpan="4">لا توجد حجوزات حديثة</td></tr>}
+            </tbody>
+          </table>
+        </article>
+
+        <article className={styles.panel}>
+          <h2>الغرف الأكثر طلباً</h2>
+          <table className={styles.table}>
+            <thead><tr><th>اسم الغرفة</th><th>عدد الحجوزات</th><th>نسبة الإشغال</th></tr></thead>
+            <tbody>
+              {rooms.slice(0, 10).map((room) => (
+                <tr key={room.roomTypeId || room.id || room.name}>
+                  <td>{room.roomTypeName || room.name || '-'}</td>
+                  <td>{number(room.bookingCount || room.bookingsCount)}</td>
+                  <td>{number(room.occupancyRate).toFixed(0)}%</td>
+                </tr>
+              ))}
+              {rooms.length === 0 && <tr><td colSpan="3">لا توجد بيانات غرف</td></tr>}
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
   );
 };
 

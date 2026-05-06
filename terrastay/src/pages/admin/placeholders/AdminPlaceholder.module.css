@@ -1,0 +1,27 @@
+.placeholder {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--admin-card-bg);
+  box-shadow: 0 10px 30px rgba(15, 34, 53, 0.08);
+}
+
+.placeholder h1 {
+  margin: 0;
+  color: var(--admin-primary);
+}
+
+.placeholder p {
+  margin: 0;
+  color: #587086;
+}
+
+.placeholder button {
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--admin-primary);
+  font-weight: 800;
+}
