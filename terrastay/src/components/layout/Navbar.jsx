@@ -100,6 +100,8 @@ const Navbar = () => {
   };
 
   const menuLinks = [
+    { to: '/', label: 'الرئيسية', icon: UserCircle, show: true },
+    { to: '/search', label: 'الفنادق', icon: Search, show: true },
     { to: '/my-bookings', label: t('myBookings'), icon: CalendarCheck, show: !isManager },
     { to: '/favorites', label: t('favorites'), icon: Heart, show: true },
     { to: '/settings', label: t('settings'), icon: Settings, show: true },
@@ -112,9 +114,16 @@ const Navbar = () => {
       <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <Link to="/" className={styles.logo} aria-label="TerraStay home">
-            <span className={styles.logoMark}>T</span>
+            <span className={styles.logoMark}>🇵🇸</span>
             <span className={styles.logoText}>TerraStay</span>
           </Link>
+
+          <div className={styles.navLinks}>
+            <NavLink to="/">الرئيسية</NavLink>
+            <NavLink to="/search">الفنادق</NavLink>
+            <NavLink to="/favorites">المفضلة</NavLink>
+            {isAuthenticated && <NavLink to="/my-bookings">حجوزاتي</NavLink>}
+          </div>
 
           <div className={styles.centerSearch} ref={searchRef}>
             <Search size={16} />

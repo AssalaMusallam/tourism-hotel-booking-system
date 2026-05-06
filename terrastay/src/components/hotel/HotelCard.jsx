@@ -1,5 +1,6 @@
 import { MapPin, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Badge from '../ui/Badge';
 import PriceDisplay from '../PriceDisplay';
 import HeartButton from '../ui/HeartButton';
@@ -9,6 +10,7 @@ import styles from './HotelCard.module.css';
 // HotelResponseDto: { id, name, city, country, rating, amenityNames: Set<String>,
 //   images: [{id, imageUrl, fileName}], status }
 const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
+  const navigate = useNavigate();
   const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName);
   const amenityNames = hotel.amenityNames
     ? Array.from(hotel.amenityNames)
@@ -17,7 +19,7 @@ const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
   return (
     <motion.div
       className={styles.card}
-      onClick={onClick}
+      onClick={onClick || (() => navigate(`/hotels/${hotel.id}`))}
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.018, y: -4 }}

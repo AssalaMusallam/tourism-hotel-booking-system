@@ -1,0 +1,154 @@
+.form {
+  width: min(100%, 1040px);
+  display: grid;
+  grid-template-columns: minmax(220px, 1.3fr) 170px minmax(250px, 0.9fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 32px var(--color-shadow-strong);
+}
+
+.compact {
+  width: 100%;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.queryField,
+.selectField,
+.dateField {
+  position: relative;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  background: var(--color-surface-2);
+}
+
+.queryField {
+  min-width: 0;
+}
+
+.queryField input,
+.selectField select,
+.dateField input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--color-text-primary);
+  background: transparent;
+  font-weight: 700;
+}
+
+.selectField select {
+  cursor: pointer;
+}
+
+.dateField input {
+  font-size: var(--font-size-sm);
+}
+
+.submit {
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-primary);
+  background: var(--color-primary);
+  font-weight: 900;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition), background var(--transition);
+}
+
+.submit:hover {
+  transform: translateY(-2px);
+  background: var(--color-primary-dark);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  inset-inline-start: 0;
+  z-index: 80;
+  width: min(520px, 92vw);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-hover);
+}
+
+.sectionLabel {
+  padding: 11px 14px 7px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 900;
+}
+
+.suggestion {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  color: var(--color-text-primary);
+  text-align: start;
+  font-weight: 700;
+}
+
+.suggestion svg {
+  color: var(--color-primary);
+}
+
+.suggestion strong {
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+.suggestion small {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.suggestion:hover,
+.active {
+  background: var(--color-primary-soft);
+}
+
+.clear,
+.empty {
+  width: 100%;
+  padding: 13px 14px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-light);
+  text-align: center;
+  font-weight: 800;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .form {
+    grid-template-columns: 1fr;
+    border-radius: var(--radius-xl);
+  }
+
+  .queryField,
+  .selectField,
+  .dateField,
+  .submit {
+    border-radius: var(--radius-lg);
+  }
+}

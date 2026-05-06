@@ -63,6 +63,23 @@
   width: 100%;
 }
 
+.quickPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 960px;
+}
+
+.quickPills button {
+  padding: 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: var(--radius-full);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.16);
+  font-weight: 900;
+  backdrop-filter: blur(10px);
+}
+
 .section {
   padding-top: 78px;
   padding-bottom: 78px;

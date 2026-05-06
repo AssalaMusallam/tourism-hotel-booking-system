@@ -1,16 +1,18 @@
 .searchBarWrap {
-  background: var(--color-text-primary);
-  padding: 20px var(--container-padding);
+  padding: 28px var(--container-padding);
+  background:
+    linear-gradient(135deg, rgba(139, 26, 46, 0.92), rgba(107, 18, 34, 0.88)),
+    var(--color-primary);
 }
 
 .searchBarInner {
-  max-width: var(--container-max);
+  width: min(100%, var(--container-max));
   margin: 0 auto;
 }
 
 .content {
   padding-top: 28px;
-  padding-bottom: 60px;
+  padding-bottom: 70px;
 }
 
 .toolbar {
@@ -18,18 +20,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   flex-wrap: wrap;
 }
 
 .resultCount {
-  font-size: 15px;
   color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  font-weight: 700;
 }
 
 .resultCount strong {
-  color: var(--color-text-primary);
-  font-weight: 700;
+  color: var(--color-primary);
+  font-weight: 900;
 }
 
 .toolbarRight {
@@ -38,37 +41,91 @@
   gap: 10px;
 }
 
+.sortSelect,
+.mobileFilterBtn {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  font-weight: 800;
+}
+
 .mobileFilterBtn {
   display: none;
   align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
-  border: 1.5px solid var(--color-beige);
-  border-radius: var(--radius-md);
-  background: var(--color-ivory);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-family: var(--font-body);
-}
-
-.sortSelect {
-  min-width: 180px;
+  gap: 7px;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: 260px minmax(320px, 40%) minmax(0, 60%);
-  gap: 28px;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 26px;
   align-items: start;
 }
 
 .sidebar {
-  display: block;
+  position: sticky;
+  top: calc(var(--navbar-height) + 18px);
 }
 
-.results {}
+.filterPanel {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.filterPanel h3 {
+  font-size: var(--font-size-md);
+  font-weight: 900;
+}
+
+.checkboxGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.checkboxGrid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+}
+
+.rangeValue {
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+.ratingPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ratingPills button {
+  padding: 8px 11px;
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-weight: 900;
+}
+
+.activePill {
+  color: var(--color-text-on-primary) !important;
+  background: var(--color-primary) !important;
+}
+
+.results {
+  display: grid;
+  gap: 22px;
+}
 
 .grid {
   display: grid;
@@ -76,80 +133,51 @@
   gap: 20px;
 }
 
-.mapPane {
-  position: sticky;
-  top: calc(var(--navbar-height) + 16px);
-}
-
-.mapSkeleton {
-  height: calc(100vh - 150px);
-  border-radius: var(--radius-lg);
-}
-
-.selectedCard {
-  border-radius: var(--radius-lg);
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
-
-.mobileMapToggle {
-  display: none;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  padding: 4px;
-  margin-bottom: 16px;
+.errorBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.mobileMapToggle button {
-  min-height: 40px;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
+  border-radius: var(--radius-lg);
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
   font-weight: 800;
 }
 
-.toggleActive {
-  background: #fff;
-  color: var(--color-primary) !important;
-  box-shadow: var(--shadow-card);
+.errorBanner button {
+  color: var(--color-primary);
+  font-weight: 900;
 }
 
-:root.dark .toggleActive {
-  background: var(--color-surface-alt);
-}
-
-@media (max-width: 1024px) {
-  .layout { grid-template-columns: minmax(260px, 42%) minmax(0, 58%); }
-  .sidebar {
-    grid-column: 1 / -1;
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 768px) {
-  .mobileFilterBtn { display: flex; }
-  .mobileMapToggle { display: grid; }
-  .layout { grid-template-columns: 1fr; }
-  .mapPane { position: static; }
-  .mobileHidden { display: none; }
+@media (min-width: 1180px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mobileFilterBtn {
+    display: inline-flex;
+  }
+
   .sidebar {
     display: none;
+    position: static;
   }
+
   .sidebarOpen {
     display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 300;
-    background: var(--color-ivory);
-    overflow-y: auto;
-    padding: 20px;
   }
-}
-
-@media (max-width: 640px) {
-  .grid { grid-template-columns: 1fr; }
 }

@@ -52,8 +52,16 @@ const HomePage = () => {
           <motion.div className={styles.searchWrap} initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
             <HeroSearchBar onSearch={handleSearch} />
           </motion.div>
+          <div className={styles.quickPills}>
+            {['القدس', 'بيت لحم', 'رام الله', 'نابلس', 'أريحا', 'الخليل'].map((quickCity) => (
+              <button type="button" key={quickCity} onClick={() => navigate(`/search?city=${encodeURIComponent(quickCity)}`)}>
+                {quickCity}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
+      <div className="tatreezDivider" />
 
       <section className={`container ${styles.section}`}>
         <div className={styles.sectionHeader}>
@@ -88,6 +96,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+      <div className="tatreezDivider" />
 
       <footer className={styles.footer}>
         <div className="container">

@@ -1,32 +1,32 @@
 :root {
-  --color-terracotta: #8B1A4A;
-  --color-terracotta-dark: #6D1238;
-  --color-terracotta-light: #C4617A;
-  --color-beige: #EDD5DE;
-  --color-beige-light: #F5E6EC;
-  --color-ivory: #FDF8F9;
-  --color-ivory-dark: #F5E6EC;
-  --color-red: #991B1B;
-  --color-red-light: #B91C1C;
+  --color-terracotta: #8B1A2E;
+  --color-terracotta-dark: #6B1222;
+  --color-terracotta-light: #B5294A;
+  --color-beige: #E8D0D4;
+  --color-beige-light: #F9EEF0;
+  --color-ivory: #FFFFFF;
+  --color-ivory-dark: #FDF6F7;
+  --color-red: #C0392B;
+  --color-red-light: #A93226;
   --color-page-bg: #FFFFFF;
 
-  --color-text-primary: #1C0A12;
-  --color-text-secondary: #5C3347;
-  --color-text-muted: #9C7080;
+  --color-text-primary: #1A0A0D;
+  --color-text-secondary: #6B4A50;
+  --color-text-muted: #9E7A80;
   --color-text-on-dark: #FFFFFF;
 
-  --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', 'Noto Sans Arabic', 'Tajawal', system-ui, sans-serif;
+  --font-heading: 'Cairo', 'Inter', sans-serif;
+  --font-body: 'Cairo', 'Inter', sans-serif;
 
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
 
-  --shadow-card: 0 4px 16px rgba(139, 26, 74, 0.12);
-  --shadow-card-hover: 0 12px 40px rgba(139, 26, 74, 0.22);
-  --transition: 0.2s ease;
+  --shadow-card: 0 4px 24px rgba(139, 26, 46, 0.12);
+  --shadow-card-hover: 0 14px 38px rgba(139, 26, 46, 0.22);
+  --transition: 200ms ease;
 
   --navbar-height: 72px;
   --container-max: 1280px;

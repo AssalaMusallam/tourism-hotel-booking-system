@@ -1,197 +1,131 @@
-import { Suspense, lazy, useRef, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal } from 'lucide-react';
 import { useHotels } from '../hooks/useCatalogQueries';
-import HeroSearchBar from '../components/search/HeroSearchBar';
+import SmartSearchBar from '../components/search/SmartSearchBar';
 import SearchFilters from '../components/search/SearchFilters';
-import HotelCard, { HotelCardSkeleton } from '../components/hotel/HotelCard';
+import HotelCard from '../components/hotel/HotelCard';
 import Pagination from '../components/ui/Pagination';
 import EmptyState from '../components/ui/EmptyState';
+import SkeletonCard from '../components/ui/SkeletonCard';
+import HotelsMap from '../components/map/HotelsMap';
+import palestineHotels from '../data/palestineHotels';
 import styles from './SearchPage.module.css';
 
-const HotelMap = lazy(() => import('../components/map/HotelMap'));
+const cities = ['القدس', 'بيت لحم', 'رام الله', 'نابلس', 'أريحا', 'الخليل', 'جنين', 'طولكرم', 'قلقيلية', 'طوباس'];
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
-
-  // Read URL params
-  const city = searchParams.get('city') || '';
   const q = searchParams.get('q') || '';
-  const page = Number(searchParams.get('page') || '0'); // 0-indexed
-  const minRating = searchParams.get('minRating') || '';
-  const maxRating = searchParams.get('maxRating') || '';
-  const amenity = searchParams.get('amenity') || '';
-  const hasImage = searchParams.get('hasImage') || '';
-
-  // Local filter state
-  const [filters, setFilters] = useState({
-    minRating: minRating ? Number(minRating) : 0,
-    amenity: amenity || '',
-    hasImage: hasImage === 'true',
-  });
-
+  const city = searchParams.get('city') || '';
+  const page = Number(searchParams.get('page') || '0');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [selectedHotelId, setSelectedHotelId] = useState(null);
-  const [mobileView, setMobileView] = useState('list');
-  const cardRefs = useRef({});
+  const [sort, setSort] = useState('rating');
+  const [selectedCities, setSelectedCities] = useState(city ? [city] : []);
+  const [rating, setRating] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(500);
 
-  // Build API params — all matching /api/hotels query params
-  const apiParams = {
-    ...(city && { city }),
-    ...(q && { q }),
-    ...(minRating && { minRating }),
-    ...(maxRating && { maxRating }),
-    ...(amenity && { amenity }),
-    ...(hasImage === 'true' && { hasImage: true }),
-    page,
-    size: 10,
-  };
+  const apiParams = { ...(q && { search: q, q }), ...(city && { city }), page, size: 12 };
+  const { data, isLoading, isError, refetch } = useHotels(apiParams);
+  const sourceHotels = data?.content?.length ? data.content : palestineHotels;
 
-  const { data, isLoading } = useHotels(apiParams);
-  const hotels = data?.content || [];
-  const totalPages = data?.totalPages || 0;
-  const totalElements = data?.totalElements || 0;
+  const hotels = useMemo(() => {
+    const query = q.trim().toLowerCase();
+    return sourceHotels
+      .filter((hotel) => !query || hotel.name.toLowerCase().includes(query) || hotel.city.toLowerCase().includes(query))
+      .filter((hotel) => selectedCities.length === 0 || selectedCities.includes(hotel.city))
+      .filter((hotel) => Number(hotel.rating || 0) >= rating)
+      .filter((hotel) => Number(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice || 0) <= maxPrice)
+      .sort((a, b) => {
+        if (sort === 'price') return Number(a.minPricePerNight || 0) - Number(b.minPricePerNight || 0);
+        if (sort === 'newest') return Number(b.id || 0) - Number(a.id || 0);
+        return Number(b.rating || 0) - Number(a.rating || 0);
+      });
+  }, [sourceHotels, q, selectedCities, rating, maxPrice, sort]);
 
-  const handlePageChange = (newPage) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', String(newPage));
-    setSearchParams(params);
-  };
-
-  const handleApplyFilters = () => {
-    const params = new URLSearchParams(searchParams);
-    if (filters.minRating > 0) params.set('minRating', String(filters.minRating));
-    else params.delete('minRating');
-    if (filters.amenity) params.set('amenity', filters.amenity);
-    else params.delete('amenity');
-    if (filters.hasImage) params.set('hasImage', 'true');
-    else params.delete('hasImage');
-    params.set('page', '0');
-    setSearchParams(params);
-  };
-
-  const handleResetFilters = () => {
-    setFilters({ minRating: 0, amenity: '', hasImage: false });
+  const updateSearch = ({ q: nextQ, city: nextCity }) => {
     const params = new URLSearchParams();
-    if (city) params.set('city', city);
+    if (nextQ) params.set('q', nextQ);
+    if (nextCity) params.set('city', nextCity);
     params.set('page', '0');
+    setSelectedCities(nextCity ? [nextCity] : []);
     setSearchParams(params);
   };
 
-  const handleSearch = ({ city: newCity }) => {
-    const params = new URLSearchParams(searchParams);
-    if (newCity) params.set('city', newCity);
-    else params.delete('city');
-    params.set('page', '0');
-    setSearchParams(params);
-  };
-
-  const handleMarkerClick = (hotelId) => {
-    setSelectedHotelId(hotelId);
-    cardRefs.current[hotelId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const toggleCity = (value) => {
+    setSelectedCities((current) =>
+      current.includes(value) ? current.filter((item) => item !== value) : [...current, value]
+    );
   };
 
   return (
     <div>
       <div className={styles.searchBarWrap}>
         <div className={styles.searchBarInner}>
-          <HeroSearchBar compact onSearch={handleSearch} defaultValues={{ city }} />
+          <SmartSearchBar compact onSearch={updateSearch} defaultValues={{ q, city }} />
         </div>
       </div>
 
       <div className={`container ${styles.content}`}>
         <div className={styles.toolbar}>
           <div className={styles.resultCount}>
-            {isLoading ? 'Searching...' : (
-              <span>
-                <strong>{totalElements}</strong> hotel{totalElements !== 1 ? 's' : ''} found
-                {city ? ` in ${city}` : ''}
-              </span>
-            )}
+            <strong>{hotels.length}</strong> فندق {city ? `في ${city}` : 'في فلسطين'}
           </div>
-          <button
-            className={styles.mobileFilterBtn}
-            onClick={() => setMobileFiltersOpen((v) => !v)}
-          >
-            <SlidersHorizontal size={16} /> Filters
-          </button>
-        </div>
-
-        <div className={styles.mobileMapToggle}>
-          <button
-            className={mobileView === 'list' ? styles.toggleActive : ''}
-            onClick={() => setMobileView('list')}
-          >
-            List
-          </button>
-          <button
-            className={mobileView === 'map' ? styles.toggleActive : ''}
-            onClick={() => setMobileView('map')}
-          >
-            Map ({hotels.length} hotels)
-          </button>
+          <div className={styles.toolbarRight}>
+            <select className={styles.sortSelect} value={sort} onChange={(event) => setSort(event.target.value)}>
+              <option value="rating">الأعلى تقييماً</option>
+              <option value="price">الأقل سعراً</option>
+              <option value="newest">الأحدث</option>
+            </select>
+            <button className={styles.mobileFilterBtn} onClick={() => setMobileFiltersOpen((value) => !value)}>
+              <SlidersHorizontal size={16} /> الفلاتر
+            </button>
+          </div>
         </div>
 
         <div className={styles.layout}>
           <aside className={`${styles.sidebar} ${mobileFiltersOpen ? styles.sidebarOpen : ''}`}>
-            <SearchFilters
-              filters={filters}
-              onChange={setFilters}
-              onApply={handleApplyFilters}
-              onReset={handleResetFilters}
-            />
+            <div className={styles.filterPanel}>
+              <h3>المدينة</h3>
+              <div className={styles.checkboxGrid}>
+                {cities.map((item) => (
+                  <label key={item}><input type="checkbox" checked={selectedCities.includes(item)} onChange={() => toggleCity(item)} /> {item}</label>
+                ))}
+              </div>
+              <h3>السعر</h3>
+              <input type="range" min="0" max="500" value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))} />
+              <span className={styles.rangeValue}>حتى ${maxPrice}</span>
+              <h3>التقييم</h3>
+              <div className={styles.ratingPills}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <button key={value} className={rating === value ? styles.activePill : ''} onClick={() => setRating(rating === value ? 0 : value)}>{value} ★</button>
+                ))}
+              </div>
+              <SearchFilters filters={{ minRating: rating, amenity: '', hasImage: false }} onChange={() => {}} onApply={() => {}} onReset={() => { setSelectedCities([]); setRating(0); setMaxPrice(500); }} />
+            </div>
           </aside>
 
-          <div className={`${styles.results} ${mobileView === 'map' ? styles.mobileHidden : ''}`}>
-            {isLoading ? (
-              <div className={styles.grid}>
-                {Array.from({ length: 6 }).map((_, i) => <HotelCardSkeleton key={i} />)}
+          <main className={styles.results}>
+            <HotelsMap hotels={hotels} />
+            {isError && (
+              <div className={styles.errorBanner}>
+                تعذر تحميل النتائج من الخادم، يتم عرض بيانات محلية.
+                <button onClick={() => refetch()}>إعادة المحاولة</button>
               </div>
+            )}
+            {isLoading ? (
+              <div className={styles.grid}>{Array.from({ length: 6 }).map((_, index) => <SkeletonCard key={index} />)}</div>
             ) : hotels.length === 0 ? (
-              <EmptyState
-                title="No hotels found"
-                description="Try adjusting your search or filters."
-                action={{ label: 'Clear Filters', onClick: handleResetFilters }}
-              />
+              <EmptyState title="لم يتم العثور على نتائج" description="جرّب إزالة بعض الفلاتر أو البحث عن مدينة أخرى." />
             ) : (
               <>
                 <div className={styles.grid}>
-                  {hotels.map((hotel) => (
-                    <div
-                      key={hotel.id}
-                      ref={(node) => { cardRefs.current[hotel.id] = node; }}
-                      className={Number(selectedHotelId) === Number(hotel.id) ? styles.selectedCard : ''}
-                      onMouseEnter={() => setSelectedHotelId(hotel.id)}
-                      onMouseLeave={() => setSelectedHotelId(null)}
-                    >
-                      <HotelCard
-                        hotel={hotel}
-                        onClick={() => navigate(`/hotels/${hotel.id}`)}
-                      />
-                    </div>
-                  ))}
+                  {hotels.map((hotel, index) => <HotelCard key={hotel.id} hotel={hotel} index={index} />)}
                 </div>
-                <Pagination
-                  page={page}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
+                {data?.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} onPageChange={(next) => { searchParams.set('page', String(next)); setSearchParams(searchParams); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />}
               </>
             )}
-          </div>
-
-          <aside className={`${styles.mapPane} ${mobileView === 'list' ? styles.mobileHidden : ''}`}>
-            <Suspense fallback={<div className={`skeleton ${styles.mapSkeleton}`} />}>
-              <HotelMap
-                hotels={hotels}
-                selectedId={selectedHotelId}
-                onMarkerClick={handleMarkerClick}
-                height="calc(100vh - 150px)"
-              />
-            </Suspense>
-          </aside>
+          </main>
         </div>
       </div>
     </div>

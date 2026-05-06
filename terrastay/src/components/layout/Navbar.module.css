@@ -46,6 +46,26 @@
   box-shadow: var(--shadow-md);
 }
 
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navLinks a {
+  padding: 8px 11px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 900;
+}
+
+.navLinks a:hover,
+.navLinks a[aria-current="page"] {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
 .logoText {
   color: var(--color-primary);
   font-family: var(--font-heading);
@@ -315,6 +335,10 @@
 }
 
 @media (max-width: 1120px) {
+  .navLinks {
+    display: none;
+  }
+
   .centerSearch {
     max-width: 360px;
   }
