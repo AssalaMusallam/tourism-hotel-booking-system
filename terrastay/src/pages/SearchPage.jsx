@@ -10,12 +10,30 @@ import EmptyState from '../components/ui/EmptyState';
 import SkeletonCard from '../components/ui/SkeletonCard';
 import HotelsMap from '../components/map/HotelsMap';
 import palestineHotels from '../data/palestineHotels';
+import useLanguage from '../hooks/useLanguage';
 import styles from './SearchPage.module.css';
 
-const cities = ['القدس', 'بيت لحم', 'رام الله', 'نابلس', 'أريحا', 'الخليل', 'جنين', 'طولكرم', 'قلقيلية', 'طوباس'];
+const cities = [
+  { value: 'القدس', label: 'القدس', labelEn: 'Jerusalem' },
+  { value: 'بيت لحم', label: 'بيت لحم', labelEn: 'Bethlehem' },
+  { value: 'رام الله', label: 'رام الله', labelEn: 'Ramallah' },
+  { value: 'نابلس', label: 'نابلس', labelEn: 'Nablus' },
+  { value: 'أريحا', label: 'أريحا', labelEn: 'Jericho' },
+  { value: 'الخليل', label: 'الخليل', labelEn: 'Hebron' },
+  { value: 'جنين', label: 'جنين', labelEn: 'Jenin' },
+  { value: 'طولكرم', label: 'طولكرم', labelEn: 'Tulkarm' },
+  { value: 'قلقيلية', label: 'قلقيلية', labelEn: 'Qalqilya' },
+  { value: 'طوباس', label: 'طوباس', labelEn: 'Tubas' },
+];
+
+const cityLabel = (value, language) => {
+  const match = cities.find((item) => item.value === value || item.labelEn === value);
+  return language === 'en' ? match?.labelEn || value : match?.label || value;
+};
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { language, t } = useLanguage();
   const q = searchParams.get('q') || '';
   const city = searchParams.get('city') || '';
   const page = Number(searchParams.get('page') || '0');
@@ -32,8 +50,8 @@ const SearchPage = () => {
   const hotels = useMemo(() => {
     const query = q.trim().toLowerCase();
     return sourceHotels
-      .filter((hotel) => !query || hotel.name.toLowerCase().includes(query) || hotel.city.toLowerCase().includes(query))
-      .filter((hotel) => selectedCities.length === 0 || selectedCities.includes(hotel.city))
+      .filter((hotel) => !query || hotel.nameEn?.toLowerCase().includes(query) || hotel.cityEn?.toLowerCase().includes(query) || hotel.name?.toLowerCase().includes(query) || hotel.city?.toLowerCase().includes(query))
+      .filter((hotel) => selectedCities.length === 0 || selectedCities.includes(hotel.city) || selectedCities.includes(hotel.cityEn))
       .filter((hotel) => Number(hotel.rating || 0) >= rating)
       .filter((hotel) => Number(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice || 0) <= maxPrice)
       .sort((a, b) => {
@@ -69,16 +87,16 @@ const SearchPage = () => {
       <div className={`container ${styles.content}`}>
         <div className={styles.toolbar}>
           <div className={styles.resultCount}>
-            <strong>{hotels.length}</strong> فندق {city ? `في ${city}` : 'في فلسطين'}
+            <strong>{hotels.length}</strong> {city ? `${language === 'en' ? 'hotels in' : 'فندق في'} ${cityLabel(city, language)}` : t('hotelsInPalestine')}
           </div>
           <div className={styles.toolbarRight}>
             <select className={styles.sortSelect} value={sort} onChange={(event) => setSort(event.target.value)}>
-              <option value="rating">الأعلى تقييماً</option>
-              <option value="price">الأقل سعراً</option>
-              <option value="newest">الأحدث</option>
+              <option value="rating">{t('highestRated')}</option>
+              <option value="price">{t('lowestPrice')}</option>
+              <option value="newest">{t('newest')}</option>
             </select>
             <button className={styles.mobileFilterBtn} onClick={() => setMobileFiltersOpen((value) => !value)}>
-              <SlidersHorizontal size={16} /> الفلاتر
+              <SlidersHorizontal size={16} /> {t('filter')}
             </button>
           </div>
         </div>
@@ -86,16 +104,16 @@ const SearchPage = () => {
         <div className={styles.layout}>
           <aside className={`${styles.sidebar} ${mobileFiltersOpen ? styles.sidebarOpen : ''}`}>
             <div className={styles.filterPanel}>
-              <h3>المدينة</h3>
+              <h3>{t('city')}</h3>
               <div className={styles.checkboxGrid}>
                 {cities.map((item) => (
-                  <label key={item}><input type="checkbox" checked={selectedCities.includes(item)} onChange={() => toggleCity(item)} /> {item}</label>
+                  <label key={item.value}><input type="checkbox" checked={selectedCities.includes(item.value)} onChange={() => toggleCity(item.value)} /> {language === 'en' ? item.labelEn : item.label}</label>
                 ))}
               </div>
-              <h3>السعر</h3>
+              <h3>{t('price')}</h3>
               <input type="range" min="0" max="500" value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))} />
-              <span className={styles.rangeValue}>حتى ${maxPrice}</span>
-              <h3>التقييم</h3>
+              <span className={styles.rangeValue}>{language === 'en' ? 'Up to' : 'حتى'} ${maxPrice}</span>
+              <h3>{t('rating')}</h3>
               <div className={styles.ratingPills}>
                 {[1, 2, 3, 4, 5].map((value) => (
                   <button key={value} className={rating === value ? styles.activePill : ''} onClick={() => setRating(rating === value ? 0 : value)}>{value} ★</button>
@@ -109,14 +127,14 @@ const SearchPage = () => {
             <HotelsMap hotels={hotels} />
             {isError && (
               <div className={styles.errorBanner}>
-                تعذر تحميل النتائج من الخادم، يتم عرض بيانات محلية.
-                <button onClick={() => refetch()}>إعادة المحاولة</button>
+                {language === 'en' ? 'Could not load server results. Showing local data.' : 'تعذر تحميل النتائج من الخادم، يتم عرض بيانات محلية.'}
+                <button onClick={() => refetch()}>{t('retry')}</button>
               </div>
             )}
             {isLoading ? (
               <div className={styles.grid}>{Array.from({ length: 6 }).map((_, index) => <SkeletonCard key={index} />)}</div>
             ) : hotels.length === 0 ? (
-              <EmptyState title="لم يتم العثور على نتائج" description="جرّب إزالة بعض الفلاتر أو البحث عن مدينة أخرى." />
+              <EmptyState title={t('noResults')} description={language === 'en' ? 'Try removing filters or searching another city.' : 'جرّب إزالة بعض الفلاتر أو البحث عن مدينة أخرى.'} />
             ) : (
               <>
                 <div className={styles.grid}>

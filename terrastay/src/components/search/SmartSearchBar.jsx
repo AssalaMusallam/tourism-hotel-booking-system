@@ -2,9 +2,22 @@ import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Building2, CalendarDays, Clock3, MapPin, Search } from 'lucide-react';
 import useSmartSearch from '../../hooks/useSmartSearch';
+import useLanguage from '../../hooks/useLanguage';
+import { useLocalizedField } from '../../hooks/useLocalizedField';
 import styles from './SmartSearchBar.module.css';
 
-const cities = ['القدس', 'بيت لحم', 'رام الله', 'نابلس', 'أريحا', 'الخليل', 'جنين', 'طولكرم', 'قلقيلية', 'طوباس'];
+const cities = [
+  { name: 'القدس', nameEn: 'Jerusalem' },
+  { name: 'بيت لحم', nameEn: 'Bethlehem' },
+  { name: 'رام الله', nameEn: 'Ramallah' },
+  { name: 'نابلس', nameEn: 'Nablus' },
+  { name: 'أريحا', nameEn: 'Jericho' },
+  { name: 'الخليل', nameEn: 'Hebron' },
+  { name: 'جنين', nameEn: 'Jenin' },
+  { name: 'طولكرم', nameEn: 'Tulkarm' },
+  { name: 'قلقيلية', nameEn: 'Qalqilya' },
+  { name: 'طوباس', nameEn: 'Tubas' },
+];
 
 const Highlight = ({ text, query }) => {
   if (!query) return text;
@@ -20,6 +33,8 @@ const Highlight = ({ text, query }) => {
 };
 
 const SmartSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
+  const { language, t } = useLanguage();
+  const lf = useLocalizedField();
   const search = useSmartSearch({
     defaultQuery: defaultValues.q || defaultValues.city || '',
     defaultCity: defaultValues.city || '',
@@ -48,7 +63,7 @@ const SmartSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
           }}
           onFocus={() => search.setOpen(true)}
           onKeyDown={search.onKeyDown}
-          placeholder="ابحث عن فندق أو مدينة"
+          placeholder={t('searchPlaceholder')}
         />
         <AnimatePresence>
           {search.open && (
@@ -60,10 +75,10 @@ const SmartSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
               transition={{ duration: 0.18 }}
             >
               {search.recent.length === 0 && search.query.length === 0 ? (
-                <div className={styles.empty}><Search size={18} /> لا توجد عمليات بحث سابقة</div>
+                <div className={styles.empty}><Search size={18} /> {t('recentSearches')}</div>
               ) : (
                 <>
-                  {search.filteredRecent.length > 0 && <div className={styles.sectionLabel}>البحث الأخير</div>}
+                  {search.filteredRecent.length > 0 && <div className={styles.sectionLabel}>{t('recentSearches')}</div>}
                   {search.filteredRecent.map((item, index) => (
                     <button
                       type="button"
@@ -76,7 +91,7 @@ const SmartSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
                       {item.city && <small>{item.city}</small>}
                     </button>
                   ))}
-                  {search.liveHotels.length > 0 && <div className={styles.sectionLabel}>نتائج مقترحة</div>}
+                  {search.liveHotels.length > 0 && <div className={styles.sectionLabel}>{t('suggestedResults')}</div>}
                   {search.liveHotels.map((hotel, hotelIndex) => {
                     const index = search.filteredRecent.length + hotelIndex;
                     return (
@@ -84,16 +99,16 @@ const SmartSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
                         type="button"
                         key={hotel.id}
                         className={`${styles.suggestion} ${search.activeIndex === index ? styles.active : ''}`}
-                        onMouseDown={() => search.submit({ label: hotel.name, city: hotel.city, hotel })}
+                        onMouseDown={() => search.submit({ label: lf(hotel, 'name'), city: lf(hotel, 'city'), hotel })}
                       >
                         <Building2 size={16} />
-                        <span><Highlight text={hotel.name} query={search.query} /></span>
-                        <small>{hotel.city}</small>
+                        <span><Highlight text={lf(hotel, 'name')} query={search.query} /></span>
+                        <small>{lf(hotel, 'city')}</small>
                       </button>
                     );
                   })}
                   {search.recent.length > 0 && (
-                    <button type="button" className={styles.clear} onMouseDown={search.clearHistory}>مسح السجل</button>
+                    <button type="button" className={styles.clear} onMouseDown={search.clearHistory}>{t('clearHistory')}</button>
                   )}
                 </>
               )}
@@ -105,18 +120,18 @@ const SmartSearchBar = ({ compact = false, onSearch, defaultValues = {} }) => {
       <label className={styles.selectField}>
         <MapPin size={17} />
         <select value={search.city} onChange={(event) => search.setCity(event.target.value)}>
-          <option value="">كل المدن</option>
-          {cities.map((city) => <option key={city} value={city}>{city}</option>)}
+          <option value="">{t('allCities')}</option>
+          {cities.map((city) => <option key={city.name} value={city.name}>{language === 'en' ? city.nameEn : city.name}</option>)}
         </select>
       </label>
 
       <label className={styles.dateField}>
         <CalendarDays size={17} />
-        <input type="date" value={search.checkIn} onChange={(event) => search.setCheckIn(event.target.value)} />
-        <input type="date" value={search.checkOut} onChange={(event) => search.setCheckOut(event.target.value)} />
+        <input type="date" lang={language === 'en' ? 'en' : 'ar'} placeholder={language === 'en' ? 'mm/dd/yyyy' : 'يوم/شهر/سنة'} value={search.checkIn} onChange={(event) => search.setCheckIn(event.target.value)} />
+        <input type="date" lang={language === 'en' ? 'en' : 'ar'} placeholder={language === 'en' ? 'mm/dd/yyyy' : 'يوم/شهر/سنة'} value={search.checkOut} onChange={(event) => search.setCheckOut(event.target.value)} />
       </label>
 
-      <button className={styles.submit} type="submit">ابحث الآن</button>
+      <button className={styles.submit} type="submit">{t('searchBtn')}</button>
     </form>
   );
 };

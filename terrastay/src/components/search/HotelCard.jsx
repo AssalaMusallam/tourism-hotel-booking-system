@@ -3,6 +3,8 @@ import { MapPin, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PriceDisplay from '../PriceDisplay';
 import { getImageUrl } from '../../lib/imageUrl';
+import useLanguage from '../../hooks/useLanguage';
+import { useLocalizedField } from '../../hooks/useLocalizedField';
 import styles from './HotelCard.module.css';
 
 // HotelResponseDto shape:
@@ -10,12 +12,17 @@ import styles from './HotelCard.module.css';
 //   images: [{id, url}], status }
 
 const HotelCard = ({ hotel, index = 0 }) => {
+  const { language, t } = useLanguage();
+  const lf = useLocalizedField();
   const imgSrc = getImageUrl(
     hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName
   );
-  const amenityNames = hotel.amenityNames
-    ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames])
-    : [];
+  const amenityNames = hotel.amenities?.length
+    ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
+    : (language === 'en' && hotel.amenityNamesEn ? hotel.amenityNamesEn : (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...(hotel.amenityNames || [])]));
+  const hotelName = lf(hotel, 'name');
+  const city = lf(hotel, 'city');
+  const country = lf(hotel, 'country');
 
   return (
     <motion.div
@@ -29,7 +36,7 @@ const HotelCard = ({ hotel, index = 0 }) => {
         <div className={styles.imageWrap}>
           <img
             src={imgSrc}
-            alt={hotel.name}
+            alt={hotelName}
             className={styles.image}
             loading="lazy"
             onError={(e) => { e.currentTarget.src = '/placeholder-hotel.jpg'; }}
@@ -40,10 +47,10 @@ const HotelCard = ({ hotel, index = 0 }) => {
       <div className={styles.body}>
         <div className={styles.location}>
           <MapPin size={12} />
-          <span>{hotel.city}{hotel.country ? `, ${hotel.country}` : ''}</span>
+          <span>{city}{country ? `, ${country}` : ''}</span>
         </div>
         <Link to={`/hotels/${hotel.id}`} className={styles.name}>
-          {hotel.name}
+          {hotelName}
         </Link>
         {hotel.rating != null && (
           <div className={styles.meta}>
@@ -68,11 +75,11 @@ const HotelCard = ({ hotel, index = 0 }) => {
         <div className={styles.footer}>
           {(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice) && (
             <div className={styles.fromPrice}>
-              from <PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice} size="sm" suffix="/night" />
+              {t('basePrice')} <PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice} size="sm" suffix={`/${t('perNight')}`} />
             </div>
           )}
           <Link to={`/hotels/${hotel.id}`} className={styles.viewBtn}>
-            View Hotel
+            {t('viewDetails')}
           </Link>
         </div>
       </div>

@@ -13,6 +13,8 @@ import Button from '../components/ui/Button';
 import HotelReviewsList from '../components/review/HotelReviewsList';
 import RatingSummaryWidget from '../components/review/RatingSummaryWidget';
 import PriceDisplay from '../components/PriceDisplay';
+import useLanguage from '../hooks/useLanguage';
+import { useLocalizedField } from '../hooks/useLocalizedField';
 import styles from './HotelDetailPage.module.css';
 
 const HotelMap = lazy(() => import('../components/map/HotelMap'));
@@ -30,16 +32,18 @@ const HotelDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { language, t } = useLanguage();
+  const lf = useLocalizedField();
 
   const { data: hotel, isLoading, error } = useHotel(id);
   const { data: roomsData } = useRoomsByHotel(id, { page: 0, size: 50 });
   const rooms = roomsData?.content || [];
 
   useEffect(() => {
-    if (hotel?.name) document.title = `${hotel.name} – PinkFlow`;
+    if (hotel?.name) document.title = `${lf(hotel, 'name')} - TerraStay`;
     else document.title = 'PinkFlow – Hotel Booking';
     return () => { document.title = 'PinkFlow – Hotel Booking'; };
-  }, [hotel?.name]);
+  }, [hotel?.name, language]);
 
   if (isLoading) return <Spinner centered />;
   if (error || !hotel) return (
@@ -68,9 +72,15 @@ const HotelDetailPage = () => {
     navigate(`/hotels/${id}/availability?${query.toString()}`, { state: { room, hotel } });
   };
 
-  const amenityNames = hotel.amenityNames
-    ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames])
-    : [];
+  const amenityNames = hotel.amenities?.length
+    ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
+    : (language === 'en' && hotel.amenityNamesEn ? hotel.amenityNamesEn : (hotel.amenityNames ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames]) : []));
+  const hotelName = lf(hotel, 'name');
+  const address = lf(hotel, 'address');
+  const cityName = lf(hotel, 'city');
+  const countryName = lf(hotel, 'country');
+  const description = lf(hotel, 'description');
+  const cancellation = lf(hotel, 'cancellationPolicySummary');
 
   return (
     <div>
@@ -81,14 +91,14 @@ const HotelDetailPage = () => {
           <span>/</span>
           <Link to="/search">Search</Link>
           <span>/</span>
-          <span>{hotel.name}</span>
+          <span>{hotelName}</span>
         </div>
       </div>
 
       <div className="container" style={{ paddingBottom: 80 }}>
         {/* Gallery */}
         <div className={styles.galleryWrap}>
-          <ImageGallery images={hotel.images} name={hotel.name} />
+          <ImageGallery images={hotel.images} name={hotelName} />
         </div>
 
         {hotel.latitude != null && hotel.longitude != null && (
@@ -109,9 +119,9 @@ const HotelDetailPage = () => {
           <div className={styles.hotelMeta}>
             <div className={styles.location}>
               <MapPin size={16} />
-              <span>{hotel.address} — {hotel.city}, {hotel.country}</span>
+              <span>{address} - {cityName}, {countryName}</span>
             </div>
-            <h1 className={styles.hotelName}>{hotel.name}</h1>
+            <h1 className={styles.hotelName}>{hotelName}</h1>
             {hotel.rating != null && (
               <div className={styles.metaRow}>
                 <StarRating value={hotel.rating} size={16} />
@@ -131,7 +141,7 @@ const HotelDetailPage = () => {
               )}
               {hotel.websiteUrl && (
                 <a href={hotel.websiteUrl} target="_blank" rel="noreferrer" className={styles.contactLink}>
-                  <Globe size={14} /> Website
+                  <Globe size={14} /> {language === 'en' ? 'Website' : 'الموقع'}
                 </a>
               )}
             </div>
@@ -144,30 +154,30 @@ const HotelDetailPage = () => {
             {hotel.checkInTime && (
               <div className={styles.timeBlock}>
                 <Clock size={14} />
-                <span>Check-in: <strong>{displayTime(hotel.checkInTime)}</strong></span>
+                <span>{t('checkInTime')}: <strong>{displayTime(hotel.checkInTime)}</strong></span>
               </div>
             )}
             {hotel.checkOutTime && (
               <div className={styles.timeBlock}>
                 <Clock size={14} />
-                <span>Check-out: <strong>{displayTime(hotel.checkOutTime)}</strong></span>
+                <span>{t('checkOutTime')}: <strong>{displayTime(hotel.checkOutTime)}</strong></span>
               </div>
             )}
           </div>
         )}
 
         {/* Description */}
-        {hotel.description && (
+        {description && (
           <div className={styles.descSection}>
-            <h2>About This Hotel</h2>
-            <p className={styles.description}>{hotel.description}</p>
+            <h2>{language === 'en' ? 'About This Hotel' : 'نبذة عن الفندق'}</h2>
+            <p className={styles.description}>{description}</p>
           </div>
         )}
 
         {/* Amenities */}
         {amenityNames.length > 0 && (
           <div className={styles.amenitiesSection}>
-            <h2>Amenities</h2>
+            <h2>{t('amenities')}</h2>
             <div className={styles.amenityPills}>
               {amenityNames.map((a) => (
                 <Badge key={a} variant="category">{a}</Badge>
@@ -179,11 +189,11 @@ const HotelDetailPage = () => {
         {/* Policies */}
         {(hotel.policies || hotel.cancellationPolicySummary) && (
           <div className={styles.policiesSection}>
-            <h2>Policies</h2>
+            <h2>{language === 'en' ? 'Policies' : 'السياسات'}</h2>
             {hotel.policies && <p>{hotel.policies}</p>}
-            {hotel.cancellationPolicySummary && (
+            {cancellation && (
               <div className={styles.cancelPolicy}>
-                <strong>Cancellation:</strong> {hotel.cancellationPolicySummary}
+                <strong>{t('cancellationPolicy')}:</strong> {cancellation}
               </div>
             )}
           </div>
@@ -191,7 +201,7 @@ const HotelDetailPage = () => {
 
         {/* Room Types */}
         <div className={styles.roomsSection}>
-          <h2>Available Rooms</h2>
+          <h2>{language === 'en' ? 'Available Rooms' : 'الغرف المتاحة'}</h2>
           {rooms.length === 0 ? (
             <p className={styles.noRooms}>No rooms available at this time.</p>
           ) : (
@@ -206,7 +216,7 @@ const HotelDetailPage = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className={styles.roomInfo}>
-                    <h3 className={styles.roomName}>{room.name}</h3>
+                    <h3 className={styles.roomName}>{lf(room, 'name')}</h3>
                     <div className={styles.roomDetails}>
                       <span className={styles.roomDetail}>
                         <BedDouble size={14} />
@@ -218,7 +228,7 @@ const HotelDetailPage = () => {
                         {room.maxChildren > 0 && `, ${room.maxChildren} child${room.maxChildren !== 1 ? 'ren' : ''}`}
                       </span>
                       <span className={styles.roomDetail}>
-                        Capacity: {room.capacity}
+                        {t('capacity')}: {room.capacity}
                       </span>
                     </div>
                     {room.description && <p className={styles.roomDesc}>{room.description}</p>}
@@ -226,11 +236,11 @@ const HotelDetailPage = () => {
                   <div className={styles.roomAction}>
                     <div className={styles.roomPrice}>
                       <span className={styles.priceAmount}><PriceDisplay usdAmount={room.basePrice} size="md" /></span>
-                      <span className={styles.priceNight}>/night</span>
+                      <span className={styles.priceNight}>/{t('perNight')}</span>
                     </div>
                     <span className={styles.roomUnits}>{room.totalUnits} unit{room.totalUnits !== 1 ? 's' : ''}</span>
                     <Button variant="primary" size="sm" onClick={() => handleBookRoom(room)}>
-                      Select Room
+                      {t('bookNow')}
                     </Button>
                   </div>
                 </motion.div>
@@ -241,7 +251,7 @@ const HotelDetailPage = () => {
 
         {/* Rating Summary */}
         <div className={styles.reviewsSection}>
-          <h2>Guest Reviews</h2>
+          <h2>{t('reviews')}</h2>
           <RatingSummaryWidget hotelId={id} />
           <HotelReviewsList hotelId={id} />
         </div>

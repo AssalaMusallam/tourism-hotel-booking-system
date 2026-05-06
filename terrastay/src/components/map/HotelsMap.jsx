@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import { MapPinned } from 'lucide-react';
 import PriceDisplay from '../PriceDisplay';
+import useLanguage from '../../hooks/useLanguage';
+import { useLocalizedField } from '../../hooks/useLocalizedField';
 import styles from './HotelsMap.module.css';
 
 const customIcon = L.divIcon({
@@ -23,6 +25,8 @@ const isMapped = (hotel) =>
 
 const HotelsMap = ({ hotels = [], initiallyOpen = false, single = false, zoom = 8 }) => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
+  const lf = useLocalizedField();
   const [open, setOpen] = useState(initiallyOpen || single);
   const mappedHotels = useMemo(() => hotels.filter(isMapped), [hotels]);
   const center = mappedHotels.length === 1
@@ -34,7 +38,7 @@ const HotelsMap = ({ hotels = [], initiallyOpen = false, single = false, zoom = 
       {!single && (
         <button type="button" className={styles.toggle} onClick={() => setOpen((value) => !value)}>
           <MapPinned size={18} />
-          {open ? 'إخفاء الخريطة' : 'عرض على الخريطة'}
+          {open ? t('hideMap') : t('showOnMap')}
         </button>
       )}
       <AnimatePresence initial={false}>
@@ -46,7 +50,7 @@ const HotelsMap = ({ hotels = [], initiallyOpen = false, single = false, zoom = 
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.24 }}
           >
-            <span className={styles.badge}>{mappedHotels.length} فنادق على الخريطة</span>
+            <span className={styles.badge}>{mappedHotels.length} {language === 'en' ? 'hotels on map' : 'فنادق على الخريطة'}</span>
             <MapContainer center={center} zoom={mappedHotels.length === 1 ? 14 : zoom} className={styles.map} scrollWheelZoom={false}>
               <TileLayer
                 attribution="&copy; OpenStreetMap contributors"
@@ -56,10 +60,10 @@ const HotelsMap = ({ hotels = [], initiallyOpen = false, single = false, zoom = 
                 <Marker key={hotel.id} position={[Number(hotel.latitude), Number(hotel.longitude)]} icon={customIcon}>
                   <Popup>
                     <div className={styles.popup}>
-                      <strong>{hotel.name}</strong>
-                      <span>{hotel.city} · ⭐ {Number(hotel.rating || 0).toFixed(1)}</span>
-                      <span><PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice || 90} suffix="/ليلة" /></span>
-                      <button type="button" onClick={() => navigate(`/hotels/${hotel.id}`)}>عرض التفاصيل</button>
+                      <strong>{lf(hotel, 'name')}</strong>
+                      <span>{lf(hotel, 'city')} · ⭐ {Number(hotel.rating || 0).toFixed(1)}</span>
+                      <span><PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice || 90} suffix={`/${t('perNight')}`} /></span>
+                      <button type="button" onClick={() => navigate(`/hotels/${hotel.id}`)}>{t('viewDetails')}</button>
                     </div>
                   </Popup>
                 </Marker>

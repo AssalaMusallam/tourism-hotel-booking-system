@@ -5,6 +5,7 @@ import { usePayment } from '../hooks/usePaymentQueries';
 import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
 import PaymentStatusBadge from '../components/payment/PaymentStatusBadge';
+import useLanguage from '../hooks/useLanguage';
 import styles from './PaymentReceiptPage.module.css';
 
 const money = (value, currency = 'USD') =>
@@ -22,10 +23,11 @@ const iconFor = {
 const PaymentReceiptPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data: payment, isLoading, isError } = usePayment(id);
 
   if (isLoading) return <Spinner centered />;
-  if (isError || !payment) return <main className={styles.page}><section className={styles.receipt}>Payment not found</section></main>;
+  if (isError || !payment) return <main className={styles.page}><section className={styles.receipt}>{t('noData')}</section></main>;
 
   const Icon = iconFor[payment.status] || Clock;
 
@@ -36,7 +38,7 @@ const PaymentReceiptPage = () => {
           <Icon size={48} />
         </div>
         <div className={styles.heading}>
-          <h1>{payment.status === 'SUCCESS' ? 'Payment Confirmed' : payment.status === 'FAILED' ? 'Payment Failed' : 'Payment Receipt'}</h1>
+          <h1>{payment.status === 'SUCCESS' ? t('paymentSuccess') : payment.status === 'FAILED' ? t('paymentFailed') : t('downloadReceipt')}</h1>
           <PaymentStatusBadge status={payment.status} />
         </div>
 
@@ -45,20 +47,20 @@ const PaymentReceiptPage = () => {
         )}
 
         <div className={styles.rows}>
-          <div><span>Transaction</span><strong className={styles.mono}>{payment.transactionReference}</strong></div>
-          <div><span>Amount</span><strong>{money(payment.amount, payment.currency)} {payment.currency}</strong></div>
+          <div><span>{t('receiptNumber')}</span><strong className={styles.mono}>{payment.transactionReference}</strong></div>
+          <div><span>{t('totalPrice')}</span><strong>{money(payment.amount, payment.currency)} {payment.currency}</strong></div>
           <div><span>Provider</span><strong>{payment.providerName || 'MOCK_GATEWAY'}</strong></div>
-          <div><span>Method</span><strong>{payment.method}</strong></div>
+          <div><span>{t('paymentMethod')}</span><strong>{payment.method}</strong></div>
           <div><span>Paid at</span><strong>{formatTime(payment.paidAt)}</strong></div>
           <div><span>Created at</span><strong>{formatTime(payment.createdAt)}</strong></div>
           {payment.status === 'REFUNDED' && (
             <>
-              <div><span>Refunded at</span><strong>{formatTime(payment.refundedAt)}</strong></div>
+              <div><span>{t('paymentRefunded')}</span><strong>{formatTime(payment.refundedAt)}</strong></div>
               <div><span>Refund reason</span><strong>{payment.refundReason || '-'}</strong></div>
             </>
           )}
           <div>
-            <span>Booking</span>
+            <span>{t('bookingReference')}</span>
             <Link to={`/bookings/confirmation/${payment.bookingId}`} className={styles.link}>#{payment.bookingId}</Link>
           </div>
         </div>
@@ -66,7 +68,7 @@ const PaymentReceiptPage = () => {
         <div className={styles.actions}>
           {payment.status === 'FAILED' && (
             <Button variant="primary" onClick={() => navigate(`/bookings/${payment.bookingId}/pay`)}>
-              Try Again
+              {t('retry')}
             </Button>
           )}
           <Button variant="secondary" onClick={() => navigate(`/bookings/${payment.bookingId}/payments`)}>

@@ -5,16 +5,23 @@ import Badge from '../ui/Badge';
 import PriceDisplay from '../PriceDisplay';
 import HeartButton from '../ui/HeartButton';
 import { getImageUrl } from '../../lib/imageUrl';
+import useLanguage from '../../hooks/useLanguage';
+import { useLocalizedField } from '../../hooks/useLocalizedField';
 import styles from './HotelCard.module.css';
 
 // HotelResponseDto: { id, name, city, country, rating, amenityNames: Set<String>,
 //   images: [{id, imageUrl, fileName}], status }
 const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
+  const lf = useLocalizedField();
   const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName);
-  const amenityNames = hotel.amenityNames
-    ? Array.from(hotel.amenityNames)
-    : [];
+  const amenityNames = hotel.amenities?.length
+    ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
+    : Array.from(language === 'en' && hotel.amenityNamesEn ? hotel.amenityNamesEn : (hotel.amenityNames || []));
+  const hotelName = lf(hotel, 'name');
+  const city = lf(hotel, 'city');
+  const country = lf(hotel, 'country');
 
   return (
     <motion.div
@@ -28,7 +35,7 @@ const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
       <div className={styles.imgWrap}>
         <img
           src={img}
-          alt={hotel.name}
+          alt={hotelName}
           className={styles.img}
           loading="lazy"
           onError={(e) => { e.currentTarget.src = '/placeholder-hotel.jpg'; }}
@@ -45,9 +52,9 @@ const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
       <div className={styles.body}>
         <div className={styles.location}>
           <MapPin size={12} />
-          <span>{hotel.city}{hotel.country ? `, ${hotel.country}` : ''}</span>
+          <span>{city}{country ? `, ${country}` : ''}</span>
         </div>
-        <h3 className={styles.name}>{hotel.name}</h3>
+        <h3 className={styles.name}>{hotelName}</h3>
         <div className={styles.meta}>
           {hotel.rating != null && (
             <span className={styles.rating}>
@@ -69,12 +76,12 @@ const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
         <div className={styles.footer}>
           <div className={styles.price}>
             {(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice) ? (
-              <PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice} size="sm" suffix="/night" />
+              <PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice} size="sm" suffix={`/${t('perNight')}`} />
             ) : (
-              <span>حسب التوفر</span>
+              <span>{t('availability')}</span>
             )}
           </div>
-          <span className={styles.bookNow}>احجز الآن</span>
+          <span className={styles.bookNow}>{t('bookNow')}</span>
         </div>
       </div>
     </motion.div>

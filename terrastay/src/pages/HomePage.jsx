@@ -7,22 +7,26 @@ import HeroSearchBar from '../components/search/HeroSearchBar';
 import HotelCard from '../components/hotel/HotelCard';
 import SkeletonCard from '../components/ui/SkeletonCard';
 import useLanguage from '../hooks/useLanguage';
+import { CITY_IMAGES } from '../data/palestineHotels';
 import styles from './HomePage.module.css';
 
-const destinationImages = [
-  'https://images.unsplash.com/photo-1542743408-218cc173cda0?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1570641963303-92ce4845ed4c?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=300&q=80',
+const fallbackImage = CITY_IMAGES['القدس'];
+const cityFallbacks = [
+  { name: 'القدس', nameEn: 'Jerusalem' },
+  { name: 'بيت لحم', nameEn: 'Bethlehem' },
+  { name: 'أريحا', nameEn: 'Jericho' },
+  { name: 'رام الله', nameEn: 'Ramallah' },
+  { name: 'نابلس', nameEn: 'Nablus' },
+  { name: 'الخليل', nameEn: 'Hebron' },
 ];
+
+const cityNameEn = Object.fromEntries(cityFallbacks.map((city) => [city.name, city.nameEn]));
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { data: citiesList } = useCities();
-  const cities = (citiesList?.length ? citiesList : ['القدس', 'بيت لحم', 'أريحا', 'رام الله', 'نابلس', 'الخليل']).slice(0, 6);
+  const cities = (citiesList?.length ? citiesList.map((city) => ({ name: city, nameEn: cityNameEn[city] || city })) : cityFallbacks).slice(0, 6);
   const { data: featuredData, isLoading } = useHotels({ size: 3, hasImage: true });
   const featured = featuredData?.content || [];
 
@@ -53,9 +57,9 @@ const HomePage = () => {
             <HeroSearchBar onSearch={handleSearch} />
           </motion.div>
           <div className={styles.quickPills}>
-            {['القدس', 'بيت لحم', 'رام الله', 'نابلس', 'أريحا', 'الخليل'].map((quickCity) => (
-              <button type="button" key={quickCity} onClick={() => navigate(`/search?city=${encodeURIComponent(quickCity)}`)}>
-                {quickCity}
+            {cityFallbacks.map((quickCity) => (
+              <button type="button" key={quickCity.name} onClick={() => navigate(`/search?city=${encodeURIComponent(quickCity.name)}`)}>
+                {language === 'en' ? quickCity.nameEn : quickCity.name}
               </button>
             ))}
           </div>
@@ -68,18 +72,21 @@ const HomePage = () => {
           <h2>{t('popularDestinations')}</h2>
         </div>
         <div className={styles.destinations}>
-          {cities.map((city, index) => (
+          {cities.map((city) => {
+            const label = language === 'en' ? city.nameEn || city.name : city.name;
+            const img = CITY_IMAGES[city.name] || CITY_IMAGES[city.nameEn] || fallbackImage;
+            return (
             <motion.button
               type="button"
-              key={city}
+              key={city.name}
               className={styles.destinationCard}
-              onClick={() => navigate(`/search?city=${encodeURIComponent(city)}`)}
+              onClick={() => navigate(`/search?city=${encodeURIComponent(city.name)}`)}
               whileHover={{ y: -4, scale: 1.03 }}
             >
-              <img src={destinationImages[index % destinationImages.length]} alt={city} />
-              <span>{city}</span>
+              <img src={img} alt={label} />
+              <span>{label}</span>
             </motion.button>
-          ))}
+          );})}
         </div>
       </section>
 
