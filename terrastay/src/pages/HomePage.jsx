@@ -1,169 +1,116 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Award, Tag, Headphones, MapPin } from 'lucide-react';
-import { useHotels, useCities } from '../hooks/useCatalogQueries';
+import { Globe2, MapPin, MessageCircle, Send } from 'lucide-react';
+import { useCities, useHotels } from '../hooks/useCatalogQueries';
 import HeroSearchBar from '../components/search/HeroSearchBar';
-import HotelCard, { HotelCardSkeleton } from '../components/hotel/HotelCard';
+import HotelCard from '../components/hotel/HotelCard';
+import SkeletonCard from '../components/ui/SkeletonCard';
+import useLanguage from '../hooks/useLanguage';
 import styles from './HomePage.module.css';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
-};
+const destinationImages = [
+  'https://images.unsplash.com/photo-1542743408-218cc173cda0?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1570641963303-92ce4845ed4c?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=300&q=80',
+];
 
 const HomePage = () => {
   const navigate = useNavigate();
-  useEffect(() => { document.title = 'PinkFlow – Find Your Perfect Stay'; }, []);
+  const { t } = useLanguage();
   const { data: citiesList } = useCities();
-  const cities = citiesList || [];
-
-  const { data: featuredData, isLoading } = useHotels({ size: 6 });
+  const cities = (citiesList?.length ? citiesList : ['القدس', 'بيت لحم', 'أريحا', 'رام الله', 'نابلس', 'الخليل']).slice(0, 6);
+  const { data: featuredData, isLoading } = useHotels({ size: 3, hasImage: true });
   const featured = featuredData?.content || [];
 
-  const features = [
-    { icon: Shield, title: 'Local Expertise', desc: 'Deep knowledge of Palestinian culture, holy sites, and the best local experiences.' },
-    { icon: Award, title: 'Verified Hotels', desc: 'Every property is personally verified by our team for quality and authenticity.' },
-    { icon: Tag, title: 'Best Prices', desc: 'We guarantee the best rates. Find a lower price elsewhere and we\'ll match it.' },
-    { icon: Headphones, title: '24/7 Support', desc: 'Round-the-clock customer support in Arabic and English for all your needs.' },
-  ];
+  useEffect(() => {
+    document.title = 'TerraStay - Palestine Hotel Booking';
+  }, []);
 
-  const cityColors = [
-    '#c17f59', '#8B4A2E', '#A65A3A', '#6B4C3B',
-    '#C4784F', '#9E7E6B', '#D8C3A5', '#7A1E1E',
-  ];
-
-  const handleSearch = ({ city }) => {
+  const handleSearch = ({ city, checkIn, checkOut, guests }) => {
     const params = new URLSearchParams();
     if (city) params.set('city', city);
+    if (checkIn) params.set('checkIn', checkIn);
+    if (checkOut) params.set('checkOut', checkOut);
+    if (guests) params.set('guests', guests);
     navigate(`/search?${params.toString()}`);
   };
 
   return (
-    <div>
-      {/* HERO */}
+    <div className={styles.page}>
       <section className={styles.hero}>
-        <div className={styles.heroBg} />
+        <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
-          <motion.div className={styles.heroText} initial="hidden" animate="visible">
-            <motion.span className={styles.heroEyebrow} variants={fadeUp} custom={0}>
-              Holy Land Tourism
-            </motion.span>
-            <motion.h1 className={styles.heroHeadline} variants={fadeUp} custom={1}>
-              Discover the Heart<br />of Palestine
-            </motion.h1>
-            <motion.p className={styles.heroSub} variants={fadeUp} custom={2}>
-              Stay in historic hotels across Jerusalem, Bethlehem, Nazareth, and beyond.
-              Experience authentic Palestinian hospitality.
-            </motion.p>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className={styles.heroText}>
+            <span className={styles.eyebrow}>TerraStay Palestine</span>
+            <h1>{t('homeHeadline')}</h1>
+            <p>{t('homeSubheadline')}</p>
           </motion.div>
-          <motion.div
-            className={styles.searchWrap}
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-          >
+          <motion.div className={styles.searchWrap} initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
             <HeroSearchBar onSearch={handleSearch} />
           </motion.div>
         </div>
       </section>
 
-      {/* CITIES — from real API */}
-      {cities.length > 0 && (
-        <section className={`${styles.section} container`}>
-          <div className={styles.sectionTitle}>
-            <h2>Explore by City</h2>
-            <p>Discover holy sites, ancient markets, and breathtaking landscapes</p>
-          </div>
-          <div className={styles.citiesGrid}>
-            {cities.slice(0, 8).map((city, i) => (
-              <motion.button
-                key={city}
-                className={styles.cityCard}
-                onClick={() => navigate(`/search?city=${encodeURIComponent(city)}`)}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06, duration: 0.35 }}
-                whileHover={{ scale: 1.03 }}
-              >
-                <div className={styles.cityInitial} style={{ background: cityColors[i % cityColors.length] }}>
-                  {city[0]}
-                </div>
-                <div className={styles.cityInfo}>
-                  <span className={styles.cityName}>{city}</span>
-                  <MapPin size={12} />
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* FEATURED HOTELS */}
-      <section className={`${styles.section} ${styles.featuredSection}`}>
-        <div className="container">
-          <div className={styles.sectionTitle}>
-            <h2>Featured Hotels</h2>
-            <p>Handpicked properties offering exceptional stays in the Holy Land</p>
-          </div>
-          <div className={styles.hotelsGrid}>
-            {isLoading
-              ? Array.from({ length: 6 }).map((_, i) => <HotelCardSkeleton key={i} />)
-              : featured.map((hotel) => (
-                  <HotelCard
-                    key={hotel.id}
-                    hotel={hotel}
-                    onClick={() => navigate(`/hotels/${hotel.id}`)}
-                  />
-                ))
-            }
-          </div>
-          <div className={styles.viewAllWrap}>
-            <button className={styles.viewAllBtn} onClick={() => navigate('/search')}>
-              View All Hotels
-            </button>
-          </div>
+      <section className={`container ${styles.section}`}>
+        <div className={styles.sectionHeader}>
+          <h2>{t('popularDestinations')}</h2>
         </div>
-      </section>
-
-      {/* WHY CHOOSE US */}
-      <section className={`${styles.section} container`}>
-        <div className={styles.sectionTitle}>
-          <h2>Why Choose PinkFlow</h2>
-          <p>The trusted platform for pilgrims and travelers visiting the Holy Land</p>
-        </div>
-        <div className={styles.featuresGrid}>
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              className={styles.featureCard}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.4 }}
+        <div className={styles.destinations}>
+          {cities.map((city, index) => (
+            <motion.button
+              type="button"
+              key={city}
+              className={styles.destinationCard}
+              onClick={() => navigate(`/search?city=${encodeURIComponent(city)}`)}
+              whileHover={{ y: -4, scale: 1.03 }}
             >
-              <div className={styles.featureIcon}>
-                <f.icon size={24} />
-              </div>
-              <h3 className={styles.featureTitle}>{f.title}</h3>
-              <p className={styles.featureDesc}>{f.desc}</p>
-            </motion.div>
+              <img src={destinationImages[index % destinationImages.length]} alt={city} />
+              <span>{city}</span>
+            </motion.button>
           ))}
         </div>
       </section>
 
-      {/* CTA BANNER */}
-      <section className={styles.ctaBanner}>
-        <div className={styles.ctaBg} />
-        <div className={`container ${styles.ctaContent}`}>
-          <h2>Ready to Experience Palestine?</h2>
-          <p>Join thousands of travelers who have discovered the magic of the Holy Land with PinkFlow.</p>
-          <button className={styles.ctaBtn} onClick={() => navigate('/search')}>
-            Find Your Perfect Hotel
-          </button>
+      <section className={styles.featuredBand}>
+        <div className={`container ${styles.section}`}>
+          <div className={styles.sectionHeader}>
+            <h2>{t('featuredHotels')}</h2>
+            <button type="button" onClick={() => navigate('/search')}>{t('viewAllHotels')}</button>
+          </div>
+          <div className={styles.hotelsGrid}>
+            {isLoading
+              ? Array.from({ length: 3 }).map((_, index) => <SkeletonCard key={index} />)
+              : featured.slice(0, 3).map((hotel, index) => <HotelCard key={hotel.id} hotel={hotel} index={index} />)}
+          </div>
         </div>
       </section>
+
+      <footer className={styles.footer}>
+        <div className="container">
+          <div className={styles.footerGrid}>
+            <div>
+              <h2>TerraStay</h2>
+              <p>إقامات فلسطينية مختارة بعناية للمسافرين والضيوف.</p>
+            </div>
+            <div className={styles.footerLinks}>
+              <a href="/search">الفنادق</a>
+              <a href="/favorites">المفضلة</a>
+              <a href="/settings">الإعدادات</a>
+            </div>
+            <div className={styles.social}>
+              <MapPin size={18} />
+              <Globe2 size={18} />
+              <MessageCircle size={18} />
+              <Send size={18} />
+            </div>
+          </div>
+          <small>© 2026 TerraStay. All rights reserved.</small>
+        </div>
+      </footer>
     </div>
   );
 };

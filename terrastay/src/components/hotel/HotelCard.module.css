@@ -1,28 +1,124 @@
 .card {
-  background: var(--color-ivory);
-  border: 1px solid var(--color-beige);
-  border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
   transition: border-color var(--transition), box-shadow var(--transition);
 }
+
 .card:hover {
-  border-color: var(--color-terracotta);
-  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-hover);
 }
-.imgWrap { height: 200px; overflow: hidden; position: relative; background: var(--color-beige-light); }
-.img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-.card:hover .img { transform: scale(1.04); }
-.imgPlaceholder {
-  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-  font-size: 56px; font-family: var(--font-heading); color: rgba(166,90,58,0.3);
-  background: linear-gradient(135deg, var(--color-ivory-dark), var(--color-beige-light));
+
+.imgWrap {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--color-surface-alt);
 }
-.statusBadge { position: absolute; top: 10px; left: 10px; }
-.body { padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; }
-.location { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
-.name { font-size: 15px; font-weight: 600; color: var(--color-text-primary); font-family: var(--font-body); line-height: 1.3; }
-.meta { display: flex; gap: 8px; align-items: center; }
-.rating { display: flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
-.amenities { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.pill { font-size: 11px; padding: 2px 7px; background: var(--color-beige-light); color: var(--color-text-secondary); border-radius: 20px; }
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.card:hover .img {
+  transform: scale(1.045);
+}
+
+.heart {
+  position: absolute;
+  top: 12px;
+  inset-inline-end: 12px;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+}
+
+.body {
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+}
+
+.location,
+.rating,
+.footer {
+  display: flex;
+  align-items: center;
+}
+
+.location {
+  gap: 5px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.name {
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating {
+  gap: 4px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill {
+  padding: 5px 9px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  background: var(--color-primary-ultra-light);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.footer {
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 7px;
+}
+
+.price {
+  color: var(--color-text-primary);
+  font-weight: 900;
+}
+
+.bookNow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-primary);
+  background: var(--color-primary);
+  font-size: 13px;
+  font-weight: 900;
+}

@@ -1,6 +1,6 @@
 @import './variables.css';
 @import './theme.css';
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -8,7 +8,12 @@
   padding: 0;
 }
 
-html { font-size: 16px; scroll-behavior: smooth; }
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background: var(--color-bg);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 
 body {
   font-family: var(--font-body);
@@ -17,6 +22,18 @@ body {
   background: var(--color-bg);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+html[lang="ar"] body {
+  font-family: var(--font-arabic);
+}
+
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  text-align: right;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -76,16 +93,16 @@ input, select, textarea { font: inherit; }
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #ef4444;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-lg);
   font-size: 12px;
   font-weight: 800;
   transform-origin: bottom center;
 }
 
 .pf-hotel-marker-selected {
-  background: #2563eb;
+  background: var(--color-primary-hover);
   transform: scale(1.18);
   box-shadow: 0 12px 26px rgba(37, 99, 235, 0.34);
 }
@@ -112,7 +129,7 @@ input, select, textarea { font: inherit; }
   margin-top: 4px;
   border-radius: var(--radius-md);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-on-primary);
   padding: 8px 10px;
   font-size: 12px;
   font-weight: 800;

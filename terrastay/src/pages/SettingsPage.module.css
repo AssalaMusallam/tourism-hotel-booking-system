@@ -1,0 +1,116 @@
+.page {
+  display: grid;
+  gap: 24px;
+  padding-top: 42px;
+  padding-bottom: 72px;
+}
+
+.header {
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.header span {
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+.header h1 {
+  margin-top: 8px;
+  font-size: clamp(34px, 5vw, 52px);
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 112px;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.card > svg {
+  color: var(--color-primary);
+}
+
+.card h2 {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.card p {
+  color: var(--color-text-secondary);
+}
+
+.switch,
+.checkbox span {
+  width: 56px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  background: var(--color-primary-ultra-light);
+  border: 1px solid var(--color-border);
+}
+
+.switch svg,
+.checkbox span::after {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: #FFFFFF;
+  box-shadow: var(--shadow-sm);
+}
+
+.switchActive,
+.checkbox input:checked + span {
+  justify-content: flex-end;
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+.checkbox input {
+  position: absolute;
+  opacity: 0;
+}
+
+.checkbox span::after {
+  content: '';
+}
+
+.linkButton,
+.danger button {
+  padding: 10px 15px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-primary);
+  background: var(--color-primary);
+  font-weight: 800;
+}
+
+.danger button {
+  background: var(--color-danger);
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

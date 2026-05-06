@@ -1,0 +1,70 @@
+.sidebar {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 80;
+  width: 260px;
+  padding: 22px 14px;
+  background: #1C0A12;
+  color: #FFFFFF;
+  box-shadow: var(--shadow-lg);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px 22px;
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.logoMark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+}
+
+.nav {
+  display: grid;
+  gap: 6px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 44px;
+  padding: 0 13px;
+  border-radius: var(--radius-md);
+  color: rgba(255, 255, 255, 0.76);
+  font-weight: 700;
+  transition: background var(--transition), color var(--transition);
+}
+
+.link:hover {
+  color: #FFFFFF;
+  background: rgba(245, 230, 236, 0.14);
+}
+
+.active {
+  color: #FFFFFF;
+  background: var(--color-primary);
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    padding: 14px;
+  }
+
+  .nav {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}

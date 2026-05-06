@@ -24,7 +24,13 @@ import { parseApiError } from '../../lib/parseApiError';
 import styles from './ManagePricingRules.module.css';
 
 // ── Timeline ────────────────────────────────────────────────────────────────
-const TIMELINE_COLORS = ['#f59e0b', '#14b8a6', '#8b5cf6', '#f43f5e', '#6366f1'];
+const TIMELINE_COLORS = [
+  'var(--color-warning)',
+  'var(--color-success)',
+  'var(--color-primary-light)',
+  'var(--color-primary)',
+  'var(--color-text-muted)',
+];
 
 const RulesTimeline = ({ rules }) => {
   if (!rules?.length) return null;

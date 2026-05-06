@@ -1,280 +1,176 @@
-/* HERO */
-.hero {
-  position: relative;
-  min-height: 620px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: linear-gradient(145deg, #2C1810 0%, #6B4C3B 50%, #A65A3A 100%);
+.page {
+  background: var(--color-bg);
 }
 
-.heroBg {
+.hero {
+  position: relative;
+  min-height: calc(100vh - var(--navbar-height));
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(139, 26, 74, 0.72), rgba(139, 26, 74, 0.08)),
+    url('https://images.unsplash.com/photo-1542743408-218cc173cda0?auto=format&fit=crop&w=1800&q=85') center / cover;
+}
+
+.hero::after {
+  content: '';
   position: absolute;
-  inset: 0;
-  opacity: 0.2;
+  inset-inline: 0;
+  bottom: 0;
+  height: 120px;
+  background: linear-gradient(transparent, var(--color-bg));
 }
 
 .heroContent {
   position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  padding: 80px var(--container-padding);
-  width: 100%;
-  max-width: var(--container-max);
-  margin: 0 auto;
+  z-index: 2;
+  width: min(100%, var(--container-max));
+  display: grid;
+  gap: 34px;
+  padding: 84px var(--container-padding) 120px;
 }
 
 .heroText {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  max-width: 720px;
+  color: var(--color-text-on-primary);
 }
 
-.heroEyebrow {
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--color-beige-light);
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 14px;
+  color: rgba(255, 255, 255, 0.84);
+  font-weight: 900;
 }
 
-.heroHeadline {
+.heroText h1 {
+  max-width: 780px;
+  color: var(--color-text-on-primary);
   font-family: var(--font-heading);
-  font-size: 60px;
-  font-weight: 500;
-  color: var(--color-text-on-dark);
-  line-height: 1.1;
+  font-size: clamp(42px, 8vw, 82px);
+  line-height: 1.04;
 }
 
-.heroSub {
-  font-size: 18px;
-  color: rgba(245, 240, 230, 0.8);
-  max-width: 560px;
-  margin: 0 auto;
-  line-height: 1.7;
+.heroText p {
+  max-width: 620px;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 600;
 }
 
 .searchWrap {
   width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
-/* SECTIONS */
 .section {
-  padding: 80px 0;
+  padding-top: 78px;
+  padding-bottom: 78px;
 }
 
-.featuredSection {
-  background: var(--color-ivory-dark);
-  padding: 80px 0;
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 28px;
 }
 
-/* CITIES */
-.citiesGrid {
+.sectionHeader h2 {
+  font-size: clamp(30px, 4vw, 46px);
+}
+
+.sectionHeader button {
+  padding: 11px 18px;
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  background: var(--color-primary-ultra-light);
+  font-weight: 900;
+}
+
+.destinations {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(130px, 1fr);
+  gap: 22px;
+  overflow-x: auto;
+  padding: 6px 4px 14px;
 }
 
-.cityCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.destinationCard {
+  display: grid;
+  justify-items: center;
   gap: 12px;
-  padding: 24px 16px;
-  background: var(--color-ivory);
-  border: 1px solid var(--color-beige);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
-  font-family: var(--font-body);
-}
-
-.cityCard:hover {
-  border-color: var(--color-terracotta);
-  box-shadow: var(--shadow-card-hover);
-}
-
-.cityInitial {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: 600;
-  font-family: var(--font-heading);
-  color: rgba(255,255,255,0.9);
-}
-
-.cityInfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.cityName {
-  font-size: 14px;
-  font-weight: 600;
   color: var(--color-text-primary);
+  font-weight: 900;
 }
 
-.cityAr {
-  font-size: 12px;
-  color: var(--color-text-muted);
+.destinationCard img {
+  width: 126px;
+  height: 126px;
+  object-fit: cover;
+  border: 4px solid var(--color-surface);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
 }
 
-/* HOTELS GRID */
+.featuredBand {
+  background: var(--color-surface);
+  border-block: 1px solid var(--color-border);
+}
+
 .hotelsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: 1fr;
+  gap: 22px;
 }
 
-.viewAllWrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
+.footer {
+  padding: 48px 0 24px;
+  color: #FFFFFF;
+  background: #1C0A12;
 }
 
-.viewAllBtn {
-  padding: 13px 36px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-terracotta);
-  background: transparent;
-  border: 2px solid var(--color-terracotta);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: all var(--transition);
+.footer h2 {
+  color: #FFFFFF;
 }
 
-.viewAllBtn:hover {
-  background: var(--color-terracotta);
-  color: var(--color-text-on-dark);
+.footer p,
+.footer small,
+.footer a {
+  color: rgba(255, 255, 255, 0.72);
 }
 
-/* FEATURES */
-.featuresGrid {
+.footerGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+  margin-bottom: 28px;
 }
 
-.featureCard {
+.footerLinks,
+.social {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 28px 24px;
-  background: var(--color-ivory);
-  border: 1px solid var(--color-beige);
-  border-radius: var(--radius-lg);
-  transition: border-color var(--transition), box-shadow var(--transition);
+  flex-wrap: wrap;
+  gap: 14px;
 }
 
-.featureCard:hover {
-  border-color: var(--color-terracotta-light);
-  box-shadow: var(--shadow-card);
+.social {
+  color: #FFFFFF;
 }
 
-.featureIcon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
-  background: rgba(166, 90, 58, 0.1);
-  color: var(--color-terracotta);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+@media (min-width: 768px) {
+  .hotelsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footerGrid {
+    grid-template-columns: 1.4fr 1fr auto;
+    align-items: start;
+  }
 }
 
-.featureTitle {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.featureDesc {
-  font-size: 14px;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-}
-
-/* CTA */
-.ctaBanner {
-  position: relative;
-  padding: 80px 0;
-  background: var(--color-text-primary);
-  overflow: hidden;
-}
-
-.ctaBg {
-  position: absolute;
-  inset: 0;
-  opacity: 0.1;
-}
-
-.ctaContent {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.ctaContent h2 {
-  color: var(--color-text-on-dark);
-  font-size: 40px;
-}
-
-.ctaContent p {
-  color: rgba(245, 240, 230, 0.75);
-  font-size: 18px;
-  max-width: 520px;
-}
-
-.ctaBtn {
-  padding: 14px 40px;
-  background: var(--color-terracotta);
-  color: var(--color-text-on-dark);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font-body);
-  transition: background var(--transition);
-  margin-top: 8px;
-}
-
-.ctaBtn:hover {
-  background: var(--color-terracotta-light);
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .heroHeadline { font-size: 44px; }
-  .hotelsGrid { grid-template-columns: repeat(2, 1fr); }
-  .featuresGrid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 640px) {
-  .hero { min-height: 500px; }
-  .heroHeadline { font-size: 32px; }
-  .heroSub { font-size: 16px; }
-  .hotelsGrid { grid-template-columns: 1fr; }
-  .featuresGrid { grid-template-columns: 1fr; }
-  .citiesGrid { grid-template-columns: repeat(3, 1fr); }
-  .section { padding: 48px 0; }
+@media (min-width: 1100px) {
+  .hotelsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

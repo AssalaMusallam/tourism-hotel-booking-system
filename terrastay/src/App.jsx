@@ -10,6 +10,9 @@ import ErrorBoundary from './components/ui/ErrorBoundary';
 import { AuthProvider } from './context/AuthContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
+import { FavoritesProvider } from './context/FavoritesContext';
+import AdminLayout from './components/layout/AdminLayout';
 
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
@@ -24,6 +27,8 @@ import PaymentReceiptPage from './pages/PaymentReceiptPage';
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import ReviewPage from './pages/ReviewPage';
 import ProfilePage from './pages/ProfilePage';
+import FavoritesPage from './pages/FavoritesPage';
+import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 
@@ -39,6 +44,7 @@ import HotelAvailabilityPage from './pages/hotels/HotelAvailabilityPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
 import NotificationsPage from './pages/admin/notifications/NotificationsPage';
 import NotificationDetailPage from './pages/admin/notifications/NotificationDetailPage';
+import RoleRequestsPage from './pages/admin/RoleRequestsPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 
 const queryClient = new QueryClient({
@@ -55,16 +61,18 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
+          <LanguageProvider>
           <ThemeProvider>
           <CurrencyProvider>
+          <FavoritesProvider>
           <Toaster
             position="top-right"
             toastOptions={{
               duration: 4000,
               success: {
                 style: {
-                  background: 'var(--color-terracotta)',
-                  color: 'var(--color-text-on-dark)',
+                  background: 'var(--color-success)',
+                  color: 'var(--color-text-on-primary)',
                   fontFamily: "'Inter', sans-serif",
                   fontSize: '14px',
                   fontWeight: '500',
@@ -72,15 +80,15 @@ const App = () => {
               },
               error: {
                 style: {
-                  background: 'var(--color-red)',
-                  color: 'var(--color-text-on-dark)',
+                  background: 'var(--color-danger)',
+                  color: 'var(--color-text-on-primary)',
                   fontFamily: "'Inter', sans-serif",
                   fontSize: '14px',
                   fontWeight: '500',
                 },
               },
               style: {
-                background: 'var(--color-beige)',
+                background: 'var(--color-surface)',
                 color: 'var(--color-text-primary)',
                 fontFamily: "'Inter', sans-serif",
                 fontSize: '14px',
@@ -104,6 +112,14 @@ const App = () => {
             <Route
               path="/profile"
               element={<ProtectedRoute><PageLayout><ProfilePage /></PageLayout></ProtectedRoute>}
+            />
+            <Route
+              path="/favorites"
+              element={<PageLayout><FavoritesPage /></PageLayout>}
+            />
+            <Route
+              path="/settings"
+              element={<PageLayout><SettingsPage /></PageLayout>}
             />
             <Route
               path="/bookings/confirmation/:id"
@@ -144,40 +160,43 @@ const App = () => {
             <Route path="/unauthorized" element={<PageLayout><UnauthorizedPage /></PageLayout>} />
 
             {/* Admin pages (ADMIN or MANAGER required) */}
-            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/hotels" element={<AdminRoute><ManageHotels /></AdminRoute>} />
-            <Route path="/admin/hotels/:hotelId/rooms" element={<AdminRoute><ManageRooms /></AdminRoute>} />
-            <Route path="/admin/amenities" element={<AdminRoute><ManageAmenities /></AdminRoute>} />
-            <Route path="/admin/bookings" element={<AdminRoute><AdminBookings /></AdminRoute>} />
-            <Route path="/admin/users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
-            <Route path="/admin/hotels/:hotelId/managers" element={<AdminRoute><HotelManagersPage /></AdminRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminLayout title="لوحة التحكم"><AdminDashboard /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/hotels" element={<AdminRoute><AdminLayout title="الفنادق"><ManageHotels /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/hotels/:hotelId/rooms" element={<AdminRoute><AdminLayout title="أنواع الغرف"><ManageRooms /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/amenities" element={<AdminRoute><AdminLayout title="وسائل الراحة"><ManageAmenities /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/bookings" element={<AdminRoute><AdminLayout title="الحجوزات"><AdminBookings /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminLayout title="المستخدمون"><ManageUsers /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/hotels/:hotelId/managers" element={<AdminRoute><AdminLayout title="مديرو الفندق"><HotelManagersPage /></AdminLayout></AdminRoute>} />
             <Route
               path="/admin/notifications"
-              element={<ProtectedRoute roles={['ADMIN']}><NotificationsPage /></ProtectedRoute>}
+              element={<ProtectedRoute roles={['ADMIN']}><AdminLayout title="الإشعارات"><NotificationsPage /></AdminLayout></ProtectedRoute>}
             />
-            <Route path="/admin/notifications/:id" element={<AdminRoute><NotificationDetailPage /></AdminRoute>} />
+            <Route path="/admin/notifications/:id" element={<AdminRoute><AdminLayout title="تفاصيل الإشعار"><NotificationDetailPage /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/role-requests" element={<AdminRoute><AdminLayout title="طلبات الأدوار"><RoleRequestsPage /></AdminLayout></AdminRoute>} />
 
             {/* Dashboard aliases requested by the production spec */}
-            <Route path="/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/dashboard/hotels" element={<AdminRoute><ManageHotels /></AdminRoute>} />
-            <Route path="/dashboard/hotels/:hotelId/rooms" element={<AdminRoute><ManageRooms /></AdminRoute>} />
-            <Route path="/dashboard/bookings" element={<AdminRoute><AdminBookings /></AdminRoute>} />
-            <Route path="/dashboard/users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
-            <Route path="/dashboard/hotels/:hotelId/managers" element={<AdminRoute><HotelManagersPage /></AdminRoute>} />
+            <Route path="/dashboard" element={<AdminRoute><AdminLayout title="لوحة التحكم"><AdminDashboard /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/hotels" element={<AdminRoute><AdminLayout title="الفنادق"><ManageHotels /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/hotels/:hotelId/rooms" element={<AdminRoute><AdminLayout title="أنواع الغرف"><ManageRooms /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/bookings" element={<AdminRoute><AdminLayout title="الحجوزات"><AdminBookings /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/users" element={<AdminRoute><AdminLayout title="المستخدمون"><ManageUsers /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/hotels/:hotelId/managers" element={<AdminRoute><AdminLayout title="مديرو الفندق"><HotelManagersPage /></AdminLayout></AdminRoute>} />
             <Route
               path="/dashboard/notifications"
-              element={<ProtectedRoute roles={['ADMIN']}><NotificationsPage /></ProtectedRoute>}
+              element={<ProtectedRoute roles={['ADMIN']}><AdminLayout title="الإشعارات"><NotificationsPage /></AdminLayout></ProtectedRoute>}
             />
-            <Route path="/admin/pricing-rules" element={<AdminRoute><ManagePricingRules /></AdminRoute>} />
-            <Route path="/dashboard/pricing-rules" element={<AdminRoute><ManagePricingRules /></AdminRoute>} />
+            <Route path="/admin/pricing-rules" element={<AdminRoute><AdminLayout title="قواعد التسعير"><ManagePricingRules /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/pricing-rules" element={<AdminRoute><AdminLayout title="قواعد التسعير"><ManagePricingRules /></AdminLayout></AdminRoute>} />
             <Route
               path="/dashboard/reports"
-              element={<ProtectedRoute roles={['ADMIN']}><AdminReportsPage /></ProtectedRoute>}
+              element={<ProtectedRoute roles={['ADMIN']}><AdminLayout title="التقارير"><AdminReportsPage /></AdminLayout></ProtectedRoute>}
             />
           </Routes>
           </ErrorBoundary>
+          </FavoritesProvider>
           </CurrencyProvider>
           </ThemeProvider>
+          </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

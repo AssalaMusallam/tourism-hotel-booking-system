@@ -1,12 +1,14 @@
 import { MapPin, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Badge from '../ui/Badge';
+import PriceDisplay from '../PriceDisplay';
+import HeartButton from '../ui/HeartButton';
 import { getImageUrl } from '../../lib/imageUrl';
 import styles from './HotelCard.module.css';
 
 // HotelResponseDto: { id, name, city, country, rating, amenityNames: Set<String>,
 //   images: [{id, imageUrl, fileName}], status }
-const HotelCard = ({ hotel, onClick, showStatus = false }) => {
+const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
   const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName);
   const amenityNames = hotel.amenityNames
     ? Array.from(hotel.amenityNames)
@@ -16,8 +18,10 @@ const HotelCard = ({ hotel, onClick, showStatus = false }) => {
     <motion.div
       className={styles.card}
       onClick={onClick}
-      whileHover={{ scale: 1.01, y: -2 }}
-      transition={{ duration: 0.18 }}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.018, y: -4 }}
+      transition={{ delay: index * 0.05, duration: 0.22 }}
     >
       <div className={styles.imgWrap}>
         <img
@@ -34,6 +38,7 @@ const HotelCard = ({ hotel, onClick, showStatus = false }) => {
             </Badge>
           </div>
         )}
+        <HeartButton hotelId={hotel.id} className={styles.heart} />
       </div>
       <div className={styles.body}>
         <div className={styles.location}>
@@ -59,6 +64,16 @@ const HotelCard = ({ hotel, onClick, showStatus = false }) => {
             )}
           </div>
         ) : null}
+        <div className={styles.footer}>
+          <div className={styles.price}>
+            {(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice) ? (
+              <PriceDisplay usdAmount={hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice} size="sm" suffix="/night" />
+            ) : (
+              <span>حسب التوفر</span>
+            )}
+          </div>
+          <span className={styles.bookNow}>احجز الآن</span>
+        </div>
       </div>
     </motion.div>
   );
