@@ -6,6 +6,8 @@ import PriceBreakdownCard from '../pricing/PriceBreakdownCard';
 import JoinWaitingListButton from '../waitingList/JoinWaitingListButton';
 import PriceDisplay from '../PriceDisplay';
 import { useRoomPricePreview } from '../../hooks/usePricingRules';
+import useLanguage from '../../hooks/useLanguage';
+import { useLocalizedField } from '../../hooks/useLocalizedField';
 import styles from './RoomCard.module.css';
 
 const money = (value) =>
@@ -19,24 +21,44 @@ const DEFAULT_AMENITIES = [
 
 const getRoomName = (room) => room.roomTypeName || room.name || 'Room type';
 const getRoomId = (room) => room.roomTypeId || room.id;
+const roomImageFallback = (room) => {
+  const name = `${room?.name || room?.roomTypeName || ''} ${room?.bedType || ''}`.toLowerCase();
+  if (name.includes('family') || name.includes('عائ')) return 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80';
+  if (name.includes('suite') || name.includes('جناح')) return 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80';
+  if (name.includes('king') || room?.bedType === 'KING') return 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&q=80';
+  return 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80';
+};
+
+const getRoomImage = (room) => room?.images?.[0]?.imageUrl || room?.imageUrl || roomImageFallback(room);
 
 const RoomCard = ({ room, checkIn, checkOut, onBook }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { language } = useLanguage();
+  const lf = useLocalizedField();
   const roomTypeId = getRoomId(room);
   const { data: priceBreakdown, isLoading: priceLoading, isError: priceError } = useRoomPricePreview(
     roomTypeId, checkIn, checkOut
   );
   const amenities = room.amenities?.length
-    ? room.amenities.map((label) => ({ label, icon: BadgeCheck }))
+    ? room.amenities.map((amenity) => ({ label: typeof amenity === 'string' ? lf({ name: amenity }, 'name') : lf(amenity, 'name'), icon: BadgeCheck }))
     : DEFAULT_AMENITIES;
+  const localizedRoomName = language === 'en'
+    ? (room.roomTypeNameEn || room.nameEn || lf({ ...room, name: getRoomName(room) }, 'name'))
+    : getRoomName(room);
+  const localizedDescription = language === 'en'
+    ? (room.descriptionEn || lf({ ...room, description: room.description }, 'description'))
+    : room.description;
 
   return (
     <article className={`${styles.card} ${!room.available ? styles.full : ''}`}>
+      <div className={styles.media}>
+        <img src={getRoomImage(room)} alt={localizedRoomName} loading="lazy" />
+      </div>
       <div className={styles.main}>
         <div className={styles.top}>
           <div>
-            <h2 className={styles.name}>{getRoomName(room)}</h2>
+            <h2 className={styles.name}>{localizedRoomName}</h2>
             <div className={styles.meta}>
               <span className={styles.metaItem}>
                 <Users size={16} />
@@ -67,9 +89,9 @@ const RoomCard = ({ room, checkIn, checkOut, onBook }) => {
         </div>
 
         <p className={styles.description}>
-          {room.available
+          {localizedDescription || (room.available
             ? `Sleeps up to ${room.capacity} guests with ${room.remainingUnits} unit${room.remainingUnits === 1 ? '' : 's'} available for your selected dates.`
-            : `Sleeps up to ${room.capacity} guests. Join the waiting list and we will notify you if a spot opens.`}
+            : `Sleeps up to ${room.capacity} guests. Join the waiting list and we will notify you if a spot opens.`)}
         </p>
       </div>
 

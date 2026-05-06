@@ -26,6 +26,25 @@
   color: #587086;
 }
 
+.viewSiteBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #1A3C5E;
+  background: #fff;
+  color: #1A3C5E;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.viewSiteBtn:hover {
+  background: #F4F7FA;
+}
+
 .kpiGrid,
 .chartGrid,
 .tableGrid {

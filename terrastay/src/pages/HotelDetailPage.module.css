@@ -149,6 +149,14 @@
   transition: all var(--transition);
   gap: 24px;
 }
+.roomImage {
+  width: 150px;
+  height: 112px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  flex: 0 0 150px;
+  background: var(--color-surface);
+}
 .roomCard:hover {
   border-color: var(--color-terracotta-light);
   box-shadow: var(--shadow-card);
@@ -210,6 +218,11 @@
   .roomCard {
     flex-direction: column;
     align-items: stretch;
+  }
+  .roomImage {
+    width: 100%;
+    height: 180px;
+    flex-basis: auto;
   }
   .roomAction {
     flex-direction: row;

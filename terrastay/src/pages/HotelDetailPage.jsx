@@ -28,6 +28,16 @@ const BED_LABELS = {
   SOFA_BED: 'Sofa Bed', FUTON: 'Futon',
 };
 
+const roomImageFallback = (room) => {
+  const name = `${room?.name || ''} ${room?.bedType || ''}`.toLowerCase();
+  if (name.includes('family') || name.includes('عائ')) return 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80';
+  if (name.includes('suite') || name.includes('جناح')) return 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80';
+  if (name.includes('king') || room?.bedType === 'KING') return 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&q=80';
+  return 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80';
+};
+
+const getRoomImage = (room) => room?.images?.[0]?.imageUrl || room?.imageUrl || roomImageFallback(room);
+
 const HotelDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -74,13 +84,16 @@ const HotelDetailPage = () => {
 
   const amenityNames = hotel.amenities?.length
     ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
-    : (language === 'en' && hotel.amenityNamesEn ? hotel.amenityNamesEn : (hotel.amenityNames ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames]) : []));
+    : (language === 'en' && hotel.amenityNamesEn
+      ? Array.from(hotel.amenityNamesEn)
+      : (hotel.amenityNames ? (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...hotel.amenityNames]) : []).map((name) => (language === 'en' ? lf({ name }, 'name') : name)));
   const hotelName = lf(hotel, 'name');
   const address = lf(hotel, 'address');
   const cityName = lf(hotel, 'city');
   const countryName = lf(hotel, 'country');
   const description = lf(hotel, 'description');
   const cancellation = lf(hotel, 'cancellationPolicySummary');
+  const policies = lf(hotel, 'policies');
 
   return (
     <div>
@@ -104,7 +117,7 @@ const HotelDetailPage = () => {
         {hotel.latitude != null && hotel.longitude != null && (
           <div className={styles.embeddedMap}>
             <Suspense fallback={<div className={`skeleton ${styles.mapSkeleton}`} />}>
-              <HotelMap hotels={[hotel]} selectedId={hotel.id} height="320px" />
+              <HotelMap key={hotel.id} hotels={[hotel]} selectedId={hotel.id} height="320px" />
             </Suspense>
           </div>
         )}
@@ -190,7 +203,7 @@ const HotelDetailPage = () => {
         {(hotel.policies || hotel.cancellationPolicySummary) && (
           <div className={styles.policiesSection}>
             <h2>{language === 'en' ? 'Policies' : 'السياسات'}</h2>
-            {hotel.policies && <p>{hotel.policies}</p>}
+            {policies && <p>{policies}</p>}
             {cancellation && (
               <div className={styles.cancelPolicy}>
                 <strong>{t('cancellationPolicy')}:</strong> {cancellation}
@@ -215,6 +228,7 @@ const HotelDetailPage = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.3 }}
                 >
+                  <img className={styles.roomImage} src={getRoomImage(room)} alt={lf(room, 'name')} loading="lazy" />
                   <div className={styles.roomInfo}>
                     <h3 className={styles.roomName}>{lf(room, 'name')}</h3>
                     <div className={styles.roomDetails}>
@@ -231,7 +245,7 @@ const HotelDetailPage = () => {
                         {t('capacity')}: {room.capacity}
                       </span>
                     </div>
-                    {room.description && <p className={styles.roomDesc}>{room.description}</p>}
+                    {(room.description || language === 'en') && <p className={styles.roomDesc}>{lf(room, 'description')}</p>}
                   </div>
                   <div className={styles.roomAction}>
                     <div className={styles.roomPrice}>

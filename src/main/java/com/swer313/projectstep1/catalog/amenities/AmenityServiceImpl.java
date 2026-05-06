@@ -162,7 +162,7 @@ public class AmenityServiceImpl implements AmenityService {
         return repository.findAll(spec, pageable)
                 .getContent()
                 .stream()
-                .map(a -> new AmenityMinimalDTO(a.getId(), a.getName()))
+                .map(a -> new AmenityMinimalDTO(a.getId(), a.getName(), a.getNameEn()))
                 .toList();
     }
 
@@ -174,7 +174,7 @@ public class AmenityServiceImpl implements AmenityService {
         Page<Amenity> page = repository.findAll(spec, pageable);
         List<AmenityMinimalDTO> content = page.getContent()
                 .stream()
-                .map(a -> new AmenityMinimalDTO(a.getId(), a.getName()))
+                .map(a -> new AmenityMinimalDTO(a.getId(), a.getName(), a.getNameEn()))
                 .toList();
 
         return PagedResponse.from(page, content);

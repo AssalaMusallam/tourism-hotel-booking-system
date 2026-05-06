@@ -99,7 +99,7 @@ const PaymentPage = () => {
           <ShieldCheck size={24} />
           <h2>{money(amount)} USD</h2>
           <div className={styles.line}><span>Hotel</span><strong>{booking.hotelName}</strong></div>
-          <div className={styles.line}><span>Room</span><strong>{booking.roomTypeName}</strong></div>
+          <div className={styles.line}><span>Room</span><strong>{booking.roomTypeNameEn || booking.roomTypeName}</strong></div>
           <div className={styles.line}><span>Dates</span><strong>{booking.checkIn} to {booking.checkOut}</strong></div>
           <div className={styles.line}><span>Provider</span><strong>MOCK_GATEWAY</strong></div>
         </aside>

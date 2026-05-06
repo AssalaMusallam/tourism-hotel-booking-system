@@ -21,7 +21,7 @@ public class RoomTypeResponseDto {
     private final int totalUnits;
     private final String description;
     private final String policies;
-  //  private final List<String> imagesUrl;
+    private final List<RoomTypeImageResponseDto> images;
     private final RoomTypeStatus status;
     private final Set<Long> amenityIds;
 
@@ -38,7 +38,26 @@ public class RoomTypeResponseDto {
             int totalUnits,
             String description,
             String policies,
-            //List<String> imagesUrl,
+            RoomTypeStatus status,
+            Set<Long> amenityIds
+    ) {
+        this(id, hotelId, name, capacity, bedType, bedCount, maxAdults, maxChildren, basePrice, totalUnits, description, policies, List.of(), status, amenityIds);
+    }
+
+    public RoomTypeResponseDto(
+            Long id,
+            Long hotelId,
+            String name,
+            int capacity,
+            BedType bedType,
+            int bedCount,
+            int maxAdults,
+            int maxChildren,
+            BigDecimal basePrice,
+            int totalUnits,
+            String description,
+            String policies,
+            List<RoomTypeImageResponseDto> images,
             RoomTypeStatus status,
             Set<Long> amenityIds
     ) {
@@ -54,7 +73,7 @@ public class RoomTypeResponseDto {
         this.totalUnits = totalUnits;
         this.description = description;
         this.policies = policies;
-       // this.imagesUrl = imagesUrl;
+        this.images = images != null ? images : List.of();
         this.status = status;
         this.amenityIds = amenityIds;
     }
@@ -72,6 +91,7 @@ public class RoomTypeResponseDto {
     public String getDescription()  { return description; }
     public String getPolicies()     { return policies; }
    // public List<String> getImagesUrl() { return imagesUrl; }
+    public List<RoomTypeImageResponseDto> getImages() { return images; }
     public RoomTypeStatus getStatus() { return status; }
     public Set<Long> getAmenityIds() { return amenityIds; }
 }

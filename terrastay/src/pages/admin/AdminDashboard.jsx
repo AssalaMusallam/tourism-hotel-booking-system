@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, CalendarClock, DollarSign, Hotel, Percent, Plus, Tag } from 'lucide-react';
+import { BarChart3, CalendarClock, DollarSign, Globe2, Hotel, Percent, Plus, Tag } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import {
   useAdminBookingStatus,
@@ -10,6 +10,7 @@ import {
   useAdminSummary,
 } from '../../hooks/useAdminQueries';
 import api from '../../api/axios';
+import useLanguage from '../../hooks/useLanguage';
 import '../../styles/admin-theme.css';
 import styles from './AdminDashboard.module.css';
 
@@ -35,6 +36,7 @@ const statusClass = (status) => ({
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { language } = useLanguage();
   const summaryQuery = useAdminSummary();
   const revenueQuery = useAdminRevenue();
   const statusQuery = useAdminBookingStatus();
@@ -71,6 +73,10 @@ const AdminDashboard = () => {
           <h1>لوحة التحكم</h1>
           <p>مرحباً، {user?.name || user?.fullName || 'Admin'}</p>
         </div>
+        <button type="button" onClick={() => navigate('/', { state: { previewWebsite: true } })} className={styles.viewSiteBtn}>
+          <Globe2 size={16} />
+          {language === 'en' ? 'View Website' : 'عرض الموقع'}
+        </button>
       </header>
 
       <div className={styles.kpiGrid}>

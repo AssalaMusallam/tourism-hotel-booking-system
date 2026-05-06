@@ -1,5 +1,23 @@
 import api from './axios';
 
+const CITY_MAP = {
+  القدس: 'Jerusalem',
+  'بيت لحم': 'Bethlehem',
+  'رام الله': 'Ramallah',
+  نابلس: 'Nablus',
+  أريحا: 'Jericho',
+  الخليل: 'Hebron',
+  جنين: 'Jenin',
+  طولكرم: 'Tulkarm',
+  قلقيلية: 'Qalqilya',
+  طوباس: 'Tubas',
+};
+
+const normalizeHotelParams = (params = {}) => ({
+  ...params,
+  ...(params.city ? { city: CITY_MAP[params.city] || params.city } : {}),
+});
+
 // ─── Public ──────────────────────────────────────────────────────────────────
 // GET /api/hotels  params: q, city, country, amenity, minRating, maxRating,
 //   hasImage, hasPhone, hasWebsite, hasEmail, page(0-indexed), size
@@ -11,7 +29,7 @@ import api from './axios';
 //   checkInTime, checkOutTime, policies, cancellationPolicySummary,
 //   status("ACTIVE"|"INACTIVE"), amenityNames: Set<String> }
 export const searchHotels = (params) =>
-  api.get('/api/hotels', { params }).then((r) => r.data);
+  api.get('/api/hotels', { params: normalizeHotelParams(params) }).then((r) => r.data);
 
 export const getHotelById = (id) =>
   api.get(`/api/hotels/${id}`).then((r) => r.data);

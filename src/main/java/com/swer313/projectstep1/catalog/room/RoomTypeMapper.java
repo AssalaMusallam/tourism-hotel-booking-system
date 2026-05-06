@@ -62,6 +62,9 @@ public class RoomTypeMapper {
                 : rt.getAmenities().stream()
                 .map(a -> a.getId())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+        List<RoomTypeImageResponseDto> images = rt.getImages() == null
+                ? List.of()
+                : rt.getImages().stream().map(RoomTypeMapper::toImageDto).toList();
 
         return new RoomTypeResponseDto(
                 rt.getId(),
@@ -76,9 +79,18 @@ public class RoomTypeMapper {
                 rt.getTotalUnits(),
                 rt.getDescription(),
                 rt.getPolicies(),
+                images,
                 rt.getStatus(),
                 amenityIds
         );
+    }
+
+    private static RoomTypeImageResponseDto toImageDto(RoomTypeImage image) {
+        RoomTypeImageResponseDto dto = new RoomTypeImageResponseDto();
+        dto.setId(image.getId());
+        dto.setImageUrl(image.getImageUrl());
+        dto.setFileName(image.getFileName());
+        return dto;
     }
 
     private static List<String> safeImages(List<String> images) {

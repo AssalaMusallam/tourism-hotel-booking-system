@@ -10,6 +10,9 @@ public class AmenityRequestDTO {
     @Size(min = 3, max = 100, message = "Amenity name must be between 3 and 100 characters")
     private String name;
 
+    @Size(max = 100, message = "English amenity name must be at most 100 characters")
+    private String nameEn;
+
     @NotBlank(message = "Amenity description cannot be blank")
     @Size(min = 10, max = 500, message = "Amenity description must be between 10 and 500 characters")
     private String description;
@@ -31,8 +34,20 @@ public class AmenityRequestDTO {
         this.active = active;
     }
 
+    public AmenityRequestDTO(String name, String nameEn, String description, Amenity.AmenityCategory category, Boolean premium, Boolean active) {
+        this.name = name;
+        this.nameEn = nameEn;
+        this.description = description;
+        this.category = category;
+        this.premium = premium;
+        this.active = active;
+    }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getNameEn() { return nameEn; }
+    public void setNameEn(String nameEn) { this.nameEn = nameEn; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

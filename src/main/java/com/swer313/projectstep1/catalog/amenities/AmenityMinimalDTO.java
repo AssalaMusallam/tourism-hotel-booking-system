@@ -3,14 +3,21 @@ package com.swer313.projectstep1.catalog.amenities;
 public class AmenityMinimalDTO {
     private final Long id;
     private final String name;
+    private final String nameEn;
 
     public AmenityMinimalDTO(Long id, String name) {
+        this(id, name, null);
+    }
+
+    public AmenityMinimalDTO(Long id, String name, String nameEn) {
         this.id = id;
         this.name = name;
+        this.nameEn = nameEn;
     }
 
     public Long getId() { return id; }
     public String getName() { return name; }
+    public String getNameEn() { return nameEn; }
 }
 /*
 شو معناها؟

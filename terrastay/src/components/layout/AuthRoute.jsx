@@ -3,7 +3,7 @@ import useAuth from '../../hooks/useAuth';
 
 const AuthRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  if (isAuthenticated) return <Navigate to="/search" replace />;
+  if (isAuthenticated) return <Navigate to="/" replace />;
   return children;
 };
 

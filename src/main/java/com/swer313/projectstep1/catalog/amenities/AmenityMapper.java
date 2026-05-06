@@ -16,6 +16,7 @@ public class AmenityMapper {
                 dto.getDescription(),
                 dto.getCategory()
         );
+        amenity.setNameEn(dto.getNameEn());
 
         // override defaults only if provided
         if (dto.getPremium() != null) {
@@ -36,6 +37,7 @@ public class AmenityMapper {
         if (entity == null || dto == null) return;
 
         entity.setName(dto.getName());
+        entity.setNameEn(dto.getNameEn());
         entity.setDescription(dto.getDescription());
         entity.setCategory(dto.getCategory());
 
@@ -58,6 +60,7 @@ public class AmenityMapper {
         return new AmenityResponseDTO(
                 entity.getId(),
                 entity.getName(),
+                entity.getNameEn(),
                 entity.getDescription(),
                 entity.getCategory(),
                 entity.isPremium(),

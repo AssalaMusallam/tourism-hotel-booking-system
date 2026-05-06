@@ -11,6 +11,7 @@ import com.swer313.projectstep1.catalog.hotel.HotelImageRepository;
 import com.swer313.projectstep1.catalog.hotel.HotelRepository;
 import com.swer313.projectstep1.catalog.room.BedType;
 import com.swer313.projectstep1.catalog.room.RoomType;
+import com.swer313.projectstep1.catalog.room.RoomTypeImage;
 import com.swer313.projectstep1.catalog.room.RoomTypeRepository;
 import com.swer313.projectstep1.catalog.room.RoomTypeStatus;
 import com.swer313.projectstep1.notification.Notification;
@@ -323,9 +324,42 @@ public class LoadDatabase implements CommandLineRunner {
     private Amenity am(String name, String desc,
                        Amenity.AmenityCategory cat, boolean premium, boolean active) {
         Amenity a = new Amenity(name, desc, cat);
+        a.setNameEn(amenityNameEn(name));
         a.setPremium(premium);
         a.setActive(active);
         return a;
+    }
+
+    private String amenityNameEn(String name) {
+        return switch (name) {
+            case "موقف سيارات مجاني مع خدمة فاليه" -> "Free Valet Parking";
+            case "إفطار بوفيه مجاني" -> "Free Breakfast Buffet";
+            case "مصعد كهربائي" -> "Elevator";
+            case "حديقة وفضاء خارجي" -> "Garden & Outdoor Space";
+            case "مسبح خارجي مدفأ" -> "Heated Outdoor Pool";
+            case "تكييف وتدفئة مركزي" -> "Central AC & Heating";
+            case "مطعم عربي أصيل" -> "Authentic Arabic Restaurant";
+            case "إنترنت فايبر عالي السرعة" -> "High-Speed Fiber Internet";
+            case "مركز صحي وسبا فاخر" -> "Luxury Spa & Wellness Center";
+            case "تلفاز ذكي 4K مع Netflix", "NETFLIX مع 4K تلفاز ذكي" -> "Smart 4K TV with Netflix";
+            case "مقهى سطح الفندق" -> "Rooftop Café";
+            case "إطلالة بانورامية على المدينة" -> "Panoramic City View";
+            case "واي فاي مجاني" -> "Free WiFi";
+            case "موقف سيارات مجاني" -> "Free Parking";
+            case "مسبح" -> "Swimming Pool";
+            case "مركز لياقة", "صالة رياضية مجهزة" -> "Fitness Center";
+            case "سبا" -> "Spa";
+            case "مطعم" -> "Restaurant";
+            case "خدمة الغرف", "خدمة غرف على مدار الساعة" -> "Room Service";
+            case "مكيف هواء" -> "Air Conditioning";
+            case "غسيل ملابس", "خدمة غسيل وكوي" -> "Laundry Service";
+            case "مركز أعمال" -> "Business Center";
+            case "قاعة مؤتمرات", "قاعة اجتماعات" -> "Conference Room";
+            case "نقل مطار", "نقل من المطار" -> "Airport Shuttle";
+            case "إطلالة بحرية" -> "Sea View";
+            case "إطلالة على الحديقة", "إطلالة حديقة" -> "Garden View";
+            default -> null;
+        };
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -637,61 +671,53 @@ public class LoadDatabase implements CommandLineRunner {
         return switch (hotelName) {
             // القدس
             case "فندق الكرمل القدس" -> List.of(
-                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1552832897-5c2a9176d7f2?w=800&q=80",
+                    "https://images.unsplash.com/photo-1548690312-1f537be8ef74?w=800&q=80",
+                    "https://images.unsplash.com/photo-1565591452-bb3b8b66c0a0?w=800&q=80"
             );
             case "فندق دار السلام" -> List.of(
-                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1548690312-1f537be8ef74?w=800&q=80",
+                    "https://images.unsplash.com/photo-1565591452-bb3b8b66c0a0?w=800&q=80",
+                    "https://images.unsplash.com/photo-1552832897-5c2a9176d7f2?w=800&q=80"
             );
             case "فندق قصر فلسطين" -> List.of(
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1564501049559-0f4b9e6b2082?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1565591452-bb3b8b66c0a0?w=800&q=80",
+                    "https://images.unsplash.com/photo-1552832897-5c2a9176d7f2?w=800&q=80",
+                    "https://images.unsplash.com/photo-1548690312-1f537be8ef74?w=800&q=80"
             );
             // بيت لحم
             case "فندق جورج" -> List.of(
-                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+                    "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80"
             );
             case "منتجع سانت جورج" -> List.of(
-                    "https://images.unsplash.com/photo-1439130490301-25e322d88054?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+                    "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80"
             );
             // أريحا
             case "فندق أريحا الريف" -> List.of(
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=800&q=80",
+                    "https://images.unsplash.com/photo-1580674684081-a8888dc0e9e0?w=800&q=80"
             );
             // رام الله
             case "فندق رام المشرق" -> List.of(
-                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80"
             );
             // نابلس
             case "فندق نابلس الكبير" -> List.of(
-                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+                    "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80"
             );
             // الخليل
             case "فندق أبراهام الخليل" -> List.of(
-                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+                    "https://images.unsplash.com/photo-1566073771259-4a5f33f14c97?w=800&q=80"
             );
             // طولكرم (inactive)
             case "فندق الزهور طولكرم" -> List.of(
-                    "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=800&q=80",
+                    "https://images.unsplash.com/photo-1551882547-ff40c4a49e6c?w=800&q=80"
             );
             default -> List.of();
         };
@@ -962,7 +988,30 @@ public class LoadDatabase implements CommandLineRunner {
         r.setPolicies(policies);
         r.setStatus(status);
         r.setAmenities(amenities);
+        RoomTypeImage image = new RoomTypeImage();
+        image.setRoomType(r);
+        image.setImageUrl(roomImageUrl(name, bedType));
+        image.setFileName(image.getImageUrl().substring(image.getImageUrl().lastIndexOf('/') + 1).split("\\?")[0]);
+        r.getImages().add(image);
         return r;
+    }
+
+    private String roomImageUrl(String roomName, BedType bedType) {
+        if (roomName != null && roomName.contains("عائ")) {
+            return "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80";
+        }
+        if (roomName != null && (roomName.contains("جناح") || roomName.contains("فيلا"))) {
+            return bedType == BedType.KING
+                    ? "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80"
+                    : "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=80";
+        }
+        if (bedType == BedType.KING) {
+            return "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&q=80";
+        }
+        if (bedType == BedType.QUEEN) {
+            return "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80";
+        }
+        return "https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=600&q=80";
     }
 
     // ═════════════════════════════════════════════════════════════════════════

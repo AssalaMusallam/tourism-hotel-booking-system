@@ -19,7 +19,9 @@ const HotelCard = ({ hotel, index = 0 }) => {
   );
   const amenityNames = hotel.amenities?.length
     ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
-    : (language === 'en' && hotel.amenityNamesEn ? hotel.amenityNamesEn : (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...(hotel.amenityNames || [])]));
+    : (language === 'en' && hotel.amenityNamesEn
+      ? Array.from(hotel.amenityNamesEn)
+      : (Array.isArray(hotel.amenityNames) ? hotel.amenityNames : [...(hotel.amenityNames || [])]).map((name) => (language === 'en' ? lf({ name }, 'name') : name)));
   const hotelName = lf(hotel, 'name');
   const city = lf(hotel, 'city');
   const country = lf(hotel, 'country');

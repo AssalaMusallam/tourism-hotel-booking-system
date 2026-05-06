@@ -50,6 +50,10 @@ public class Amenity {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
+    @Size(max = 100, message = "English amenity name must be at most 100 characters")
+    @Column(name = "name_en", length = 100)
+    private String nameEn;
+
     @NotBlank(message = "Amenity description cannot be blank")
     @Size(min = 10, max = 500, message = "Amenity description must be between 10 and 500 characters")
     @Column(nullable = false, length = 500)
@@ -103,12 +107,22 @@ public class Amenity {
         this.category = category;
     }
 
+    public Amenity(String name, String nameEn, String description, AmenityCategory category) {
+        this.name = name;
+        this.nameEn = nameEn;
+        this.description = description;
+        this.category = category;
+    }
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getNameEn() { return nameEn; }
+    public void setNameEn(String nameEn) { this.nameEn = nameEn; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

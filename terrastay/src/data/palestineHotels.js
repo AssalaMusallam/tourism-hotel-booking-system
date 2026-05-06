@@ -94,10 +94,51 @@ const hotelRows = [
   ['فندق الناصرة الكبير', 'Nazareth Grand Hotel', 'الناصرة', 'Nazareth', 32.6996, 35.3035, 4.4, 'وسط الناصرة', 'Central Nazareth', '1551882547-ff40c4a49e6c'],
 ];
 
+const roomImage = (photoId) => ({ imageUrl: `https://images.unsplash.com/photo-${photoId}?w=600&q=80`, isPrimary: true });
+
 const roomTypesFor = (hotelId) => [
-  { id: hotelId * 10 + 1, hotelId, name: 'غرفة قياسية', nameEn: 'Standard Room', basePrice: 80 + (hotelId % 5) * 10, capacity: 2, bedType: 'DOUBLE', totalUnits: 10, status: 'ACTIVE' },
-  { id: hotelId * 10 + 2, hotelId, name: 'غرفة ديلوكس', nameEn: 'Deluxe Room', basePrice: 140 + (hotelId % 6) * 10, capacity: hotelId % 2 ? 2 : 3, bedType: 'KING', totalUnits: 6, status: 'ACTIVE' },
-  { id: hotelId * 10 + 3, hotelId, name: 'جناح', nameEn: 'Suite', basePrice: 250 + (hotelId % 8) * 18, capacity: 4, bedType: 'KING', totalUnits: 3, status: 'ACTIVE' },
+  {
+    id: hotelId * 10 + 1,
+    hotelId,
+    name: 'غرفة قياسية',
+    nameEn: 'Standard Room',
+    description: 'غرفة مريحة بتجهيزات أساسية وإطلالة هادئة لإقامة عملية.',
+    descriptionEn: 'A comfortable room with essential amenities and a calm setting for a practical stay.',
+    basePrice: 80 + (hotelId % 5) * 10,
+    capacity: 2,
+    bedType: 'DOUBLE',
+    totalUnits: 10,
+    status: 'ACTIVE',
+    images: [roomImage(hotelId % 2 ? '1631049307264-da0ec9d70304' : '1564078516393-cf04bd966897')],
+  },
+  {
+    id: hotelId * 10 + 2,
+    hotelId,
+    name: 'غرفة ديلوكس',
+    nameEn: 'Deluxe Room',
+    description: 'غرفة واسعة بسرير ملكي ولمسات فاخرة تناسب الإقامات الهادئة.',
+    descriptionEn: 'A spacious king room with refined touches for a quiet and polished stay.',
+    basePrice: 140 + (hotelId % 6) * 10,
+    capacity: hotelId % 2 ? 2 : 3,
+    bedType: 'KING',
+    totalUnits: 6,
+    status: 'ACTIVE',
+    images: [roomImage(hotelId % 2 ? '1590490360182-c33d57733427' : '1618773928121-c32242e63f39')],
+  },
+  {
+    id: hotelId * 10 + 3,
+    hotelId,
+    name: 'جناح',
+    nameEn: 'Suite',
+    description: 'جناح رحب بمنطقة جلوس مستقلة وتجهيزات ممتازة للعائلات أو الإقامات الخاصة.',
+    descriptionEn: 'A generous suite with a separate sitting area and premium amenities for families or special stays.',
+    basePrice: 250 + (hotelId % 8) * 18,
+    capacity: 4,
+    bedType: 'KING',
+    totalUnits: 3,
+    status: 'ACTIVE',
+    images: [roomImage(hotelId % 2 ? '1582719478250-c89cae4dc85b' : '1578683010236-d716f9a3f461')],
+  },
 ];
 
 export const palestineHotels = hotelRows.map(([name, nameEn, city, cityEn, latitude, longitude, rating, address, addressEn, photoId], index) => {

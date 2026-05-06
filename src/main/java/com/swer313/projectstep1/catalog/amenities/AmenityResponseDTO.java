@@ -5,6 +5,7 @@ public class AmenityResponseDTO {
 
     private final Long id;
     private final String name;
+    private final String nameEn;
     private final String description;
     private final Amenity.AmenityCategory category;
     private final boolean premium;
@@ -22,8 +23,23 @@ public class AmenityResponseDTO {
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
+        this(id, name, null, description, category, premium, active, createdAt, updatedAt);
+    }
+
+    public AmenityResponseDTO(
+            Long id,
+            String name,
+            String nameEn,
+            String description,
+            Amenity.AmenityCategory category,
+            boolean premium,
+            boolean active,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
         this.id = id;
         this.name = name;
+        this.nameEn = nameEn;
         this.description = description;
         this.category = category;
         this.premium = premium;
@@ -34,6 +50,7 @@ public class AmenityResponseDTO {
 
     public Long getId() { return id; }
     public String getName() { return name; }
+    public String getNameEn() { return nameEn; }
     public String getDescription() { return description; }
     public Amenity.AmenityCategory getCategory() { return category; }
     public boolean isPremium() { return premium; }

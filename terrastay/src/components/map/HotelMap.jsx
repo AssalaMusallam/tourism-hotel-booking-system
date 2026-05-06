@@ -99,7 +99,9 @@ const HotelMap = ({ hotels = [], selectedId, onMarkerClick, height = '500px' }) 
       bounds.push(latLng);
     });
 
-    if (bounds.length > 0) {
+    if (visibleHotels.length === 1 && bounds[0]) {
+      map.setView(bounds[0], 14);
+    } else if (bounds.length > 0) {
       map.fitBounds(bounds, { padding: [34, 34], maxZoom: 14 });
     }
   }, [visibleHotels, selectedId, onMarkerClick, resolvedTheme]);

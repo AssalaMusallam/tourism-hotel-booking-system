@@ -52,6 +52,7 @@ public class HotelMapper {
         dto.setCheckOutTime(h.getCheckOutTime());
         dto.setPolicies(h.getPolicies());
         dto.setCancellationPolicySummary(h.getCancellationPolicySummary());
+        dto.setCancellationPolicySummaryEn("Free cancellation terms vary by booking. Please review the policy before confirming.");
         dto.setStatus(h.getStatus());
 
         Set<String> amenityNames = h.getAmenities() == null ? Set.of() :
@@ -59,6 +60,11 @@ public class HotelMapper {
                         .map(Amenity::getName)
                         .collect(Collectors.toSet());
         dto.setAmenityNames(amenityNames);
+        Set<String> amenityNamesEn = h.getAmenities() == null ? Set.of() :
+                h.getAmenities().stream()
+                        .map(a -> a.getNameEn() != null ? a.getNameEn() : a.getName())
+                        .collect(Collectors.toSet());
+        dto.setAmenityNamesEn(amenityNamesEn);
 
         List<HotelImageResponseDto> images = h.getImages() == null ? List.of() :
                 h.getImages().stream().map(HotelMapper::toImageDto).toList();

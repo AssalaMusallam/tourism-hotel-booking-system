@@ -1,15 +1,24 @@
 import { useState } from 'react';
-import { BedDouble, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import AvailabilityBadge from './AvailabilityBadge';
 import GuestCapacityIndicator from './GuestCapacityIndicator';
 import PriceBreakdownCard from '../pricing/PriceBreakdownCard';
 import PriceDisplay from '../PriceDisplay';
 import Button from '../ui/Button';
 import { useRoomPricePreview } from '../../hooks/usePricingRules';
+import { useLocalizedField } from '../../hooks/useLocalizedField';
 import styles from './RoomTypeAvailabilityCard.module.css';
 
 const money = (v) =>
   Number(v || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+const roomImageFallback = (room) => {
+  const name = `${room?.roomTypeName || room?.name || ''} ${room?.bedType || ''}`.toLowerCase();
+  if (name.includes('family') || name.includes('عائ')) return 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80';
+  if (name.includes('suite') || name.includes('جناح')) return 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80';
+  if (name.includes('king') || room?.bedType === 'KING') return 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&q=80';
+  return 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80';
+};
 
 /**
  * Card showing summary availability + pricing for one room type.
@@ -18,6 +27,7 @@ const money = (v) =>
  */
 const RoomTypeAvailabilityCard = ({ summary, checkIn, checkOut, requestedGuests, onSelect }) => {
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const lf = useLocalizedField();
 
   const roomTypeId = summary.roomTypeId;
   const { data: priceBreakdown, isLoading: priceLoading } = useRoomPricePreview(
@@ -25,19 +35,20 @@ const RoomTypeAvailabilityCard = ({ summary, checkIn, checkOut, requestedGuests,
   );
 
   const isBooked = !summary.available;
+  const roomName = lf({ ...summary, name: summary.roomTypeName }, 'name');
+  const roomImage = summary.images?.[0]?.imageUrl || summary.imageUrl || roomImageFallback(summary);
 
   return (
     <article className={`${styles.card} ${isBooked ? styles.cardBooked : ''}`}>
-      {/* Image placeholder */}
       <div className={styles.imgPlaceholder}>
-        <BedDouble size={32} className={styles.imgIcon} />
+        <img src={roomImage} alt={roomName} loading="lazy" className={styles.roomImage} />
         {isBooked && <div className={styles.bookedOverlay}>Fully Booked</div>}
       </div>
 
       <div className={styles.body}>
         {/* Header row */}
         <div className={styles.header}>
-          <h3 className={styles.name}>{summary.roomTypeName}</h3>
+          <h3 className={styles.name}>{roomName}</h3>
           <AvailabilityBadge
             available={summary.available}
             remainingUnits={summary.remainingUnits}

@@ -100,7 +100,7 @@ const en = {
   confirmed: 'Confirmed',
   completed: 'Completed',
   cancelled: 'Cancelled',
-  waitingList: 'Waiting list',
+  waitingList: 'Waiting List',
   payNow: 'Pay now',
   paymentMethod: 'Payment method',
   creditCard: 'Credit card',

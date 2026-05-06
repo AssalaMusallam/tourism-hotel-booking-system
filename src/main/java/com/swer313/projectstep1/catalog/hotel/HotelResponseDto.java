@@ -24,8 +24,10 @@ public class HotelResponseDto {
     private LocalTime checkOutTime;
     private String policies;
     private String cancellationPolicySummary;
+    private String cancellationPolicySummaryEn;
     private Hotel.Status status;
     private Set<String> amenityNames;
+    private Set<String> amenityNamesEn;
 
     public Set<String> getAmenityNames() {
         return amenityNames;
@@ -33,6 +35,14 @@ public class HotelResponseDto {
 
     public void setAmenityNames(Set<String> amenityNames) {
         this.amenityNames = amenityNames;
+    }
+
+    public Set<String> getAmenityNamesEn() {
+        return amenityNamesEn;
+    }
+
+    public void setAmenityNamesEn(Set<String> amenityNamesEn) {
+        this.amenityNamesEn = amenityNamesEn;
     }
 
 
@@ -92,6 +102,11 @@ public class HotelResponseDto {
     public String getCancellationPolicySummary() { return cancellationPolicySummary; }
     public void setCancellationPolicySummary(String cancellationPolicySummary) {
         this.cancellationPolicySummary = cancellationPolicySummary;
+    }
+
+    public String getCancellationPolicySummaryEn() { return cancellationPolicySummaryEn; }
+    public void setCancellationPolicySummaryEn(String cancellationPolicySummaryEn) {
+        this.cancellationPolicySummaryEn = cancellationPolicySummaryEn;
     }
 
     public Hotel.Status getStatus() { return status; }

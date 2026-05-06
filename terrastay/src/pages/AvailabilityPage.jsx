@@ -12,6 +12,8 @@ import Button from '../components/ui/Button';
 import SectionError from '../components/ui/SectionError';
 import RoomCard, { RoomCardSkeleton, getAvailabilityRoomId } from '../components/availability/RoomCard';
 import { parseApiError } from '../lib/parseApiError';
+import useLanguage from '../hooks/useLanguage';
+import { useLocalizedField } from '../hooks/useLocalizedField';
 import styles from './AvailabilityPage.module.css';
 
 const today = format(new Date(), 'yyyy-MM-dd');
@@ -31,6 +33,8 @@ const AvailabilityPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { language } = useLanguage();
+  const lf = useLocalizedField();
 
   const hotelId = routeHotelId || searchParams.get('hotelId');
   const checkIn = searchParams.get('checkIn') || today;
@@ -70,7 +74,7 @@ const AvailabilityPage = () => {
     const pendingBooking = {
       hotelId: String(hotelId),
       roomTypeId: getAvailabilityRoomId(room),
-      roomName: room.roomTypeName,
+      roomName: language === 'en' ? (room.roomTypeNameEn || room.nameEn || lf({ ...room, name: room.roomTypeName || room.name }, 'name')) : (room.roomTypeName || room.name),
       checkIn: params.checkIn,
       checkOut: params.checkOut,
       guests: params.guests,

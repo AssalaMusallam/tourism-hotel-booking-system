@@ -26,6 +26,8 @@ const cities = [
   { value: 'طوباس', label: 'طوباس', labelEn: 'Tubas' },
 ];
 
+const CITY_MAP = Object.fromEntries(cities.map((item) => [item.value, item.labelEn]));
+
 const cityLabel = (value, language) => {
   const match = cities.find((item) => item.value === value || item.labelEn === value);
   return language === 'en' ? match?.labelEn || value : match?.label || value;
@@ -43,15 +45,17 @@ const SearchPage = () => {
   const [rating, setRating] = useState(0);
   const [maxPrice, setMaxPrice] = useState(500);
 
-  const apiParams = { ...(q && { search: q, q }), ...(city && { city }), page, size: 12 };
+  const apiCity = city ? CITY_MAP[city] || city : '';
+  const apiParams = { ...(q && { search: q, q }), ...(apiCity && { city: apiCity }), page, size: 12 };
   const { data, isLoading, isError, refetch } = useHotels(apiParams);
-  const sourceHotels = data?.content?.length ? data.content : palestineHotels;
+  const hotelList = Array.isArray(data) ? data : data?.content ?? [];
+  const sourceHotels = hotelList.length ? hotelList : palestineHotels;
 
   const hotels = useMemo(() => {
     const query = q.trim().toLowerCase();
     return sourceHotels
       .filter((hotel) => !query || hotel.nameEn?.toLowerCase().includes(query) || hotel.cityEn?.toLowerCase().includes(query) || hotel.name?.toLowerCase().includes(query) || hotel.city?.toLowerCase().includes(query))
-      .filter((hotel) => selectedCities.length === 0 || selectedCities.includes(hotel.city) || selectedCities.includes(hotel.cityEn))
+      .filter((hotel) => selectedCities.length === 0 || selectedCities.includes(hotel.city) || selectedCities.includes(hotel.cityEn) || selectedCities.some((selected) => CITY_MAP[selected] === hotel.city || CITY_MAP[selected] === hotel.cityEn))
       .filter((hotel) => Number(hotel.rating || 0) >= rating)
       .filter((hotel) => Number(hotel.minPricePerNight || hotel.pricePerNight || hotel.basePrice || 0) <= maxPrice)
       .sort((a, b) => {

@@ -18,7 +18,9 @@ const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
   const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName);
   const amenityNames = hotel.amenities?.length
     ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
-    : Array.from(language === 'en' && hotel.amenityNamesEn ? hotel.amenityNamesEn : (hotel.amenityNames || []));
+    : (language === 'en' && hotel.amenityNamesEn
+      ? Array.from(hotel.amenityNamesEn)
+      : Array.from(hotel.amenityNames || []).map((name) => (language === 'en' ? lf({ name }, 'name') : name)));
   const hotelName = lf(hotel, 'name');
   const city = lf(hotel, 'city');
   const country = lf(hotel, 'country');

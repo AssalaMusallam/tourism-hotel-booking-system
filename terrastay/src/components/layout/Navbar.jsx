@@ -100,13 +100,13 @@ const Navbar = () => {
   };
 
   const menuLinks = [
-    { to: '/', label: 'الرئيسية', icon: UserCircle, show: true },
-    { to: '/search', label: 'الفنادق', icon: Search, show: true },
+    { to: '/', label: t('home'), icon: UserCircle, show: true },
+    { to: '/search', label: t('hotels'), icon: Search, show: true },
     { to: '/my-bookings', label: t('myBookings'), icon: CalendarCheck, show: !isManager },
     { to: '/favorites', label: t('favorites'), icon: Heart, show: !isAdmin && !isManager },
     { to: '/settings', label: t('settings'), icon: Settings, show: true },
-    { to: '/dashboard', label: t('adminPanel'), icon: LayoutDashboard, show: isAdmin || isManager },
-    { to: '/my-waiting-list', label: 'قائمة الانتظار', icon: Bell, show: isAuthenticated && !isManager },
+    { to: '/admin', label: t('adminPanel'), icon: LayoutDashboard, show: isAdmin || isManager },
+    { to: '/my-waiting-list', label: t('waitingList'), icon: Bell, show: isAuthenticated && !isManager },
   ].filter((item) => item.show);
 
   return (
@@ -119,10 +119,10 @@ const Navbar = () => {
           </Link>
 
           <div className={styles.navLinks}>
-            <NavLink to="/">الرئيسية</NavLink>
-            <NavLink to="/search">الفنادق</NavLink>
-            {!isAdmin && !isManager && <NavLink to="/favorites">المفضلة</NavLink>}
-            {isAuthenticated && !isAdmin && !isManager && <NavLink to="/my-bookings">حجوزاتي</NavLink>}
+            <NavLink to="/">{t('home')}</NavLink>
+            <NavLink to="/search">{t('hotels')}</NavLink>
+            {!isAdmin && !isManager && <NavLink to="/favorites">{t('favorites')}</NavLink>}
+            {isAuthenticated && !isAdmin && !isManager && <NavLink to="/my-bookings">{t('myBookings')}</NavLink>}
           </div>
 
           <div className={styles.centerSearch} ref={searchRef}>
