@@ -1,6 +1,23 @@
 import api from './axios';
 
 const CITY_MAP = {
+  'رام الله': 'Ramallah',
+  القدس: 'Jerusalem',
+  'بيت لحم': 'Bethlehem',
+  أريحا: 'Jericho',
+  نابلس: 'Nablus',
+  الخليل: 'Hebron',
+  جنين: 'Jenin',
+  طولكرم: 'Tulkarm',
+  قلقيلية: 'Qalqilya',
+  طوباس: 'Tubas',
+  سلفيت: 'Salfit',
+  Ramallah: 'Ramallah',
+  Jerusalem: 'Jerusalem',
+  Bethlehem: 'Bethlehem',
+  Jericho: 'Jericho',
+  Nablus: 'Nablus',
+  Hebron: 'Hebron',
   القدس: 'Jerusalem',
   'بيت لحم': 'Bethlehem',
   'رام الله': 'Ramallah',
@@ -18,6 +35,13 @@ const normalizeHotelParams = (params = {}) => ({
   ...(params.city ? { city: CITY_MAP[params.city] || params.city } : {}),
 });
 
+const normalizeSearchResponse = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.content)) return data;
+  if (Array.isArray(data?.data)) return { ...data, content: data.data };
+  return data || { content: [] };
+};
+
 // ─── Public ──────────────────────────────────────────────────────────────────
 // GET /api/hotels  params: q, city, country, amenity, minRating, maxRating,
 //   hasImage, hasPhone, hasWebsite, hasEmail, page(0-indexed), size
@@ -29,7 +53,7 @@ const normalizeHotelParams = (params = {}) => ({
 //   checkInTime, checkOutTime, policies, cancellationPolicySummary,
 //   status("ACTIVE"|"INACTIVE"), amenityNames: Set<String> }
 export const searchHotels = (params) =>
-  api.get('/api/hotels', { params: normalizeHotelParams(params) }).then((r) => r.data);
+  api.get('/api/hotels', { params: normalizeHotelParams(params) }).then((r) => normalizeSearchResponse(r.data));
 
 export const getHotelById = (id) =>
   api.get(`/api/hotels/${id}`).then((r) => r.data);

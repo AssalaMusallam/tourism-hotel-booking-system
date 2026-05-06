@@ -39,9 +39,9 @@ export const useLogin = () => {
 
       // Redirect to state.from or role-based default
       const from = location.state?.from;
-      const isAdminRole = data.user?.role === 'ADMIN' || data.user?.role === 'MANAGER';
-      const roleHome = isAdminRole ? '/admin' : '/';
-      const target = isAdminRole ? roleHome : (from && from !== '/login' && from !== '/register' ? from : roleHome);
+      const role = data.user?.role;
+      const roleHome = role === 'ADMIN' ? '/admin' : role === 'MANAGER' ? '/manager/dashboard' : '/';
+      const target = role === 'ADMIN' || role === 'MANAGER' ? roleHome : (from && from !== '/login' && from !== '/register' ? from : roleHome);
       navigate(target, { replace: true });
 
       toast.success(`Welcome back, ${data.user?.fullName?.split(' ')[0] || 'User'}!`);

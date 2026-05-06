@@ -4,10 +4,11 @@ import useAuth from '../../hooks/useAuth';
 
 // Protects admin routes — allows ADMIN and MANAGER roles
 const AdminRoute = ({ children }) => {
-  const { isAuthenticated, isManager } = useAuth();
+  const { isAuthenticated, user, isAdmin } = useAuth();
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!isManager) {
+  if (user?.role === 'MANAGER') return <Navigate to="/manager/dashboard" replace />;
+  if (!isAdmin) {
     toast.error("You don't have permission");
     return <Navigate to="/" replace />;
   }

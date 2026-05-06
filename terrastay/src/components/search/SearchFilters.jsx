@@ -38,9 +38,6 @@ const SearchFilters = ({ filters, onChange, onApply, onReset }) => {
               onChange={(v) => updateFilter('minRating', v)}
               size={20}
             />
-            {filters.minRating > 0 && (
-              <span className={styles.filterLabel}>{filters.minRating}+ stars</span>
-            )}
           </div>
 
           {/* Amenity filter */}

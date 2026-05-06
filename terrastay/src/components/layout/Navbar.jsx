@@ -105,7 +105,7 @@ const Navbar = () => {
     { to: '/my-bookings', label: t('myBookings'), icon: CalendarCheck, show: !isManager },
     { to: '/favorites', label: t('favorites'), icon: Heart, show: !isAdmin && !isManager },
     { to: '/settings', label: t('settings'), icon: Settings, show: true },
-    { to: '/admin', label: t('adminPanel'), icon: LayoutDashboard, show: isAdmin || isManager },
+    { to: isAdmin ? '/admin' : '/manager/dashboard', label: t('adminPanel'), icon: LayoutDashboard, show: isAdmin || isManager },
     { to: '/my-waiting-list', label: t('waitingList'), icon: Bell, show: isAuthenticated && !isManager },
   ].filter((item) => item.show);
 

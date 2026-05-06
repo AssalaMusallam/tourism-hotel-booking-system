@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
@@ -13,6 +13,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import AdminLayout from './components/layout/AdminLayout';
+import ManagerLayout from './components/layout/ManagerLayout';
+import ManagerRoute from './components/layout/ManagerRoute';
 
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
@@ -33,6 +35,11 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminWaitingList from './pages/admin/AdminWaitingList';
+import AdminPayments from './pages/admin/AdminPayments';
+import AdminReviews from './pages/admin/AdminReviews';
+import AdminGuests from './pages/admin/AdminGuests';
+import AdminNotifications from './pages/admin/AdminNotifications';
 import ManageHotels from './pages/admin/ManageHotels';
 import ManageRooms from './pages/admin/ManageRooms';
 import ManageAmenities from './pages/admin/ManageAmenities';
@@ -42,11 +49,19 @@ import HotelManagersPage from './pages/admin/HotelManagersPage';
 import ManagePricingRules from './pages/admin/ManagePricingRules';
 import HotelAvailabilityPage from './pages/hotels/HotelAvailabilityPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
-import NotificationsPage from './pages/admin/notifications/NotificationsPage';
 import NotificationDetailPage from './pages/admin/notifications/NotificationDetailPage';
 import RoleRequestsPage from './pages/admin/RoleRequestsPage';
 import AdminPlaceholder from './pages/admin/placeholders/AdminPlaceholder';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import ManagerDashboard from './pages/manager/ManagerDashboard';
+import ManagerHotel from './pages/manager/ManagerHotel';
+import ManagerRoomTypes from './pages/manager/ManagerRoomTypes';
+import ManagerBookings from './pages/manager/ManagerBookings';
+import ManagerWaitingList from './pages/manager/ManagerWaitingList';
+import ManagerPayments from './pages/manager/ManagerPayments';
+import ManagerReviews from './pages/manager/ManagerReviews';
+import ManagerNotifications from './pages/manager/ManagerNotifications';
+import ManagerSettings from './pages/manager/ManagerSettings';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -164,9 +179,9 @@ const App = () => {
             <Route path="/admin/hotels/new" element={<AdminRoute><AdminLayout title="إضافة فندق"><AdminPlaceholder title="إضافة فندق" /></AdminLayout></AdminRoute>} />
             <Route path="/admin/room-types" element={<AdminRoute><AdminLayout title="أنواع الغرف"><AdminPlaceholder title="أنواع الغرف" /></AdminLayout></AdminRoute>} />
             <Route path="/admin/room-types/new" element={<AdminRoute><AdminLayout title="إضافة غرفة"><AdminPlaceholder title="إضافة غرفة" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/waiting-list" element={<AdminRoute><AdminLayout title="قائمة الانتظار"><AdminPlaceholder title="قائمة الانتظار" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/payments" element={<AdminRoute><AdminLayout title="المدفوعات"><AdminPlaceholder title="المدفوعات" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/reviews" element={<AdminRoute><AdminLayout title="التقييمات"><AdminPlaceholder title="التقييمات" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/waiting-list" element={<AdminRoute><AdminLayout title="قائمة الانتظار"><AdminWaitingList /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/payments" element={<AdminRoute><AdminLayout title="المدفوعات"><AdminPayments /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/reviews" element={<AdminRoute><AdminLayout title="التقييمات"><AdminReviews /></AdminLayout></AdminRoute>} />
             <Route path="/admin/settings" element={<AdminRoute><AdminLayout title="الإعدادات"><SettingsPage /></AdminLayout></AdminRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminLayout title="لوحة التحكم"><AdminDashboard /></AdminLayout></AdminRoute>} />
             <Route path="/admin/hotels" element={<AdminRoute><AdminLayout title="الفنادق"><ManageHotels /></AdminLayout></AdminRoute>} />
@@ -174,10 +189,11 @@ const App = () => {
             <Route path="/admin/amenities" element={<AdminRoute><AdminLayout title="وسائل الراحة"><ManageAmenities /></AdminLayout></AdminRoute>} />
             <Route path="/admin/bookings" element={<AdminRoute><AdminLayout title="الحجوزات"><AdminBookings /></AdminLayout></AdminRoute>} />
             <Route path="/admin/users" element={<AdminRoute><AdminLayout title="المستخدمون"><ManageUsers /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/guests" element={<AdminRoute><AdminLayout title="الضيوف"><AdminGuests /></AdminLayout></AdminRoute>} />
             <Route path="/admin/hotels/:hotelId/managers" element={<AdminRoute><AdminLayout title="مديرو الفندق"><HotelManagersPage /></AdminLayout></AdminRoute>} />
             <Route
               path="/admin/notifications"
-              element={<ProtectedRoute roles={['ADMIN']}><AdminLayout title="الإشعارات"><NotificationsPage /></AdminLayout></ProtectedRoute>}
+              element={<AdminRoute><AdminLayout title="الإشعارات"><AdminNotifications /></AdminLayout></AdminRoute>}
             />
             <Route path="/admin/notifications/:id" element={<AdminRoute><AdminLayout title="تفاصيل الإشعار"><NotificationDetailPage /></AdminLayout></AdminRoute>} />
             <Route path="/admin/role-requests" element={<AdminRoute><AdminLayout title="طلبات الأدوار"><RoleRequestsPage /></AdminLayout></AdminRoute>} />
@@ -188,10 +204,11 @@ const App = () => {
             <Route path="/dashboard/hotels/:hotelId/rooms" element={<AdminRoute><AdminLayout title="أنواع الغرف"><ManageRooms /></AdminLayout></AdminRoute>} />
             <Route path="/dashboard/bookings" element={<AdminRoute><AdminLayout title="الحجوزات"><AdminBookings /></AdminLayout></AdminRoute>} />
             <Route path="/dashboard/users" element={<AdminRoute><AdminLayout title="المستخدمون"><ManageUsers /></AdminLayout></AdminRoute>} />
+            <Route path="/dashboard/guests" element={<AdminRoute><AdminLayout title="الضيوف"><AdminGuests /></AdminLayout></AdminRoute>} />
             <Route path="/dashboard/hotels/:hotelId/managers" element={<AdminRoute><AdminLayout title="مديرو الفندق"><HotelManagersPage /></AdminLayout></AdminRoute>} />
             <Route
               path="/dashboard/notifications"
-              element={<ProtectedRoute roles={['ADMIN']}><AdminLayout title="الإشعارات"><NotificationsPage /></AdminLayout></ProtectedRoute>}
+              element={<AdminRoute><AdminLayout title="الإشعارات"><AdminNotifications /></AdminLayout></AdminRoute>}
             />
             <Route path="/admin/pricing-rules" element={<AdminRoute><AdminLayout title="قواعد التسعير"><ManagePricingRules /></AdminLayout></AdminRoute>} />
             <Route path="/dashboard/pricing-rules" element={<AdminRoute><AdminLayout title="قواعد التسعير"><ManagePricingRules /></AdminLayout></AdminRoute>} />
@@ -199,6 +216,18 @@ const App = () => {
               path="/dashboard/reports"
               element={<ProtectedRoute roles={['ADMIN']}><AdminLayout title="التقارير"><AdminReportsPage /></AdminLayout></ProtectedRoute>}
             />
+
+            {/* Manager pages (MANAGER only, scoped to managed hotel) */}
+            <Route path="/manager" element={<ManagerRoute><Navigate to="/manager/dashboard" replace /></ManagerRoute>} />
+            <Route path="/manager/dashboard" element={<ManagerRoute><ManagerLayout title="My Hotel Dashboard"><ManagerDashboard /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/hotel" element={<ManagerRoute><ManagerLayout title="My Hotel"><ManagerHotel /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/room-types" element={<ManagerRoute><ManagerLayout title="Room Types"><ManagerRoomTypes /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/bookings" element={<ManagerRoute><ManagerLayout title="Bookings"><ManagerBookings /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/waiting-list" element={<ManagerRoute><ManagerLayout title="Waiting List"><ManagerWaitingList /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/payments" element={<ManagerRoute><ManagerLayout title="Payments"><ManagerPayments /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/reviews" element={<ManagerRoute><ManagerLayout title="Reviews"><ManagerReviews /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/notifications" element={<ManagerRoute><ManagerLayout title="Notifications"><ManagerNotifications /></ManagerLayout></ManagerRoute>} />
+            <Route path="/manager/settings" element={<ManagerRoute><ManagerLayout title="Settings"><ManagerSettings /></ManagerLayout></ManagerRoute>} />
           </Routes>
           </ErrorBoundary>
           </FavoritesProvider>

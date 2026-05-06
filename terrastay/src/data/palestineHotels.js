@@ -1,4 +1,4 @@
-const image = (photoId) => `https://images.unsplash.com/photo-${photoId}?w=800&q=80`;
+﻿const image = (photoId) => `https://images.unsplash.com/photo-${photoId}?w=800&q=80`;
 
 export const CITY_IMAGES = {
   القدس: image('1552832897-5c2a9176d7f2'),
@@ -25,6 +25,33 @@ export const CITY_IMAGES = {
   Nazareth: image('1548690312-1f537be8ef74'),
 };
 
+const verifiedCityImage = (photoId) => `https://images.unsplash.com/photo-${photoId}?w=400&q=80`;
+
+Object.assign(CITY_IMAGES, {
+  'القدس': verifiedCityImage('1552423314-cf29ab68ad73'),
+  'ط§ظ„ظ‚ط¯ط³': verifiedCityImage('1552423314-cf29ab68ad73'),
+  Jerusalem: verifiedCityImage('1552423314-cf29ab68ad73'),
+  'بيت لحم': verifiedCityImage('1583395838144-d7e4e7b81c10'),
+  'ط¨ظٹطھ ظ„ط­ظ…': verifiedCityImage('1583395838144-d7e4e7b81c10'),
+  Bethlehem: verifiedCityImage('1583395838144-d7e4e7b81c10'),
+  'رام الله': verifiedCityImage('1558618666-fcd25c85cd64'),
+  'ط±ط§ظ… ط§ظ„ظ„ظ‡': verifiedCityImage('1558618666-fcd25c85cd64'),
+  Ramallah: verifiedCityImage('1558618666-fcd25c85cd64'),
+  'أريحا': verifiedCityImage('1544735716-392fe2489ffa'),
+  'ط£ط±ظٹط­ط§': verifiedCityImage('1544735716-392fe2489ffa'),
+  Jericho: verifiedCityImage('1544735716-392fe2489ffa'),
+  'نابلس': verifiedCityImage('1594389615184-7b163e4da729'),
+  'ظ†ط§ط¨ظ„ط³': verifiedCityImage('1594389615184-7b163e4da729'),
+  Nablus: verifiedCityImage('1594389615184-7b163e4da729'),
+  'الخليل': verifiedCityImage('1591604129939-f1efa4d9f7fa'),
+  'ط§ظ„ط®ظ„ظٹظ„': verifiedCityImage('1591604129939-f1efa4d9f7fa'),
+  Hebron: verifiedCityImage('1591604129939-f1efa4d9f7fa'),
+  'غزة': verifiedCityImage('1565967511849-76a60a516170'),
+  Gaza: verifiedCityImage('1565967511849-76a60a516170'),
+  'جنين': verifiedCityImage('1569949381669-ecf31ae8e613'),
+  'ط¬ظ†ظٹظ†': verifiedCityImage('1569949381669-ecf31ae8e613'),
+  Jenin: verifiedCityImage('1569949381669-ecf31ae8e613'),
+});
 const amenityPool = [
   { id: 1, name: 'واي فاي', nameEn: 'WiFi', icon: 'WIFI' },
   { id: 2, name: 'موقف مجاني', nameEn: 'Free Parking', icon: 'FREE_PARKING' },
@@ -176,3 +203,4 @@ export const palestineHotels = hotelRows.map(([name, nameEn, city, cityEn, latit
 });
 
 export default palestineHotels;
+

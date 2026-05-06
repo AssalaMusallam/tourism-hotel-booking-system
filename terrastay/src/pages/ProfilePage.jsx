@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertTriangle, Mail, Phone, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../api/axios';
 import { updateMe } from '../api/usersApi';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/ui/Input';
@@ -29,6 +30,7 @@ const formatDateTime = (value) => {
 const ProfilePage = () => {
   const { user, setUser } = useAuth();
   const queryClient = useQueryClient();
+  const [managerModalOpen, setManagerModalOpen] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm({
     resolver: zodResolver(schema),
@@ -50,6 +52,23 @@ const ProfilePage = () => {
       toast.success('Profile updated');
     },
     onError: (error) => toast.error(error.response?.data?.message || 'Could not update profile'),
+  });
+
+  const managerRequestMutation = useMutation({
+    mutationFn: async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.currentTarget));
+      try {
+        return await api.post('/api/users/request-manager', payload).then((response) => response.data);
+      } catch {
+        return api.post('/api/manager/request', payload).then((response) => response.data);
+      }
+    },
+    onSuccess: () => {
+      toast.success('Your request has been submitted. Admin will review it shortly.');
+      setManagerModalOpen(false);
+    },
+    onError: (error) => toast.error(error.response?.data?.message || 'Could not submit manager request'),
   });
 
   const onSubmit = (data) => {
@@ -99,7 +118,40 @@ const ProfilePage = () => {
             </Button>
           </form>
         </article>
+
+        {user?.role !== 'MANAGER' && user?.role !== 'ADMIN' && (
+          <article className={styles.card}>
+            <h2>Become a Hotel Manager</h2>
+            <p className={styles.helperText}>Submit your hotel details for admin review.</p>
+            <Button type="button" variant="secondary" onClick={() => setManagerModalOpen(true)}>
+              Request Manager Role
+            </Button>
+          </article>
+        )}
       </div>
+
+      {managerModalOpen && (
+        <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setManagerModalOpen(false)}>
+          <div className={styles.modal} role="dialog" aria-modal="true" aria-label="Request manager role" onMouseDown={(event) => event.stopPropagation()}>
+            <h2>Request Manager Role</h2>
+            <form className={styles.managerForm} onSubmit={(event) => managerRequestMutation.mutate(event)}>
+              <label>Hotel Name<input name="hotelName" required /></label>
+              <label>Hotel City
+                <select name="hotelCity" required>
+                  {['Jerusalem', 'Bethlehem', 'Ramallah', 'Jericho', 'Nablus', 'Hebron', 'Jenin', 'Tulkarm'].map((city) => <option key={city} value={city}>{city}</option>)}
+                </select>
+              </label>
+              <label>Hotel Address<input name="hotelAddress" required /></label>
+              <label>Phone Number<input name="phoneNumber" required /></label>
+              <label className={styles.fullWidth}>Short Description<textarea name="description" rows="4" required /></label>
+              <div className={styles.modalActions}>
+                <Button type="button" variant="ghost" onClick={() => setManagerModalOpen(false)}>Cancel</Button>
+                <Button type="submit" variant="primary" loading={managerRequestMutation.isPending}>Submit</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

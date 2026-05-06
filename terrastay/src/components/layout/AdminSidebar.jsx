@@ -25,7 +25,7 @@ const adminLinks = [
   { to: '/admin/waiting-list', label: 'Waiting List', icon: TicketCheck },
   { to: '/admin/payments', label: 'Payments', icon: CreditCard },
   { to: '/admin/pricing-rules', label: 'Pricing Rules', icon: Tag },
-  { to: '/admin/users', label: 'Guests', icon: Users },
+  { to: '/admin/guests', label: 'Guests', icon: Users },
   { to: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
   { to: '/admin/notifications', label: 'Notifications', icon: Bell },
   { to: '/admin/settings', label: 'Settings', icon: Settings },

@@ -26,7 +26,34 @@ const cities = [
   { value: 'طوباس', label: 'طوباس', labelEn: 'Tubas' },
 ];
 
-const CITY_MAP = Object.fromEntries(cities.map((item) => [item.value, item.labelEn]));
+const CITY_NAME_MAP = {
+  'رام الله': 'Ramallah',
+  القدس: 'Jerusalem',
+  'بيت لحم': 'Bethlehem',
+  أريحا: 'Jericho',
+  نابلس: 'Nablus',
+  الخليل: 'Hebron',
+  جنين: 'Jenin',
+  طولكرم: 'Tulkarm',
+  قلقيلية: 'Qalqilya',
+  طوباس: 'Tubas',
+  سلفيت: 'Salfit',
+  Ramallah: 'Ramallah',
+  Jerusalem: 'Jerusalem',
+  Bethlehem: 'Bethlehem',
+  Jericho: 'Jericho',
+  Nablus: 'Nablus',
+  Hebron: 'Hebron',
+  Jenin: 'Jenin',
+  Tulkarm: 'Tulkarm',
+  Qalqilya: 'Qalqilya',
+  Tubas: 'Tubas',
+};
+
+const CITY_MAP = {
+  ...Object.fromEntries(cities.map((item) => [item.value, item.labelEn])),
+  ...CITY_NAME_MAP,
+};
 
 const cityLabel = (value, language) => {
   const match = cities.find((item) => item.value === value || item.labelEn === value);
@@ -45,10 +72,10 @@ const SearchPage = () => {
   const [rating, setRating] = useState(0);
   const [maxPrice, setMaxPrice] = useState(500);
 
-  const apiCity = city ? CITY_MAP[city] || city : '';
-  const apiParams = { ...(q && { search: q, q }), ...(apiCity && { city: apiCity }), page, size: 12 };
+  const normalizedCity = city ? CITY_MAP[city] || city : '';
+  const apiParams = { ...(q && { search: q, q }), ...(normalizedCity && { city: normalizedCity }), page, size: 12 };
   const { data, isLoading, isError, refetch } = useHotels(apiParams);
-  const hotelList = Array.isArray(data) ? data : data?.content ?? [];
+  const hotelList = Array.isArray(data) ? data : data?.content || data?.data || [];
   const sourceHotels = hotelList.length ? hotelList : palestineHotels;
 
   const hotels = useMemo(() => {
