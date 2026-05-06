@@ -50,77 +50,54 @@ import java.util.UUID;
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
- *  COMPREHENSIVE DATA SEEDER — PinkFlow Hotel System
+ *  TERRASTAY — PALESTINE HOTEL DATA SEEDER
+ *  بيانات فلسطينية حقيقية لمشروع TerraStay
  * ════════════════════════════════════════════════════════════════════════════
  *
- *  يشتغل فقط بروفايل "dev". ينشئ داتا شاملة تغطي كل حالات التست:
+ *  المدن الفلسطينية المغطاة:
+ *  - القدس (Jerusalem)      31.7767° N, 35.2345° E
+ *  - بيت لحم (Bethlehem)   31.7054° N, 35.2024° E
+ *  - أريحا (Jericho)       31.8667° N, 35.4500° E
+ *  - رام الله (Ramallah)   31.9038° N, 35.2034° E
+ *  - نابلس (Nablus)        32.2211° N, 35.2544° E
+ *  - الخليل (Hebron)       31.5326° N, 35.0998° E
+ *  - طولكرم (Tulkarm)      32.3100° N, 35.0300° E
  *
- *  USERS
- *  ├── 1 Admin
- *  ├── 3 Managers  (كل واحد مسؤول عن فندق/فنادق مختلفة)
- *  └── 5 Guests    (بيانات متنوعة)
+ *  ╔═══════════════════════════════════════════════════════════════════╗
+ *  ║  بيانات الدخول:                                                   ║
+ *  ╠═══════════════════════╦══════════════╦════════════════════════════╣
+ *  ║ Email                 ║ Password     ║ Role / Info               ║
+ *  ╠═══════════════════════╬══════════════╬════════════════════════════╣
+ *  ║ admin@terrastay.ps    ║ Admin@1234   ║ ADMIN                     ║
+ *  ║ manager1@terrastay.ps ║ Manager@1234 ║ MANAGER — فندق القدس      ║
+ *  ║ manager2@terrastay.ps ║ Manager@1234 ║ MANAGER — فندق بيت لحم    ║
+ *  ║ manager3@terrastay.ps ║ Manager@1234 ║ MANAGER — فنادق متعددة    ║
+ *  ║ layla@example.ps      ║ Guest@1234   ║ GUEST — ليلى أبو عمر      ║
+ *  ║ omar@example.ps       ║ Guest@1234   ║ GUEST — عمر الحسين        ║
+ *  ║ rania@example.ps      ║ Guest@1234   ║ GUEST — رانيا الخطيب      ║
+ *  ║ khalid@example.ps     ║ Guest@1234   ║ GUEST — خالد النجار       ║
+ *  ║ sara@example.ps       ║ Guest@1234   ║ GUEST — سارة حداد         ║
+ *  ║ james@example.com     ║ Guest@1234   ║ GUEST — James Wilson (سائح)║
+ *  ║ amira@example.ps      ║ Guest@1234   ║ GUEST — أميرة سلامة       ║
+ *  ╚═══════════════════════╩══════════════╩════════════════════════════╝
  *
- *  CATALOG
- *  ├── Amenities  (مختلفة الأنواع: premium + regular, active + inactive)
- *  ├── Hotels     (3 فنادق: active, active, inactive)
- *  └── RoomTypes  (لكل فندق عدة أنواع: KING/QUEEN/TWIN, ACTIVE/INACTIVE)
- *
- *  BOOKINGS  — كل الـ statuses
- *  ├── PENDING    (حجز جديد لم يُأكد)
- *  ├── CONFIRMED  (مؤكد ومدفوع)
- *  ├── CANCELLED  (ملغى بسبب معروف)
- *  └── COMPLETED  (انتهى وأمكن تقييمه)
- *
- *  PAYMENTS  — كل الـ statuses
- *  ├── PENDING  → حجز PENDING
- *  ├── SUCCESS  → حجز CONFIRMED
- *  ├── FAILED   → حجز لا يزال PENDING (محاولة فاشلة)
- *  └── REFUNDED → حجز CANCELLED
- *
- *  REVIEWS   — مرتبطة بحجوزات COMPLETED فقط
- *  ├── تقييم ممتاز (5 نجوم)
- *  ├── تقييم متوسط (3 نجوم)
- *  └── تقييم سيئ  (1 نجمة)
- *
- *  WAITING LIST  — كل الـ statuses
- *  ├── WAITING   (ينتظر)
- *  ├── NOTIFIED  (أُشعر وعنده 24 ساعة)
- *  ├── EXPIRED   (انتهت المدة)
- *  └── CANCELLED (ألغى بنفسه)
- *
- *  NOTIFICATIONS — كل الأنواع
- *  ├── BOOKING_CONFIRMED, BOOKING_CANCELLED, BOOKING_PENDING
- *  ├── PAYMENT_SUCCESS, PAYMENT_FAILED, PAYMENT_REFUNDED
- *  ├── BOOKING_REMINDER, REVIEW_REMINDER
- *  ├── ROOM_AVAILABLE, WELCOME_EMAIL
- *  └── CUSTOM
- *
- *  PRICING RULES
- *  ├── موسم الذروة  (multiplier 1.5)
- *  ├── موسم الصيف   (multiplier 1.3)
- *  ├── خصم الشتاء   (multiplier 0.8)
- *  └── rule منتهي   (active=false)
- *
- *  بيانات الدخول:
- *  ┌────────────────────────────────┬─────────────────┬──────────────┐
- *  │ Email                          │ Password        │ Role         │
- *  ├────────────────────────────────┼─────────────────┼──────────────┤
- *  │ admin@hotel.com                │ Admin@1234      │ ADMIN        │
- *  │ manager1@hotel.com             │ Manager@1234    │ MANAGER      │
- *  │ manager2@hotel.com             │ Manager@1234    │ MANAGER      │
- *  │ manager3@hotel.com             │ Manager@1234    │ MANAGER      │
- *  │ guest1@example.com             │ Guest@1234      │ GUEST        │
- *  │ guest2@example.com             │ Guest@1234      │ GUEST        │
- *  │ guest3@example.com             │ Guest@1234      │ GUEST        │
- *  │ guest4@example.com             │ Guest@1234      │ GUEST        │
- *  │ guest5@example.com             │ Guest@1234      │ GUEST        │
- *  └────────────────────────────────┴─────────────────┴──────────────┘
+ *  الفنادق (10 فنادق):
+ *  - فندق الكرمل القدس          (القدس)     — ACTIVE  ★4.8
+ *  - فندق دار السلام            (القدس)     — ACTIVE  ★4.5
+ *  - فندق قصر فلسطين            (القدس)     — ACTIVE  ★4.6
+ *  - فندق جورج                  (بيت لحم)   — ACTIVE  ★4.4
+ *  - منتجع سانت جورج            (بيت لحم)   — ACTIVE  ★4.7
+ *  - فندق أريحا الريف            (أريحا)     — ACTIVE  ★4.2
+ *  - فندق رام المشرق             (رام الله)  — ACTIVE  ★4.3
+ *  - فندق نابلس الكبير           (نابلس)     — ACTIVE  ★4.1
+ *  - فندق أبراهام الخليل         (الخليل)    — ACTIVE  ★4.0
+ *  - فندق الزهور (قيد التجديد)   (طولكرم)   — INACTIVE
  */
 @Profile("dev")
 @Component
 public class LoadDatabase implements CommandLineRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
+    private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     // ── Dependencies ──────────────────────────────────────────────────────────
     private final UserRepository         userRepository;
@@ -137,17 +114,17 @@ public class LoadDatabase implements CommandLineRunner {
     private final PasswordEncoder        passwordEncoder;
 
     public LoadDatabase(UserRepository userRepository,
-                      HotelRepository hotelRepository,
-                      HotelImageRepository hotelImageRepository,
-                      AmenityRepository amenityRepository,
-                      RoomTypeRepository roomTypeRepository,
-                      BookingRepository bookingRepository,
-                      PaymentRepository paymentRepository,
-                      ReviewRepository reviewRepository,
-                      WaitingListRepository waitingListRepository,
-                      NotificationRepository notificationRepository,
-                      PricingRuleRepository pricingRuleRepository,
-                      PasswordEncoder passwordEncoder) {
+                        HotelRepository hotelRepository,
+                        HotelImageRepository hotelImageRepository,
+                        AmenityRepository amenityRepository,
+                        RoomTypeRepository roomTypeRepository,
+                        BookingRepository bookingRepository,
+                        PaymentRepository paymentRepository,
+                        ReviewRepository reviewRepository,
+                        WaitingListRepository waitingListRepository,
+                        NotificationRepository notificationRepository,
+                        PricingRuleRepository pricingRuleRepository,
+                        PasswordEncoder passwordEncoder) {
         this.userRepository         = userRepository;
         this.hotelRepository        = hotelRepository;
         this.hotelImageRepository   = hotelImageRepository;
@@ -169,82 +146,84 @@ public class LoadDatabase implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        log.info("╔══════════════════════════════════════════╗");
-        log.info("║        PinkFlow Data Seeder START        ║");
-        log.info("╚══════════════════════════════════════════╝");
+        log.info("╔══════════════════════════════════════════════╗");
+        log.info("║   TerraStay Palestine — Data Seeder START    ║");
+        log.info("╚══════════════════════════════════════════════╝");
 
-        // ── الترتيب مهم (Foreign Keys) ────────────────────────────────────
-        List<User>      users       = seedUsers();
-        List<Amenity>   amenities   = seedAmenities();
-        List<Hotel>     hotels      = seedHotels(users, amenities);
+        List<User>     users     = seedUsers();
+        List<Amenity>  amenities = seedAmenities();
+        List<Hotel>    hotels    = seedHotels(users, amenities);
         seedHotelImages(hotels);
-        List<RoomType>  roomTypes   = seedRoomTypes(hotels, amenities);
+        List<RoomType> roomTypes = seedRoomTypes(hotels, amenities);
         seedPricingRules();
-        List<Booking>   bookings    = seedBookings(roomTypes);
-        List<Payment>   payments    = seedPayments(bookings);
+        List<Booking>  bookings  = seedBookings(roomTypes);
+        List<Payment>  payments  = seedPayments(bookings);
         seedReviews(bookings, hotels);
         seedWaitingList(roomTypes, hotels);
         seedNotifications(bookings, payments);
 
-        log.info("╔══════════════════════════════════════════╗");
-        log.info("║        PinkFlow Data Seeder DONE ✅       ║");
-        log.info("╚══════════════════════════════════════════╝");
+        log.info("╔══════════════════════════════════════════════╗");
+        log.info("║   TerraStay Palestine — Data Seeder DONE ✅  ║");
+        log.info("╚══════════════════════════════════════════════╝");
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    //  1. USERS
+    //  1. USERS — مستخدمون فلسطينيون وسياح
     // ═════════════════════════════════════════════════════════════════════════
-    private User createUserIfMissing(String fullName,
-                                     String email,
-                                     String passwordHash,
-                                     String phone,
-                                     UserRole role,
-                                     boolean active) {
 
-        return userRepository.findByEmail(email).orElseGet(() -> {
-            User user = new User(fullName, email, passwordHash, phone, role);
-            user.setActive(active);
-            return userRepository.save(user);
-        });
-    }
     private List<User> seedUsers() {
         String adminPwd   = passwordEncoder.encode("Admin@1234");
         String managerPwd = passwordEncoder.encode("Manager@1234");
         String guestPwd   = passwordEncoder.encode("Guest@1234");
 
-        createUserIfMissing("System Admin", "admin@hotel.com",
-                adminPwd, "+1-800-555-0001", UserRole.ADMIN, true);
+        // ADMIN
+        createUserIfMissing("مدير النظام",        "admin@terrastay.ps",
+                adminPwd, "+970-2-240-0001", UserRole.ADMIN, true);
 
-        createUserIfMissing("Sarah Johnson", "manager1@hotel.com",
-                managerPwd, "+1-800-555-0101", UserRole.MANAGER, true);
+        // MANAGERs — مديرو فنادق فلسطينيون
+        createUserIfMissing("سمير عبد الرحمن",    "manager1@terrastay.ps",
+                managerPwd, "+970-2-628-1001", UserRole.MANAGER, true);
+        createUserIfMissing("ميساء القاسم",       "manager2@terrastay.ps",
+                managerPwd, "+970-2-274-2002", UserRole.MANAGER, true);
+        createUserIfMissing("أحمد شحادة",         "manager3@terrastay.ps",
+                managerPwd, "+970-9-232-3003", UserRole.MANAGER, true);
 
-        createUserIfMissing("Ali Hassan", "manager2@hotel.com",
-                managerPwd, "+962-79-555-0202", UserRole.MANAGER, true);
+        // GUESTs — ضيوف فلسطينيون وأجانب
+        createUserIfMissing("ليلى أبو عمر",       "layla@example.ps",
+                guestPwd, "+970-59-200-1111", UserRole.GUEST, true);
+        createUserIfMissing("عمر الحسين",          "omar@example.ps",
+                guestPwd, "+970-59-300-2222", UserRole.GUEST, true);
+        createUserIfMissing("رانيا الخطيب",        "rania@example.ps",
+                guestPwd, "+970-56-400-3333", UserRole.GUEST, true);
+        createUserIfMissing("خالد النجار",         "khalid@example.ps",
+                guestPwd, "+970-59-500-4444", UserRole.GUEST, true);
+        createUserIfMissing("سارة حداد",           "sara@example.ps",
+                guestPwd, "+970-56-600-5555", UserRole.GUEST, true);
 
-        createUserIfMissing("Maria Gonzalez", "manager3@hotel.com",
-                managerPwd, "+34-91-555-0303", UserRole.MANAGER, true);
+        // سائح أجنبي
+        createUserIfMissing("James Wilson",        "james@example.com",
+                guestPwd, "+1-202-555-0199", UserRole.GUEST, true);
 
-        createUserIfMissing("Ahmed Al-Rashid", "guest1@example.com",
-                guestPwd, "+962-79-100-0001", UserRole.GUEST, true);
+        // ضيفة مع حساب غير نشط (لتست حالة inactive)
+        createUserIfMissing("أميرة سلامة",         "amira@example.ps",
+                guestPwd, "+970-59-700-6666", UserRole.GUEST, false);
 
-        createUserIfMissing("Emily Clarke", "guest2@example.com",
-                guestPwd, "+44-20-7946-0002", UserRole.GUEST, true);
-
-        createUserIfMissing("Yuki Tanaka", "guest3@example.com",
-                guestPwd, "+81-3-5550-0003", UserRole.GUEST, true);
-
-        createUserIfMissing("Carlos Mendez", "guest4@example.com",
-                guestPwd, "+52-55-5550-0004", UserRole.GUEST, true);
-
-        createUserIfMissing("Blocked User", "guest5@example.com",
-                guestPwd, "+1-555-000-0005", UserRole.GUEST, false);
-
-        log.info("✅ Users seeded/verified individually.");
+        log.info("✅ Users seeded: 1 Admin, 3 Managers, 7 Guests (1 inactive)");
         return userRepository.findAll();
     }
 
+    private void createUserIfMissing(String fullName, String email,
+                                     String passwordHash, String phone,
+                                     UserRole role, boolean active) {
+        userRepository.findByEmail(email).orElseGet(() -> {
+            User u = new User(fullName, email, passwordHash, phone, role);
+            u.setActive(active);
+            return userRepository.save(u);
+        });
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
-    //  2. AMENITIES
+    //  2. AMENITIES — مرافق وخدمات فندقية
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<Amenity> seedAmenities() {
@@ -254,127 +233,95 @@ public class LoadDatabase implements CommandLineRunner {
         }
 
         // CONNECTIVITY
-        Amenity wifi = amenity("High-Speed WiFi",
-                "Fiber optic internet up to 500 Mbps throughout the property",
+        Amenity wifi      = am("إنترنت فايبر عالي السرعة",
+                "إنترنت لاسلكي بسرعة 500 ميغابايت في جميع أرجاء الفندق",
                 Amenity.AmenityCategory.CONNECTIVITY, false, true);
-        Amenity smartTv = amenity("Smart TV with Netflix",
-                "65-inch 4K Smart TV with Netflix, YouTube and streaming apps",
+        Amenity smartTv   = am("تلفاز ذكي 4K مع Netflix",
+                "شاشة 65 بوصة 4K مع Netflix وYouTube وتطبيقات البث المباشر",
                 Amenity.AmenityCategory.ENTERTAINMENT, false, true);
 
         // WELLNESS
-        Amenity spa = amenity("Luxury Spa & Wellness Center",
-                "Full-service spa with massages, sauna, steam room and treatments",
+        Amenity spa       = am("مركز صحي وسبا فاخر",
+                "سبا متكامل مع مساج وسونا وحمام بخار وجلسات تدليك",
                 Amenity.AmenityCategory.WELLNESS, true, true);
-        Amenity gym = amenity("Fully-Equipped Gym",
-                "24/7 fitness center with modern equipment and personal trainers",
+        Amenity gym       = am("صالة رياضية مجهزة",
+                "صالة رياضية 24/7 بأحدث الأجهزة ومدربين شخصيين",
                 Amenity.AmenityCategory.WELLNESS, false, true);
-        Amenity pool = amenity("Outdoor Swimming Pool",
-                "Heated outdoor pool open year-round with pool service",
+        Amenity pool      = am("مسبح خارجي مدفأ",
+                "مسبح خارجي مفتوح طوال السنة مع خدمة شاملة",
                 Amenity.AmenityCategory.OUTDOOR, false, true);
+        Amenity jacuzzi   = am("جاكوزي خاص",
+                "جاكوزي خاص بغرف السويت مع إطلالة بانورامية",
+                Amenity.AmenityCategory.WELLNESS, true, true);
 
         // DINING
-        Amenity breakfast = amenity("Complimentary Breakfast",
-                "Daily buffet breakfast with international and local options",
+        Amenity breakfast = am("إفطار بوفيه مجاني",
+                "بوفيه إفطار يومي بأصناف عربية وعالمية متنوعة",
                 Amenity.AmenityCategory.DINING, false, true);
-        Amenity roomService = amenity("24/7 Room Service",
-                "Round-the-clock in-room dining from our full restaurant menu",
+        Amenity roomSvc   = am("خدمة غرف على مدار الساعة",
+                "خدمة غرف 24 ساعة من قائمة المطعم الكاملة",
                 Amenity.AmenityCategory.DINING, false, true);
-        Amenity minibar = amenity("Premium Minibar",
-                "Fully stocked minibar with premium drinks and snacks",
+        Amenity minibar   = am("ميني بار متميز",
+                "ميني بار مكتمل بمشروبات ومقبلات فاخرة",
                 Amenity.AmenityCategory.DINING, true, true);
+        Amenity restaurant = am("مطعم عربي أصيل",
+                "مطعم يقدم أشهى المأكولات الفلسطينية والعربية الأصيلة",
+                Amenity.AmenityCategory.DINING, false, true);
 
         // COMFORT
-        Amenity ac = amenity("Air Conditioning & Heating",
-                "Individual climate control with smart thermostat in each room",
+        Amenity ac        = am("تكييف وتدفئة مركزي",
+                "تحكم فردي بدرجة الحرارة عبر ثرموستات ذكي في كل غرفة",
                 Amenity.AmenityCategory.COMFORT, false, true);
-        Amenity balcony = amenity("Private Balcony",
-                "Furnished private balcony with panoramic views",
+        Amenity balcony   = am("شرفة خاصة مع إطلالة",
+                "شرفة خاصة مؤثثة بإطلالة على المدينة أو الحديقة",
+                Amenity.AmenityCategory.OUTDOOR, false, true);
+        Amenity cityView  = am("إطلالة بانورامية على المدينة",
+                "غرف علوية مع إطلالة 180° على المدينة القديمة والمعالم الأثرية",
                 Amenity.AmenityCategory.OUTDOOR, false, true);
 
-        // PARKING
-        Amenity parking = amenity("Free Valet Parking",
-                "Complimentary valet parking service available 24/7",
+        // PARKING & SECURITY
+        Amenity parking   = am("موقف سيارات مجاني مع خدمة فاليه",
+                "موقف مجاني مع خدمة فاليه على مدار الساعة",
                 Amenity.AmenityCategory.PARKING, false, true);
-
-        // SECURITY
-        Amenity safe = amenity("In-Room Safe",
-                "Electronic in-room safe large enough for a laptop",
+        Amenity safe      = am("خزنة إلكترونية في الغرفة",
+                "خزنة إلكترونية بحجم كافٍ لحفظ اللابتوب والمستندات",
                 Amenity.AmenityCategory.SECURITY, false, true);
 
-        // INACTIVE amenity — لتست الفلترة والـ inactive state
-        Amenity oldGym = amenity("Old Gym (Closed for Renovation)",
-                "Temporarily closed gym area under major renovation",
-                Amenity.AmenityCategory.WELLNESS, false, false);
+        // CLEANING
+        Amenity laundry   = am("خدمة غسيل وكوي",
+                "خدمة غسيل وكوي في نفس اليوم متاحة يومياً",
+                Amenity.AmenityCategory.CLEANING, false, true);
+
+        // ACCESSIBILITY
+        Amenity elevator  = am("مصعد كهربائي",
+                "مصاعد حديثة للوصول لجميع الطوابق بسهولة",
+                Amenity.AmenityCategory.ACCESSIBILITY, false, true);
+
+        // OUTDOOR
+        Amenity garden    = am("حديقة وفضاء خارجي",
+                "حديقة جميلة مع أماكن للجلوس في الهواء الطلق وتراس مسقوف",
+                Amenity.AmenityCategory.OUTDOOR, false, true);
+        Amenity rooftop   = am("مقهى سطح الفندق",
+                "مقهى روفتوب مفتوح مع مشروبات ومقبلات وإطلالة ساحرة على المدينة",
+                Amenity.AmenityCategory.DINING, false, true);
+
+        // INACTIVE — لتست حالة الخدمات غير النشطة
+        Amenity oldPool   = am("مسبح داخلي (تحت التجديد)",
+                "مسبح داخلي مغلق مؤقتاً لأعمال التجديد الشاملة",
+                Amenity.AmenityCategory.OUTDOOR, false, false);
 
         List<Amenity> saved = amenityRepository.saveAll(List.of(
-                wifi, smartTv, spa, gym, pool,
-                breakfast, roomService, minibar, ac, balcony,
-                parking, safe, oldGym));
-        log.info("✅ Amenities created: {} (12 active, 1 inactive)", saved.size());
+                wifi, smartTv, spa, gym, pool, jacuzzi,
+                breakfast, roomSvc, minibar, restaurant,
+                ac, balcony, cityView, parking, safe,
+                laundry, elevator, garden, rooftop, oldPool));
+
+        log.info("✅ Amenities created: {} (19 active + 1 inactive)", saved.size());
         return saved;
     }
 
-    private void seedHotelImages(List<Hotel> hotels) {
-        int added = 0;
-
-        for (Hotel hotel : hotels) {
-            if (hotel == null || hotel.getId() == null) {
-                continue;
-            }
-
-            if (!hotelImageRepository.findByHotelId(hotel.getId()).isEmpty()) {
-                continue;
-            }
-
-            List<HotelImage> images = demoHotelImages(hotel.getName()).stream()
-                    .map(url -> hotelImage(hotel, url))
-                    .toList();
-
-            hotelImageRepository.saveAll(images);
-            added += images.size();
-        }
-
-        log.info("✅ Hotel demo images seeded/verified. Added {} image(s).", added);
-    }
-
-    private HotelImage hotelImage(Hotel hotel, String imageUrl) {
-        HotelImage image = new HotelImage();
-        image.setHotel(hotel);
-        image.setImageUrl(imageUrl);
-        image.setFileName(imageUrl.substring(imageUrl.lastIndexOf('/') + 1));
-        return image;
-    }
-
-    private List<String> demoHotelImages(String hotelName) {
-        if ("The Grand Amman Palace".equals(hotelName)) {
-            return List.of(
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
-            );
-        }
-
-        if ("Petra Desert Lodge".equals(hotelName)) {
-            return List.of(
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80"
-            );
-        }
-
-        if ("Dead Sea Horizon Resort".equals(hotelName)) {
-            return List.of(
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80"
-            );
-        }
-
-        return List.of();
-    }
-
-    private Amenity amenity(String name, String desc,
-                            Amenity.AmenityCategory cat, boolean premium, boolean active) {
+    private Amenity am(String name, String desc,
+                       Amenity.AmenityCategory cat, boolean premium, boolean active) {
         Amenity a = new Amenity(name, desc, cat);
         a.setPremium(premium);
         a.setActive(active);
@@ -382,7 +329,7 @@ public class LoadDatabase implements CommandLineRunner {
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    //  3. HOTELS
+    //  3. HOTELS — فنادق فلسطينية حقيقية
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<Hotel> seedHotels(List<User> users, List<Amenity> amenities) {
@@ -391,99 +338,367 @@ public class LoadDatabase implements CommandLineRunner {
             return hotelRepository.findAll();
         }
 
-        // نحضّر الـ managers والـ amenities
-        User mgr1 = users.stream().filter(u -> "manager1@hotel.com".equals(u.getEmail())).findFirst().orElseThrow();
-        User mgr2 = users.stream().filter(u -> "manager2@hotel.com".equals(u.getEmail())).findFirst().orElseThrow();
-        User mgr3 = users.stream().filter(u -> "manager3@hotel.com".equals(u.getEmail())).findFirst().orElseThrow();
+        User mgr1 = findUser(users, "manager1@terrastay.ps");
+        User mgr2 = findUser(users, "manager2@terrastay.ps");
+        User mgr3 = findUser(users, "manager3@terrastay.ps");
 
-        Amenity wifi       = findAmenity(amenities, "High-Speed WiFi");
-        Amenity spa        = findAmenity(amenities, "Luxury Spa & Wellness Center");
-        Amenity pool       = findAmenity(amenities, "Outdoor Swimming Pool");
-        Amenity gym        = findAmenity(amenities, "Fully-Equipped Gym");
-        Amenity breakfast  = findAmenity(amenities, "Complimentary Breakfast");
-        Amenity parking    = findAmenity(amenities, "Free Valet Parking");
-        Amenity smartTv    = findAmenity(amenities, "Smart TV with Netflix");
+        Amenity wifi      = findAmenity(amenities, "إنترنت فايبر عالي السرعة");
+        Amenity smartTv   = findAmenity(amenities, "تلفاز ذكي 4K مع Netflix");
+        Amenity spa       = findAmenity(amenities, "مركز صحي وسبا فاخر");
+        Amenity gym       = findAmenity(amenities, "صالة رياضية مجهزة");
+        Amenity pool      = findAmenity(amenities, "مسبح خارجي مدفأ");
+        Amenity breakfast = findAmenity(amenities, "إفطار بوفيه مجاني");
+        Amenity parking   = findAmenity(amenities, "موقف سيارات مجاني مع خدمة فاليه");
+        Amenity restaurant = findAmenity(amenities, "مطعم عربي أصيل");
+        Amenity ac        = findAmenity(amenities, "تكييف وتدفئة مركزي");
+        Amenity cityView  = findAmenity(amenities, "إطلالة بانورامية على المدينة");
+        Amenity garden    = findAmenity(amenities, "حديقة وفضاء خارجي");
+        Amenity rooftop   = findAmenity(amenities, "مقهى سطح الفندق");
+        Amenity elevator  = findAmenity(amenities, "مصعد كهربائي");
 
-        // ── Hotel 1: فاخر ونشيط ───────────────────────────────────────────
-        Hotel h1 = new Hotel();
-        h1.setName("The Grand Amman Palace");
-        h1.setAddress("King Abdullah II St, Amman, Jordan 11118");
-        h1.setDescription("A 5-star luxury hotel in the heart of Amman offering " +
-                "breathtaking views of the city skyline and world-class amenities.");
-        h1.setCity("Amman");
-        h1.setCountry("Jordan");
-        h1.setPhoneNumber("+962-6-550-8888");
-        h1.setEmail("reservations@grandamman.com");
-        h1.setWebsiteUrl("https://www.grandamman.com");
-        h1.setRating(4.8);
-        h1.setLatitude(31.9539);
-        h1.setLongitude(35.9106);
-        h1.setCheckInTime(LocalTime.of(14, 0));
-        h1.setCheckOutTime(LocalTime.of(12, 0));
-        h1.setPolicies("No smoking. No pets. Children under 12 stay free.");
-        h1.setCancellationPolicySummary("Free cancellation up to 48 hours before check-in.");
-        h1.setStatus(Hotel.Status.ACTIVE);
-        h1.setAmenities(Set.of(wifi, spa, pool, gym, breakfast, parking));
+        // ════════════════════════════════════════════════════
+        // H1 — فندق الكرمل القدس (Jerusalem / القدس)
+        // ════════════════════════════════════════════════════
+        Hotel h1 = hotel(
+                "فندق الكرمل القدس",
+                "شارع صلاح الدين، القدس القديمة، فلسطين",
+                "يقع فندق الكرمل في قلب البلدة القديمة في القدس، " +
+                        "على بعد خطوات من قبة الصخرة وحائط البراق والمسجد الأقصى. " +
+                        "يوفر الفندق إقامة فاخرة تجمع بين الأصالة الفلسطينية والرفاهية العصرية، " +
+                        "مع إطلالات ساحرة على أسوار المدينة القديمة التي تعود للقرن السادس عشر.",
+                "القدس", "فلسطين",
+                "+970-2-628-1100",  "reservations@karmeljrusalem.ps",
+                "https://www.karmeljerusalem.ps",
+                4.8, 31.7765, 35.2344,
+                LocalTime.of(14, 0), LocalTime.of(12, 0),
+                "لا تدخين. لا حيوانات أليفة. الأطفال أقل من 12 سنة مجاناً.",
+                "إلغاء مجاني حتى 48 ساعة قبل الوصول. بعد ذلك تُفرض رسوم ليلة واحدة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, smartTv, spa, gym, breakfast, parking, restaurant, cityView, elevator));
 
-        // ── Hotel 2: متوسط ونشيط ─────────────────────────────────────────
-        Hotel h2 = new Hotel();
-        h2.setName("Petra Desert Lodge");
-        h2.setAddress("Tourism Street, Wadi Musa, Jordan 71810");
-        h2.setDescription("Boutique lodge near the ancient city of Petra, " +
-                "offering authentic Jordanian hospitality and desert views.");
-        h2.setCity("Wadi Musa");
-        h2.setCountry("Jordan");
-        h2.setPhoneNumber("+962-3-215-7111");
-        h2.setEmail("info@petralodge.com");
-        h2.setWebsiteUrl("https://www.petralodge.com");
-        h2.setRating(4.2);
-        h2.setLatitude(30.3285);
-        h2.setLongitude(35.4444);
-        h2.setCheckInTime(LocalTime.of(15, 0));
-        h2.setCheckOutTime(LocalTime.of(11, 0));
-        h2.setPolicies("Quiet hours after 11 PM. No smoking in rooms.");
-        h2.setCancellationPolicySummary("Free cancellation up to 24 hours before check-in.");
-        h2.setStatus(Hotel.Status.ACTIVE);
-        h2.setAmenities(Set.of(wifi, breakfast, parking, smartTv));
+        // ════════════════════════════════════════════════════
+        // H2 — فندق دار السلام (Jerusalem / القدس)
+        // ════════════════════════════════════════════════════
+        Hotel h2 = hotel(
+                "فندق دار السلام",
+                "شارع المسجد الأقصى، القدس، فلسطين 91000",
+                "فندق دار السلام وجهة للمسافرين الباحثين عن الهدوء والراحة " +
+                        "في قلب القدس. تصميمه يعكس الهندسة الإسلامية الكلاسيكية " +
+                        "مع ساحة داخلية بنوافير رخامية وحدائق مثمرة. " +
+                        "يبعد 5 دقائق سيراً عن المسجد الأقصى والكنيسة والقبور التاريخية.",
+                "القدس", "فلسطين",
+                "+970-2-628-2200", "info@darsalam-hotel.ps",
+                "https://www.darsalamhotel.ps",
+                4.5, 31.7761, 35.2354,
+                LocalTime.of(15, 0), LocalTime.of(11, 0),
+                "ساعات هدوء بعد 11 مساءً. ممنوع التدخين في الغرف.",
+                "إلغاء مجاني حتى 24 ساعة قبل الوصول.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator));
 
-        // ── Hotel 3: مغلق/غير نشيط — لتست الـ inactive hotels ────────────
-        Hotel h3 = new Hotel();
-        h3.setName("Dead Sea Horizon Resort");
-        h3.setAddress("Dead Sea Road, Sweimeh, Jordan 19711");
-        h3.setDescription("Luxury resort on the shores of the Dead Sea, " +
-                "currently under renovation. Will reopen soon.");
-        h3.setCity("Sweimeh");
-        h3.setCountry("Jordan");
-        h3.setPhoneNumber("+962-5-356-1234");
-        h3.setEmail("info@deadsearesort.com");
-        h3.setRating(4.5);
-        h3.setLatitude(31.7220);
-        h3.setLongitude(35.5731);
-        h3.setCheckInTime(LocalTime.of(14, 0));
-        h3.setCheckOutTime(LocalTime.of(12, 0));
-        h3.setPolicies("Currently closed for renovation.");
-        h3.setCancellationPolicySummary("All existing bookings will be fully refunded.");
-        h3.setStatus(Hotel.Status.INACTIVE);
-        h3.setAmenities(Set.of(wifi, spa, pool));
+        // ════════════════════════════════════════════════════
+        // H3 — فندق قصر فلسطين (Jerusalem / القدس)
+        // ════════════════════════════════════════════════════
+        Hotel h3 = hotel(
+                "فندق قصر فلسطين",
+                "شارع أم الشرايط، القدس الغربية، فلسطين",
+                "فندق قصر فلسطين رمز الفخامة في القدس. " +
+                        "أسّس عام 1960 ويحتفظ بطابع معماري فلسطيني أصيل. " +
+                        "يضم أكبر قاعة للمؤتمرات في المدينة، ومسبحاً بانورامياً " +
+                        "وحديقة ملكية تمتد على مساحة 5 دونمات. " +
+                        "اختيار أمراء ورؤساء الدول منذ خمسة عقود.",
+                "القدس", "فلسطين",
+                "+970-2-628-3300", "reservations@qasrpalestine.ps",
+                "https://www.qasrpalestine.ps",
+                4.6, 31.7834, 35.2183,
+                LocalTime.of(14, 0), LocalTime.of(12, 0),
+                "لا تدخين. نزلاء VIP يحصلون على خدمة كونسيارج شخصية.",
+                "إلغاء مجاني حتى 72 ساعة. خصم 50% للإلغاء خلال 24-72 ساعة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator));
 
-        List<Hotel> saved = hotelRepository.saveAll(List.of(h1, h2, h3));
+        // ════════════════════════════════════════════════════
+        // H4 — فندق جورج (Bethlehem / بيت لحم)
+        // ════════════════════════════════════════════════════
+        Hotel h4 = hotel(
+                "فندق جورج",
+                "ميدان المهد، بيت لحم، فلسطين 90500",
+                "فندق جورج يقع على بعد 100 متر من كنيسة المهد، " +
+                        "أقدس كنيسة مسيحية في العالم. " +
+                        "يرحب بالحجاج والسياح من جميع أنحاء العالم " +
+                        "في أجواء دافئة تعكس روح بيت لحم الأصيلة. " +
+                        "المطعم يقدم أشهى الأكلات الفلسطينية الموروثة.",
+                "بيت لحم", "فلسطين",
+                "+970-2-274-4400", "info@georgehotel-bethlehem.ps",
+                "https://www.georgehotel-bethlehem.ps",
+                4.4, 31.7043, 35.2073,
+                LocalTime.of(14, 0), LocalTime.of(12, 0),
+                "فندق عائلي. يرحب بالحجاج والسياح من جميع الأديان.",
+                "إلغاء مجاني حتى 48 ساعة قبل الوصول.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator));
+
+        // ════════════════════════════════════════════════════
+        // H5 — منتجع سانت جورج (Bethlehem / بيت لحم)
+        // ════════════════════════════════════════════════════
+        Hotel h5 = hotel(
+                "منتجع سانت جورج",
+                "طريق بيت جالا، بيت لحم، فلسطين 90501",
+                "منتجع سانت جورج الفاخر يجمع بين الهدوء والطبيعة الخلابة " +
+                        "في قلب جبال بيت لحم. المنتجع محاط بكروم العنب وأشجار الزيتون المعمرة. " +
+                        "يضم مسبحاً لانهائياً بإطلالة على التلال، " +
+                        "ومركز صحي عالمي المستوى، ومطعماً يقدم خمور العنب الفلسطينية المحلية.",
+                "بيت لحم", "فلسطين",
+                "+970-2-274-5500", "reservations@saintgeorge-resort.ps",
+                "https://www.saintgeorgeresort.ps",
+                4.7, 31.7098, 35.1834,
+                LocalTime.of(15, 0), LocalTime.of(12, 0),
+                "لا حيوانات أليفة. الأطفال أقل من 16 سنة في الأجنحة الكبيرة فقط.",
+                "غير قابل للاسترداد لحجوزات أقل من 48 ساعة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, rooftop, elevator));
+
+        // ════════════════════════════════════════════════════
+        // H6 — فندق أريحا الريف (Jericho / أريحا)
+        // ════════════════════════════════════════════════════
+        Hotel h6 = hotel(
+                "فندق أريحا الريف",
+                "شارع النخيل، أريحا، فلسطين 18000",
+                "أريحا — أقدم مدينة في العالم تستضيف فندق الريف، " +
+                        "واحة هادئة وسط نخيل أريحا الشهير. " +
+                        "المناخ الدافئ طوال السنة يجعله وجهة مثالية في الشتاء. " +
+                        "قريب من قلعة هيروديوم وبحر الملح، " +
+                        "ومن مسار دراجات وادي القلط الشهير.",
+                "أريحا", "فلسطين",
+                "+970-2-232-6600", "info@jerichohotel.ps",
+                "https://www.jerichohotel.ps",
+                4.2, 31.8579, 35.4588,
+                LocalTime.of(14, 0), LocalTime.of(11, 0),
+                "تحكم فردي بالتكييف. خدمات المنتجع تشمل رحلات للمواقع الأثرية.",
+                "إلغاء مجاني حتى 24 ساعة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, ac, pool, breakfast, parking, restaurant, garden));
+
+        // ════════════════════════════════════════════════════
+        // H7 — فندق رام المشرق (Ramallah / رام الله)
+        // ════════════════════════════════════════════════════
+        Hotel h7 = hotel(
+                "فندق رام المشرق",
+                "شارع الإرسال، رام الله، فلسطين 00972",
+                "فندق رام المشرق في قلب رام الله التجارية والثقافية. " +
+                        "وجهة المؤتمرات والأعمال في فلسطين. " +
+                        "يضم أحدث قاعات الاجتماعات وصالات العرض، " +
+                        "ومطعماً على السطح يوفر أجمل إطلالة على تلال رام الله الخضراء. " +
+                        "بالقرب من المتحف الفلسطيني ومركز المدينة.",
+                "رام الله", "فلسطين",
+                "+970-2-295-7700", "info@rammashreq.ps",
+                "https://www.rammashreq.ps",
+                4.3, 31.9012, 35.2042,
+                LocalTime.of(14, 0), LocalTime.of(12, 0),
+                "مناسب لرجال الأعمال. فطور مجاني مع الإقامة.",
+                "إلغاء مجاني حتى 24 ساعة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator));
+
+        // ════════════════════════════════════════════════════
+        // H8 — فندق نابلس الكبير (Nablus / نابلس)
+        // ════════════════════════════════════════════════════
+        Hotel h8 = hotel(
+                "فندق نابلس الكبير",
+                "شارع فيصل، نابلس، فلسطين 44000",
+                "فندق نابلس الكبير يرحب بك في عاصمة فلسطين الاقتصادية. " +
+                        "موقعه المتميز قريب من البلدة القديمة وأسواق النحاسين والقيساريات. " +
+                        "جرّب أشهى الكنافة النابلسية الأصيلة في مطعمنا، " +
+                        "واستمتع بجلسة حمام تركي تقليدي في الحمام العثماني الملحق.",
+                "نابلس", "فلسطين",
+                "+970-9-232-8800", "reservations@nablushotel.ps",
+                "https://www.nablushotel.ps",
+                4.1, 32.2181, 35.2534,
+                LocalTime.of(14, 0), LocalTime.of(12, 0),
+                "قريب من الأسواق الشعبية. أجواء عائلية مرحبة.",
+                "إلغاء مجاني حتى 24 ساعة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, ac, spa, breakfast, parking, restaurant, garden, elevator));
+
+        // ════════════════════════════════════════════════════
+        // H9 — فندق أبراهام الخليل (Hebron / الخليل)
+        // ════════════════════════════════════════════════════
+        Hotel h9 = hotel(
+                "فندق أبراهام الخليل",
+                "شارع العين، الخليل، فلسطين 90200",
+                "فندق أبراهام في الخليل — مدينة إبراهيم الخليل ومسرح التاريخ. " +
+                        "قريب من المسجد الإبراهيمي والبلدة القديمة العريقة، " +
+                        "ومصانع الزجاج والفخار الخليلية الشهيرة. " +
+                        "يقدم الفندق تجربة إقامة أصيلة مع إطلالة مميزة على جبال الخليل.",
+                "الخليل", "فلسطين",
+                "+970-2-222-9900", "info@abrahamhotel-hebron.ps",
+                "https://www.abrahamhotelhebron.ps",
+                4.0, 31.5326, 35.0998,
+                LocalTime.of(14, 0), LocalTime.of(11, 0),
+                "يرحب بجميع الأديان. طابع عائلي أصيل.",
+                "إلغاء مجاني حتى 24 ساعة.",
+                Hotel.Status.ACTIVE,
+                Set.of(wifi, ac, breakfast, parking, restaurant, garden));
+
+        // ════════════════════════════════════════════════════
+        // H10 — فندق الزهور (Tulkarm / طولكرم) — INACTIVE
+        // ════════════════════════════════════════════════════
+        Hotel h10 = hotel(
+                "فندق الزهور طولكرم",
+                "شارع الاستقلال، طولكرم، فلسطين 26400",
+                "فندق الزهور في طولكرم تحت التجديد الشامل. " +
+                        "سيعود بأبهى حلة في الربع الثاني من عام 2026 " +
+                        "بتصميم عصري يحافظ على الطابع التراثي الفلسطيني.",
+                "طولكرم", "فلسطين",
+                "+970-9-267-1010", "info@zuhourtulkarm.ps",
+                null,
+                3.8, 32.3100, 35.0300,
+                LocalTime.of(14, 0), LocalTime.of(12, 0),
+                "مغلق مؤقتاً لأعمال التجديد الشاملة.",
+                "لا تُقبل الحجوزات حالياً — قيد التجديد.",
+                Hotel.Status.INACTIVE,
+                Set.of(wifi, ac));
+
+        List<Hotel> saved = hotelRepository.saveAll(List.of(
+                h1, h2, h3, h4, h5, h6, h7, h8, h9, h10));
 
         // ── ربط المانجرز بالفنادق ─────────────────────────────────────────
-        // mgr1 يدير الفندق الأول
+        // mgr1 → القدس (h1, h2)
         mgr1.addManagedHotel(saved.get(0));
-        // mgr2 يدير الفندق الثاني
-        mgr2.addManagedHotel(saved.get(1));
-        // mgr3 يدير فندقين (الأول والثالث) — لتست الـ multi-hotel manager
-        mgr3.addManagedHotel(saved.get(0));
+        mgr1.addManagedHotel(saved.get(1));
+        // mgr2 → بيت لحم (h4, h5)
+        mgr2.addManagedHotel(saved.get(3));
+        mgr2.addManagedHotel(saved.get(4));
+        // mgr3 → متعدد (h3, h6, h7, h10)
         mgr3.addManagedHotel(saved.get(2));
+        mgr3.addManagedHotel(saved.get(5));
+        mgr3.addManagedHotel(saved.get(6));
+        mgr3.addManagedHotel(saved.get(9));
         userRepository.saveAll(List.of(mgr1, mgr2, mgr3));
 
-        log.info("✅ Hotels created: 2 active, 1 inactive. Managers assigned.");
+        log.info("✅ Hotels created: 9 active (القدس×3, بيت لحم×2, أريحا, رام الله, نابلس, الخليل) + 1 inactive (طولكرم)");
         return saved;
     }
 
+    private Hotel hotel(String name, String address, String description,
+                        String city, String country,
+                        String phone, String email, String website,
+                        double rating, double lat, double lon,
+                        LocalTime checkIn, LocalTime checkOut,
+                        String policies, String cancelPolicy,
+                        Hotel.Status status, Set<Amenity> amenities) {
+        Hotel h = new Hotel();
+        h.setName(name);
+        h.setAddress(address);
+        h.setDescription(description);
+        h.setCity(city);
+        h.setCountry(country);
+        h.setPhoneNumber(phone);
+        h.setEmail(email);
+        h.setWebsiteUrl(website);
+        h.setRating(rating);
+        h.setLatitude(lat);
+        h.setLongitude(lon);
+        h.setCheckInTime(checkIn);
+        h.setCheckOutTime(checkOut);
+        h.setPolicies(policies);
+        h.setCancellationPolicySummary(cancelPolicy);
+        h.setStatus(status);
+        h.setAmenities(amenities);
+        return h;
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
-    //  4. ROOM TYPES
+    //  4. HOTEL IMAGES — صور حقيقية من Unsplash
+    // ═════════════════════════════════════════════════════════════════════════
+
+    private void seedHotelImages(List<Hotel> hotels) {
+        int added = 0;
+        for (Hotel hotel : hotels) {
+            if (hotel == null || hotel.getId() == null) continue;
+            if (!hotelImageRepository.findByHotelId(hotel.getId()).isEmpty()) continue;
+
+            List<String> urls = getHotelImages(hotel.getName());
+            List<HotelImage> images = urls.stream().map(url -> {
+                HotelImage img = new HotelImage();
+                img.setHotel(hotel);
+                img.setImageUrl(url);
+                img.setFileName(url.substring(url.lastIndexOf('/') + 1).split("\\?")[0]);
+                return img;
+            }).toList();
+
+            hotelImageRepository.saveAll(images);
+            added += images.size();
+        }
+        log.info("✅ Hotel images seeded: {} images total", added);
+    }
+
+    private List<String> getHotelImages(String hotelName) {
+        return switch (hotelName) {
+            // القدس
+            case "فندق الكرمل القدس" -> List.of(
+                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
+            );
+            case "فندق دار السلام" -> List.of(
+                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+            );
+            case "فندق قصر فلسطين" -> List.of(
+                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1564501049559-0f4b9e6b2082?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80"
+            );
+            // بيت لحم
+            case "فندق جورج" -> List.of(
+                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80"
+            );
+            case "منتجع سانت جورج" -> List.of(
+                    "https://images.unsplash.com/photo-1439130490301-25e322d88054?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=80"
+            );
+            // أريحا
+            case "فندق أريحا الريف" -> List.of(
+                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80"
+            );
+            // رام الله
+            case "فندق رام المشرق" -> List.of(
+                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80"
+            );
+            // نابلس
+            case "فندق نابلس الكبير" -> List.of(
+                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"
+            );
+            // الخليل
+            case "فندق أبراهام الخليل" -> List.of(
+                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80"
+            );
+            // طولكرم (inactive)
+            case "فندق الزهور طولكرم" -> List.of(
+                    "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80"
+            );
+            default -> List.of();
+        };
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  5. ROOM TYPES — أنواع الغرف
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<RoomType> seedRoomTypes(List<Hotel> hotels, List<Amenity> amenities) {
@@ -492,105 +707,266 @@ public class LoadDatabase implements CommandLineRunner {
             return roomTypeRepository.findAll();
         }
 
-        Hotel h1 = hotels.get(0); // Grand Amman Palace
-        Hotel h2 = hotels.get(1); // Petra Desert Lodge
-        Hotel h3 = hotels.get(2); // Dead Sea (inactive hotel)
+        Hotel h1 = hotels.get(0); // فندق الكرمل القدس
+        Hotel h2 = hotels.get(1); // فندق دار السلام
+        Hotel h3 = hotels.get(2); // فندق قصر فلسطين
+        Hotel h4 = hotels.get(3); // فندق جورج بيت لحم
+        Hotel h5 = hotels.get(4); // منتجع سانت جورج
+        Hotel h6 = hotels.get(5); // فندق أريحا الريف
+        Hotel h7 = hotels.get(6); // فندق رام المشرق
+        Hotel h8 = hotels.get(7); // فندق نابلس الكبير
+        Hotel h9 = hotels.get(8); // فندق أبراهام الخليل
+        // h10 (Tulkarm) → INACTIVE hotel
 
-        Amenity wifi      = findAmenity(amenities, "High-Speed WiFi");
-        Amenity ac        = findAmenity(amenities, "Air Conditioning & Heating");
-        Amenity minibar   = findAmenity(amenities, "Premium Minibar");
-        Amenity balcony   = findAmenity(amenities, "Private Balcony");
-        Amenity safe      = findAmenity(amenities, "In-Room Safe");
-        Amenity roomSvc   = findAmenity(amenities, "24/7 Room Service");
-        Amenity smartTv   = findAmenity(amenities, "Smart TV with Netflix");
+        Amenity wifi      = findAmenity(amenities, "إنترنت فايبر عالي السرعة");
+        Amenity ac        = findAmenity(amenities, "تكييف وتدفئة مركزي");
+        Amenity minibar   = findAmenity(amenities, "ميني بار متميز");
+        Amenity balcony   = findAmenity(amenities, "شرفة خاصة مع إطلالة");
+        Amenity safe      = findAmenity(amenities, "خزنة إلكترونية في الغرفة");
+        Amenity roomSvc   = findAmenity(amenities, "خدمة غرف على مدار الساعة");
+        Amenity smartTv   = findAmenity(amenities, "تلفاز ذكي 4K مع Netflix");
+        Amenity cityView  = findAmenity(amenities, "إطلالة بانورامية على المدينة");
+        Amenity jacuzzi   = findAmenity(amenities, "جاكوزي خاص");
+        Amenity laundry   = findAmenity(amenities, "خدمة غسيل وكوي");
+        Amenity breakfast = findAmenity(amenities, "إفطار بوفيه مجاني");
 
-        // ── H1 Room Types ─────────────────────────────────────────────────
+        // ── H1 — فندق الكرمل القدس (4 أنواع + 1 inactive) ───────────────
 
-        // Standard Double — متاح، سعر معقول
-        RoomType h1Standard = roomType(h1, "Standard Double", 2,
-                BedType.QUEEN, 1, 2, 0,
-                new BigDecimal("89.00"), 10,
-                "Comfortable room with queen bed and city view.",
-                "No smoking. Check-out by 12:00 PM.",
-                RoomTypeStatus.ACTIVE,
-                Set.of(wifi, ac, smartTv, safe));
+        RoomType h1Classic = rt(h1, "غرفة كلاسيك مع إطلالة على المدينة", 2,
+                BedType.QUEEN, 1, 2, 0, bd("120.00"), 12,
+                "غرفة أنيقة بسرير كبير مريح مع إطلالة جميلة على أسوار القدس القديمة " +
+                        "وقبة الصخرة. مساحة 28 م² مع حمام رخامي.",
+                "لا تدخين. تسجيل الخروج حتى الساعة 12 ظهراً.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, cityView));
 
-        // Deluxe King — متاح، سعر أعلى
-        RoomType h1Deluxe = roomType(h1, "Deluxe King Suite", 3,
-                BedType.KING, 1, 2, 1,
-                new BigDecimal("159.00"), 6,
-                "Spacious suite with king bed, balcony and panoramic city views.",
-                "No smoking. Late check-out available for an extra fee.",
-                RoomTypeStatus.ACTIVE,
-                Set.of(wifi, ac, minibar, balcony, safe, roomSvc, smartTv));
+        RoomType h1Deluxe = rt(h1, "جناح ديلوكس مع بالكونة", 3,
+                BedType.KING, 1, 2, 1, bd("195.00"), 6,
+                "جناح واسع بسرير ملكي وبالكونة خاصة مفروشة مع إطلالة بانورامية ساحرة " +
+                        "على المسجد الأقصى والحرم الشريف. مساحة 45 م².",
+                "لا تدخين. تسجيل متأخر متاح برسوم إضافية.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, balcony, safe, roomSvc, smartTv, cityView));
 
-        // Twin Family — متاح للعائلات
-        RoomType h1Twin = roomType(h1, "Family Twin Room", 4,
-                BedType.TWIN, 2, 2, 2,
-                new BigDecimal("130.00"), 4,
-                "Spacious family room with two queen beds, ideal for families.",
-                "Children stay free. Extra bed available.",
-                RoomTypeStatus.ACTIVE,
-                Set.of(wifi, ac, smartTv, safe));
+        RoomType h1Family = rt(h1, "غرفة عائلية توأم", 5,
+                BedType.TWIN, 2, 2, 3, bd("165.00"), 5,
+                "غرفة عائلية فسيحة بسريرين كبيرين وسرير إضافي للأطفال. " +
+                        "مثالية للعائلات والمجموعات. مساحة 52 م² مع منطقة جلوس.",
+                "الأطفال أقل من 12 سنة مجانيون. سرير إضافي متاح بطلب مسبق.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, laundry));
 
-        // Presidential Suite — مخصص للتست مع أعلى سعر
-        RoomType h1Presidential = roomType(h1, "Presidential Suite", 2,
-                BedType.KING, 1, 2, 0,
-                new BigDecimal("450.00"), 2,
-                "The pinnacle of luxury. Private butler, jacuzzi and terrace.",
-                "Non-refundable. Special requests must be submitted 72h in advance.",
-                RoomTypeStatus.ACTIVE,
-                Set.of(wifi, ac, minibar, balcony, safe, roomSvc, smartTv));
+        RoomType h1Royal = rt(h1, "الجناح الملكي — إطلالة الأقصى", 2,
+                BedType.KING, 1, 2, 0, bd("520.00"), 2,
+                "تحفة معمارية بمساحة 120 م². غرفة معيشة خاصة، جاكوزي، " +
+                        "وتراس كبير مع أفضل إطلالة على قبة الصخرة والمسجد الأقصى. " +
+                        "خدمة كونسيارج شخصية 24/7، وجبة إفطار خاصة على التراس.",
+                "غير قابل للاسترداد. كونسيارج شخصي على مدار الساعة.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, jacuzzi, balcony, safe, roomSvc, smartTv, cityView, breakfast));
 
-        // INACTIVE room type — لتست الـ INACTIVE rooms
-        RoomType h1OldRoom = roomType(h1, "Economy Single (Discontinued)", 1,
-                BedType.TWIN, 1, 1, 0,
-                new BigDecimal("45.00"), 0,
-                "Small room with single bed. No longer available.",
-                "This room type has been discontinued.",
-                RoomTypeStatus.INACTIVE,
-                Set.of(wifi));
+        RoomType h1Old = rt(h1, "غرفة مفردة اقتصادية (متوقفة)", 1,
+                BedType.TWIN, 1, 1, 0, bd("55.00"), 0,
+                "غرفة مفردة قديمة في طور الإيقاف. لم تعد متاحة للحجز.",
+                "هذا النوع من الغرف متوقف نهائياً.",
+                RoomTypeStatus.INACTIVE, Set.of(wifi));
 
-        // ── H2 Room Types ─────────────────────────────────────────────────
+        // ── H2 — فندق دار السلام (3 أنواع) ──────────────────────────────
 
-        // Desert View Room
-        RoomType h2Desert = roomType(h2, "Desert View Room", 2,
-                BedType.QUEEN, 1, 2, 0,
-                new BigDecimal("75.00"), 8,
-                "Cozy room with stunning desert and Petra mountain views.",
-                "No smoking. Quiet hours 11PM-7AM.",
-                RoomTypeStatus.ACTIVE,
-                Set.of(wifi, ac, smartTv));
+        RoomType h2Standard = rt(h2, "غرفة قياسية مزدوجة", 2,
+                BedType.QUEEN, 1, 2, 0, bd("85.00"), 14,
+                "غرفة مريحة بتصميم عربي أصيل مع إطلالة على الساحة الداخلية الهادئة. " +
+                        "مساحة 24 م² مع كل الوسائل الأساسية.",
+                "لا تدخين. ساعات هدوء بعد 11 مساءً.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe));
 
-        // Bedouin Suite — أكبر وأغلى في H2
-        RoomType h2Bedouin = roomType(h2, "Bedouin Heritage Suite", 2,
-                BedType.KING, 1, 2, 0,
-                new BigDecimal("145.00"), 3,
-                "Authentic Bedouin-style suite with handcrafted furniture and private terrace.",
-                "Non-refundable within 48h of check-in.",
-                RoomTypeStatus.ACTIVE,
-                Set.of(wifi, ac, minibar, balcony, roomSvc));
+        RoomType h2Heritage = rt(h2, "جناح التراث الفلسطيني", 2,
+                BedType.KING, 1, 2, 0, bd("140.00"), 4,
+                "جناح مميز بأثاث يدوي الصنع من خشب الزيتون الفلسطيني، " +
+                        "وأسقف مقببة بالحجر الأبيض الأصيل. يعيد توهج القدس العثمانية.",
+                "غير قابل للاسترداد خلال 48 ساعة قبل الوصول.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, balcony, safe, smartTv, cityView));
 
-        // ── H3 Room Types (inactive hotel) ───────────────────────────────
+        RoomType h2Triple = rt(h2, "غرفة ثلاثية للأسرة", 4,
+                BedType.TWIN, 2, 2, 2, bd("115.00"), 6,
+                "غرفة واسعة مخصصة للعائلات بثلاثة أسرّة مريحة وحمام كبير. " +
+                        "إطلالة على حدائق الفندق الداخلية الهادئة.",
+                "مناسبة للعائلات مع الأطفال.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe));
 
-        RoomType h3Spa = roomType(h3, "Dead Sea Spa Room", 2,
-                BedType.KING, 1, 2, 0,
-                new BigDecimal("200.00"), 5,
-                "Luxury spa room with direct Dead Sea access.",
-                "Currently unavailable — hotel under renovation.",
-                RoomTypeStatus.INACTIVE,
-                Set.of(wifi, ac, minibar));
+        // ── H3 — فندق قصر فلسطين (3 أنواع) ─────────────────────────────
+
+        RoomType h3Superior = rt(h3, "غرفة سوبيريور مع مسبح", 2,
+                BedType.QUEEN, 1, 2, 0, bd("145.00"), 10,
+                "غرفة سوبيريور أنيقة مع وصول مباشر إلى المسبح الخارجي. " +
+                        "تصميم كلاسيكي فلسطيني مع لمسات عصرية فاخرة.",
+                "لا تدخين. الوصول للمسبح من 7 صباحاً حتى 10 مساءً.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, balcony));
+
+        RoomType h3Executive = rt(h3, "غرفة إكزيكيوتف للأعمال", 2,
+                BedType.KING, 1, 2, 0, bd("220.00"), 8,
+                "غرفة مجهزة لرجال الأعمال: مكتب كبير، شاشة عرض، " +
+                        "إنترنت ألياف بصرية، وإطلالة على المدينة. تشمل وصولاً مجانياً للصالة التنفيذية.",
+                "الفطور مشمول. وصول الصالة التنفيذية من 6 صباحاً.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, safe, roomSvc, smartTv, cityView, breakfast));
+
+        RoomType h3Presidential = rt(h3, "الجناح الرئاسي — قصر فلسطين", 4,
+                BedType.KING, 1, 2, 2, bd("680.00"), 1,
+                "أرقى أجنحة فلسطين. مساحة 200 م² مع غرفتي نوم، صالون ملكي، " +
+                        "جاكوزي مع إطلالة، تراس خاص، وخدمة باتلر 24/7. " +
+                        "استضافة رؤساء الدول ومشاهير العالم.",
+                "غير قابل للاسترداد. حجز مسبق 30 يوماً على الأقل.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, jacuzzi, balcony, safe, roomSvc, smartTv, cityView, breakfast, laundry));
+
+        // ── H4 — فندق جورج بيت لحم (3 أنواع) ───────────────────────────
+
+        RoomType h4Standard = rt(h4, "غرفة قياسية قريبة من المهد", 2,
+                BedType.QUEEN, 1, 2, 0, bd("75.00"), 18,
+                "غرفة دافئة وهادئة على بعد 100 متر من كنيسة المهد. " +
+                        "تصميم بسيط يعكس روح بيت لحم الأصيلة.",
+                "مناسبة للحجاج والسياح. فطور متاح بسعر إضافي.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv));
+
+        RoomType h4Pilgrim = rt(h4, "جناح الحاج — كنيسة المهد", 3,
+                BedType.KING, 1, 2, 1, bd("120.00"), 6,
+                "جناح خاص للحجاج يطل مباشرة على ساحة المهد. " +
+                        "يشمل مكتبة دينية، مصلى خاص، وهدايا تذكارية عند الوصول.",
+                "غير قابل للاسترداد. مناسب لجميع الأديان.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, balcony));
+
+        RoomType h4Family = rt(h4, "غرفة عائلية كبيرة", 5,
+                BedType.TWIN, 2, 2, 3, bd("105.00"), 5,
+                "غرفة عائلية فسيحة بسريرين كبيرين وسرير أطفال إضافي. " +
+                        "مناسبة للعائلات الحاجّة والمجموعات السياحية.",
+                "أطفال أقل من 5 سنوات مجانيون.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe));
+
+        // ── H5 — منتجع سانت جورج بيت لحم (3 أنواع) ─────────────────────
+
+        RoomType h5Garden = rt(h5, "غرفة الحديقة مع إطلالة على الكرم", 2,
+                BedType.QUEEN, 1, 2, 0, bd("160.00"), 10,
+                "غرفة هادئة تطل على كروم العنب والزيتون المعمّر. " +
+                        "شرفة خاصة مع كرسيين للاسترخاء وتناول الشاي الفلسطيني.",
+                "لا تدخين. قواعد المنتجع تُطبق.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, balcony, breakfast));
+
+        RoomType h5Vineyard = rt(h5, "فيلا الكرم الخاصة", 4,
+                BedType.KING, 1, 2, 2, bd("350.00"), 3,
+                "فيلا مستقلة وسط الكروم. مسبح خاص، حديقة زيتون، " +
+                        "مطبخ كامل، وتراس رومانسي مع غروب الشمس على جبال بيت لحم.",
+                "حجز لليلتين كحد أدنى. غير قابل للاسترداد.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, jacuzzi, balcony, safe, roomSvc, smartTv, breakfast));
+
+        RoomType h5Suite = rt(h5, "جناح العروسين — سانت جورج", 2,
+                BedType.KING, 1, 2, 0, bd("280.00"), 2,
+                "جناح رومانسي مخصص للأزواج الجدد. جاكوزي بالورود، " +
+                        "شمبانيا محلية عند الوصول، عشاء رومانسي خاص، " +
+                        "وإطلالة على غروب الشمس فوق التلال.",
+                "حجز مسبق بأسبوع. مفاجآت إضافية عند الوصول.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, jacuzzi, balcony, safe, roomSvc, smartTv, cityView, breakfast));
+
+        // ── H6 — فندق أريحا الريف (2 أنواع) ─────────────────────────────
+
+        RoomType h6Standard = rt(h6, "غرفة النخيل المزدوجة", 2,
+                BedType.QUEEN, 1, 2, 0, bd("65.00"), 16,
+                "غرفة مريحة تطل على نخيل أريحا المشهور. " +
+                        "أريحا — مدينة الدفء في الشتاء — تجعل الإقامة ممتعة طوال العام.",
+                "تسجيل الخروج 11 صباحاً. فطور متاح.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe));
+
+        RoomType h6Desert = rt(h6, "جناح وادي القلط", 2,
+                BedType.KING, 1, 2, 0, bd("115.00"), 4,
+                "جناح إلهامي مستوحى من وادي القلط الخلاب. " +
+                        "تراس أمامي مع إطلالة على التلال والوادي، " +
+                        "ومسبح خاص صغير بالمياه الحارة.",
+                "مناسب للأزواج وسياحة الطبيعة.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, balcony, smartTv, safe));
+
+        // ── H7 — فندق رام المشرق (2 أنواع) ──────────────────────────────
+
+        RoomType h7Business = rt(h7, "غرفة الأعمال التنفيذية", 1,
+                BedType.KING, 1, 1, 0, bd("110.00"), 20,
+                "غرفة مجهزة بالكامل لرجال الأعمال. مكتب، شاشة عرض، " +
+                        "إنترنت ألياف بصرية، وصول مجاني لصالة الأعمال.",
+                "الفطور مشمول. خدمة الفطور المبكر متاحة من 5:30 صباحاً.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, breakfast));
+
+        RoomType h7Roof = rt(h7, "غرفة روفتوب مع تراس خاص", 2,
+                BedType.QUEEN, 1, 2, 0, bd("175.00"), 4,
+                "غرفة على الطابق العلوي مع تراس خاص وإطلالة 360° على رام الله. " +
+                        "تجربة فريدة: العشاء على التراس مع نجوم رام الله.",
+                "متاح للبالغين فقط. حجز في الوقت المناسب.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, minibar, balcony, smartTv, safe, cityView));
+
+        // ── H8 — فندق نابلس الكبير (2 أنواع) ────────────────────────────
+
+        RoomType h8Classic = rt(h8, "غرفة كلاسيك نابلسية", 2,
+                BedType.QUEEN, 1, 2, 0, bd("70.00"), 20,
+                "غرفة بتصميم يعكس عراقة نابلس القديمة. " +
+                        "قريبة من أسواق النحاسين وقيساريات الكنافة الشهيرة.",
+                "الحمام التركي التقليدي متاح بسعر إضافي.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv));
+
+        Amenity spa = findAmenity(amenities, "مركز صحي وسبا فاخر");
+
+        RoomType h8Ottoman = rt(h8, "جناح الحمام العثماني", 2,
+                BedType.KING, 1, 2, 0, bd("130.00"), 3,
+                "جناح فاخر مع وصول مجاني للحمام التركي العثماني الملحق بالفندق. " +
+                        "أسقف مقببة بالحجر الأبيض، ومجلس عربي تقليدي.",
+                "حمام تركي مجاني مرتين يومياً.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, spa, minibar, safe, smartTv));
+
+        // ── H9 — فندق أبراهام الخليل (2 أنواع) ──────────────────────────
+
+        RoomType h9Standard = rt(h9, "غرفة قياسية الخليل", 2,
+                BedType.QUEEN, 1, 2, 0, bd("60.00"), 18,
+                "غرفة بسيطة ومريحة في قلب الخليل، قريبة من المسجد الإبراهيمي " +
+                        "ومحلات الزجاج الخليلي الملوّن.",
+                "مناسبة للزيارات الدينية والسياحية.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv));
+
+        RoomType h9Heritage = rt(h9, "جناح الخليلية التراثية", 2,
+                BedType.KING, 1, 2, 0, bd("105.00"), 4,
+                "جناح مزيّن بأجمل إبداعات الزجاج الخليلي والخزف الفلسطيني. " +
+                        "إطلالة على المسجد الإبراهيمي وبلدة الخليل القديمة.",
+                "لا تدخين. إطلالة تاريخية لا مثيل لها.",
+                RoomTypeStatus.ACTIVE, Set.of(wifi, ac, smartTv, safe, balcony, cityView));
 
         List<RoomType> saved = roomTypeRepository.saveAll(List.of(
-                h1Standard, h1Deluxe, h1Twin, h1Presidential, h1OldRoom,
-                h2Desert, h2Bedouin,
-                h3Spa));
-        log.info("✅ RoomTypes created: {} total (2 inactive)", saved.size());
+                h1Classic, h1Deluxe, h1Family, h1Royal, h1Old,
+                h2Standard, h2Heritage, h2Triple,
+                h3Superior, h3Executive, h3Presidential,
+                h4Standard, h4Pilgrim, h4Family,
+                h5Garden, h5Vineyard, h5Suite,
+                h6Standard, h6Desert,
+                h7Business, h7Roof,
+                h8Classic, h8Ottoman,
+                h9Standard, h9Heritage));
+
+        log.info("✅ RoomTypes created: {} total (25 — 1 inactive)", saved.size());
         return saved;
     }
 
+    private RoomType rt(Hotel hotel, String name, int capacity,
+                        BedType bedType, int bedCount, int maxAdults, int maxChildren,
+                        BigDecimal basePrice, int totalUnits,
+                        String description, String policies,
+                        RoomTypeStatus status, Set<Amenity> amenities) {
+        RoomType r = new RoomType();
+        r.setHotel(hotel);
+        r.setName(name);
+        r.setCapacity(capacity);
+        r.setBedType(bedType);
+        r.setBedCount(bedCount);
+        r.setMaxAdults(maxAdults);
+        r.setMaxChildren(maxChildren);
+        r.setBasePrice(basePrice);
+        r.setTotalUnits(totalUnits);
+        r.setDescription(description);
+        r.setPolicies(policies);
+        r.setStatus(status);
+        r.setAmenities(amenities);
+        return r;
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
-    //  5. PRICING RULES
+    //  6. PRICING RULES — قواعد التسعير الموسمية
     // ═════════════════════════════════════════════════════════════════════════
 
     private void seedPricingRules() {
@@ -599,59 +975,75 @@ public class LoadDatabase implements CommandLineRunner {
             return;
         }
 
-        LocalDate today = LocalDate.now();
+        // موسم رمضان والأعياد الإسلامية (+25%)
+        PricingRule ramadan = pr("موسم رمضان الكريم 2026",
+                "أسعار موسم رمضان لشهر مارس 2026",
+                LocalDate.of(2026, 2, 28), LocalDate.of(2026, 3, 29),
+                bd("1.25"), true);
 
-        // ── موسم الصيف الحالي (+30%) ─────────────────────────────────────
-        PricingRule summer = new PricingRule();
-        summer.setName("Summer Season 2026");
-        summer.setDescription("Peak summer pricing for June-August 2026");
-        summer.setStartDate(LocalDate.of(2026, 6, 1));
-        summer.setEndDate(LocalDate.of(2026, 8, 31));
-        summer.setPriceMultiplier(new BigDecimal("1.30"));
-        summer.setActive(true);
+        // موسم عيد الأضحى (+30%)
+        PricingRule adha = pr("موسم عيد الأضحى 2026",
+                "أسعار فترة عيد الأضحى المبارك وأيام التشريق",
+                LocalDate.of(2026, 6, 15), LocalDate.of(2026, 6, 22),
+                bd("1.30"), true);
 
-        // ── موسم عيد الميلاد (+50%) ──────────────────────────────────────
-        PricingRule xmas = new PricingRule();
-        xmas.setName("Holiday Season - Christmas & New Year");
-        xmas.setDescription("Peak pricing for Christmas and New Year holiday period");
-        xmas.setStartDate(LocalDate.of(2026, 12, 20));
-        xmas.setEndDate(LocalDate.of(2027, 1, 5));
-        xmas.setPriceMultiplier(new BigDecimal("1.50"));
-        xmas.setActive(true);
+        // موسم الأعياد المسيحية (+35%) — للحجاج المسيحيين
+        PricingRule christmas = pr("موسم أعياد الميلاد والحج المسيحي",
+                "ذروة الحجاج المسيحيين في عيد الميلاد والفصح بيت لحم والقدس",
+                LocalDate.of(2026, 12, 20), LocalDate.of(2027, 1, 7),
+                bd("1.35"), true);
 
-        // ── خصم الشتاء (-20%) ────────────────────────────────────────────
-        PricingRule winter = new PricingRule();
-        winter.setName("Winter Discount 2026");
-        winter.setDescription("Off-season discount for January-February 2026");
-        winter.setStartDate(LocalDate.of(2026, 1, 15));
-        winter.setEndDate(LocalDate.of(2026, 2, 28));
-        winter.setPriceMultiplier(new BigDecimal("0.80"));
-        winter.setActive(true);
+        // موسم الفصح — أبريل (+40% — ذروة السياحة)
+        PricingRule easter = pr("موسم الفصح المجيد 2026",
+                "أعلى موسم سياحي: أسبوع الآلام وعيد الفصح في القدس وبيت لحم",
+                LocalDate.of(2026, 3, 30), LocalDate.of(2026, 4, 10),
+                bd("1.40"), true);
 
-        // ── عروض الربيع (active=true, future) ────────────────────────────
-        PricingRule spring = new PricingRule();
-        spring.setName("Spring Break 2026");
-        spring.setDescription("Special pricing for spring break travelers");
-        spring.setStartDate(LocalDate.of(2026, 3, 20));
-        spring.setEndDate(LocalDate.of(2026, 4, 10));
-        spring.setPriceMultiplier(new BigDecimal("1.20"));
-        spring.setActive(true);
+        // موسم الصيف (+20%)
+        PricingRule summer = pr("موسم الصيف الفلسطيني 2026",
+                "أسعار موسم الصيف يونيو - أغسطس 2026",
+                LocalDate.of(2026, 6, 1), LocalDate.of(2026, 8, 31),
+                bd("1.20"), true);
 
-        // ── Rule منتهي الصلاحية (active=false) — لتست الـ inactive rules
-        PricingRule expired = new PricingRule();
-        expired.setName("Black Friday 2025 (Expired)");
-        expired.setDescription("Black Friday special discount — no longer active");
-        expired.setStartDate(LocalDate.of(2025, 11, 28));
-        expired.setEndDate(LocalDate.of(2025, 11, 30));
-        expired.setPriceMultiplier(new BigDecimal("0.70"));
-        expired.setActive(false);
+        // خصم الشتاء — الموسم المنخفض (-15%)
+        PricingRule winter = pr("خصم الشتاء — الموسم المنخفض 2026",
+                "أسعار مخفضة لشهري يناير وفبراير — موسم هادئ",
+                LocalDate.of(2026, 1, 10), LocalDate.of(2026, 2, 20),
+                bd("0.85"), true);
 
-        pricingRuleRepository.saveAll(List.of(summer, xmas, winter, spring, expired));
-        log.info("✅ PricingRules created: 4 active, 1 inactive/expired");
+        // عرض مبكر — حجز مبكر الربيع (+10% — محدود)
+        PricingRule spring = pr("مهرجان فلسطين للثقافة والسياحة 2026",
+                "تزامناً مع مهرجان فلسطين الثقافي السنوي وأسبوع الزيتون",
+                LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 20),
+                bd("1.10"), true);
+
+        // rule منتهي (active=false) — لتست
+        PricingRule expired = pr("عروض عيد الميلاد 2025 (منتهية)",
+                "خصومات موسم الميلاد لعام 2025 — منتهية الصلاحية",
+                LocalDate.of(2025, 12, 15), LocalDate.of(2025, 12, 31),
+                bd("0.75"), false);
+
+        pricingRuleRepository.saveAll(List.of(
+                ramadan, adha, christmas, easter, summer, winter, spring, expired));
+
+        log.info("✅ PricingRules created: 7 active (رمضان, عيد أضحى, ميلاد, فصح, صيف, شتاء, مهرجان) + 1 منتهي");
+    }
+
+    private PricingRule pr(String name, String desc,
+                           LocalDate start, LocalDate end,
+                           BigDecimal multiplier, boolean active) {
+        PricingRule r = new PricingRule();
+        r.setName(name);
+        r.setDescription(desc);
+        r.setStartDate(start);
+        r.setEndDate(end);
+        r.setPriceMultiplier(multiplier);
+        r.setActive(active);
+        return r;
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    //  6. BOOKINGS
+    //  7. BOOKINGS — حجوزات متنوعة بكل الحالات
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<Booking> seedBookings(List<RoomType> roomTypes) {
@@ -662,149 +1054,174 @@ public class LoadDatabase implements CommandLineRunner {
 
         LocalDate today = LocalDate.now();
 
-        // الـ room types الـ active
-        RoomType standard     = findRoomType(roomTypes, "Standard Double");
-        RoomType deluxe       = findRoomType(roomTypes, "Deluxe King Suite");
-        RoomType twin         = findRoomType(roomTypes, "Family Twin Room");
-        RoomType presidential = findRoomType(roomTypes, "Presidential Suite");
-        RoomType desert       = findRoomType(roomTypes, "Desert View Room");
-        RoomType bedouin      = findRoomType(roomTypes, "Bedouin Heritage Suite");
+        // غرف نشطة للحجز
+        RoomType h1Classic = findRT(roomTypes, "غرفة كلاسيك مع إطلالة على المدينة");
+        RoomType h1Deluxe  = findRT(roomTypes, "جناح ديلوكس مع بالكونة");
+        RoomType h1Family  = findRT(roomTypes, "غرفة عائلية توأم");
+        RoomType h1Royal   = findRT(roomTypes, "الجناح الملكي — إطلالة الأقصى");
+        RoomType h2Standard = findRT(roomTypes, "غرفة قياسية مزدوجة");
+        RoomType h2Heritage = findRT(roomTypes, "جناح التراث الفلسطيني");
+        RoomType h3Executive = findRT(roomTypes, "غرفة إكزيكيوتف للأعمال");
+        RoomType h3Presidential = findRT(roomTypes, "الجناح الرئاسي — قصر فلسطين");
+        RoomType h4Standard = findRT(roomTypes, "غرفة قياسية قريبة من المهد");
+        RoomType h5Suite    = findRT(roomTypes, "جناح العروسين — سانت جورج");
+        RoomType h6Desert   = findRT(roomTypes, "جناح وادي القلط");
+        RoomType h7Business = findRT(roomTypes, "غرفة الأعمال التنفيذية");
+        RoomType h8Classic  = findRT(roomTypes, "غرفة كلاسيك نابلسية");
+        RoomType h9Standard = findRT(roomTypes, "غرفة قياسية الخليل");
 
-        // ──────────────────────────────────────────────────────────────────
-        // PENDING bookings — حجوزات جديدة، في الوقت الحالي أو المستقبل
-        // ──────────────────────────────────────────────────────────────────
+        // ── PENDING — حجوزات جديدة لم تُأكد ────────────────────────────
 
-        // PENDING #1 — حجز عادي في المستقبل
-        Booking pending1 = booking(standard,
-                "Ahmed Al-Rashid", "guest1@example.com", "+962-79-100-0001",
-                2, 0, today.plusDays(10), today.plusDays(14),
-                standard.getBasePrice(), BookingStatus.PENDING,
-                "Early check-in requested if possible.");
+        Booking p1 = bk(h1Classic, "ليلى أبو عمر", "layla@example.ps",
+                "+970-59-200-1111", 2, 0,
+                today.plusDays(8), today.plusDays(12),
+                h1Classic.getBasePrice(), BookingStatus.PENDING,
+                "نفضل إطلالة على قبة الصخرة. وصول مبكر إن أمكن.");
 
-        // PENDING #2 — حجز مع أطفال
-        Booking pending2 = booking(twin,
-                "Emily Clarke", "guest2@example.com", "+44-20-7946-0002",
-                2, 2, today.plusDays(20), today.plusDays(25),
-                twin.getBasePrice(), BookingStatus.PENDING,
-                "Need a crib for the baby please.");
+        Booking p2 = bk(h4Standard, "James Wilson", "james@example.com",
+                "+1-202-555-0199", 2, 0,
+                today.plusDays(15), today.plusDays(19),
+                h4Standard.getBasePrice(), BookingStatus.PENDING,
+                "Christian pilgrimage. Staying for Christmas celebrations.");
 
-        // PENDING #3 — حجز قريب (بكرة)
-        Booking pending3 = booking(desert,
-                "Carlos Mendez", "guest4@example.com", "+52-55-5550-0004",
-                1, 0, today.plusDays(2), today.plusDays(5),
-                desert.getBasePrice(), BookingStatus.PENDING,
+        Booking p3 = bk(h2Standard, "عمر الحسين", "omar@example.ps",
+                "+970-59-300-2222", 1, 0,
+                today.plusDays(3), today.plusDays(6),
+                h2Standard.getBasePrice(), BookingStatus.PENDING,
                 null);
 
-        // ──────────────────────────────────────────────────────────────────
-        // CONFIRMED bookings — مؤكدة ومدفوعة
-        // ──────────────────────────────────────────────────────────────────
+        Booking p4 = bk(h7Business, "رانيا الخطيب", "rania@example.ps",
+                "+970-56-400-3333", 1, 0,
+                today.plusDays(5), today.plusDays(7),
+                h7Business.getBasePrice(), BookingStatus.PENDING,
+                "رحلة عمل. أحتاج فاتورة رسمية.");
 
-        // CONFIRMED #1 — في المستقبل (upcoming)
-        Booking confirmed1 = booking(deluxe,
-                "Yuki Tanaka", "guest3@example.com", "+81-3-5550-0003",
-                2, 0, today.plusDays(7), today.plusDays(10),
-                deluxe.getBasePrice(), BookingStatus.CONFIRMED,
-                "Honeymoon couple — please decorate room with flowers.");
+        // ── CONFIRMED — حجوزات مؤكدة ────────────────────────────────────
 
-        // CONFIRMED #2 — حجز طويل في المستقبل
-        Booking confirmed2 = booking(twin,
-                "Ahmed Al-Rashid", "guest1@example.com", "+962-79-100-0001",
-                2, 1, today.plusDays(30), today.plusDays(37),
-                twin.getBasePrice(), BookingStatus.CONFIRMED,
-                "Business trip — need invoices for all charges.");
+        Booking c1 = bk(h1Deluxe, "خالد النجار", "khalid@example.ps",
+                "+970-59-500-4444", 2, 0,
+                today.plusDays(10), today.plusDays(14),
+                h1Deluxe.getBasePrice(), BookingStatus.CONFIRMED,
+                "شهر عسل. يرجى تزيين الغرفة بالورود.");
 
-        // CONFIRMED #3 — حجز مؤكد في فندق H2 (Petra)
-        Booking confirmed3 = booking(bedouin,
-                "Emily Clarke", "guest2@example.com", "+44-20-7946-0002",
-                2, 0, today.plusDays(15), today.plusDays(18),
-                bedouin.getBasePrice(), BookingStatus.CONFIRMED,
-                null);
+        Booking c2 = bk(h5Suite, "خالد النجار", "khalid@example.ps",
+                "+970-59-500-4444", 2, 0,
+                today.plusDays(20), today.plusDays(23),
+                h5Suite.getBasePrice(), BookingStatus.CONFIRMED,
+                "مفاجأة لزوجتي. لا تذكروا التفاصيل في الرسالة.");
 
-        // CONFIRMED #4 — Presidential Suite (أعلى سعر)
-        Booking confirmed4 = booking(presidential,
-                "Carlos Mendez", "guest4@example.com", "+52-55-5550-0004",
-                2, 0, today.plusDays(45), today.plusDays(48),
-                presidential.getBasePrice(), BookingStatus.CONFIRMED,
-                "VIP guest. Requires airport transfer and butler service.");
+        Booking c3 = bk(h3Presidential, "ليلى أبو عمر", "layla@example.ps",
+                "+970-59-200-1111", 2, 0,
+                today.plusDays(30), today.plusDays(33),
+                h3Presidential.getBasePrice(), BookingStatus.CONFIRMED,
+                "VIP. نحتاج خدمة استقبال في المطار.");
 
-        // ──────────────────────────────────────────────────────────────────
-        // CANCELLED bookings — ملغاة بأسباب مختلفة
-        // ──────────────────────────────────────────────────────────────────
+        Booking c4 = bk(h1Family, "سارة حداد", "sara@example.ps",
+                "+970-56-600-5555", 2, 3,
+                today.plusDays(12), today.plusDays(17),
+                h1Family.getBasePrice(), BookingStatus.CONFIRMED,
+                "عائلة مع 3 أطفال. نحتاج سرير أطفال إضافي.");
 
-        // CANCELLED #1 — ألغاها الضيف (حجز سابق)
-        Booking cancelled1 = booking(standard,
-                "Guest User", "guest2@example.com", "+44-20-7946-0002",
-                1, 0, today.minusDays(20), today.minusDays(17),
-                standard.getBasePrice(), BookingStatus.CANCELLED,
-                null);
-        cancelled1.setCancelledAt(LocalDateTime.now().minusDays(22));
-        cancelled1.setCancellationReason("Change of travel plans due to work obligations.");
-        cancelled1.setRefundAmount(standard.getBasePrice().multiply(new BigDecimal("3")));
+        Booking c5 = bk(h2Heritage, "James Wilson", "james@example.com",
+                "+1-202-555-0199", 2, 0,
+                today.plusDays(25), today.plusDays(28),
+                h2Heritage.getBasePrice(), BookingStatus.CONFIRMED,
+                "Historical Jerusalem tour group.");
 
-        // CANCELLED #2 — ألغاها المانجر (overbooking)
-        Booking cancelled2 = booking(deluxe,
-                "Yuki Tanaka", "guest3@example.com", "+81-3-5550-0003",
-                2, 0, today.minusDays(10), today.minusDays(8),
-                deluxe.getBasePrice(), BookingStatus.CANCELLED,
-                null);
-        cancelled2.setCancelledAt(LocalDateTime.now().minusDays(12));
-        cancelled2.setCancellationReason("Cancelled by manager due to unexpected room maintenance.");
-        cancelled2.setRefundAmount(deluxe.getBasePrice().multiply(new BigDecimal("2")));
+        // ── CANCELLED — حجوزات ملغاة ──────────────────────────────────
 
-        // CANCELLED #3 — ملغى بدون رسوم (إلغاء مبكر)
-        Booking cancelled3 = booking(desert,
-                "Ahmed Al-Rashid", "guest1@example.com", "+962-79-100-0001",
-                1, 0, today.plusDays(60), today.plusDays(63),
-                desert.getBasePrice(), BookingStatus.CANCELLED,
-                null);
-        cancelled3.setCancelledAt(LocalDateTime.now());
-        cancelled3.setCancellationReason("Guest cancelled early — full refund applied.");
-        cancelled3.setRefundAmount(desert.getBasePrice().multiply(new BigDecimal("3")));
+        Booking can1 = bk(h1Classic, "عمر الحسين", "omar@example.ps",
+                "+970-59-300-2222", 2, 0,
+                today.minusDays(15), today.minusDays(12),
+                h1Classic.getBasePrice(), BookingStatus.CANCELLED, null);
+        can1.setCancelledAt(LocalDateTime.now().minusDays(17));
+        can1.setCancellationReason("تغيير في خطط السفر بسبب ظروف عائلية طارئة.");
+        can1.setRefundAmount(h1Classic.getBasePrice().multiply(bd("3")));
 
-        // ──────────────────────────────────────────────────────────────────
-        // COMPLETED bookings — انتهت وممكن تكتب ريفيو
-        // ──────────────────────────────────────────────────────────────────
+        Booking can2 = bk(h3Executive, "رانيا الخطيب", "rania@example.ps",
+                "+970-56-400-3333", 1, 0,
+                today.minusDays(8), today.minusDays(6),
+                h3Executive.getBasePrice(), BookingStatus.CANCELLED, null);
+        can2.setCancelledAt(LocalDateTime.now().minusDays(10));
+        can2.setCancellationReason("تعديل جدول الأعمال — سيتم إعادة الحجز لاحقاً.");
+        can2.setRefundAmount(h3Executive.getBasePrice().multiply(bd("2")));
 
-        // COMPLETED #1 — ضيف 1 في الفندق الأول (سيكتب review ممتاز)
-        Booking completed1 = booking(standard,
-                "Ahmed Al-Rashid", "guest1@example.com", "+962-79-100-0001",
-                2, 0, today.minusDays(30), today.minusDays(27),
-                standard.getBasePrice(), BookingStatus.COMPLETED,
-                null);
+        Booking can3 = bk(h8Classic, "سارة حداد", "sara@example.ps",
+                "+970-56-600-5555", 2, 1,
+                today.plusDays(45), today.plusDays(48),
+                h8Classic.getBasePrice(), BookingStatus.CANCELLED, null);
+        can3.setCancelledAt(LocalDateTime.now());
+        can3.setCancellationReason("إلغاء مبكر — استرداد كامل.");
+        can3.setRefundAmount(h8Classic.getBasePrice().multiply(bd("3")));
 
-        // COMPLETED #2 — ضيف 2 في الفندق الأول (سيكتب review متوسط)
-        Booking completed2 = booking(deluxe,
-                "Emily Clarke", "guest2@example.com", "+44-20-7946-0002",
-                2, 0, today.minusDays(45), today.minusDays(42),
-                deluxe.getBasePrice(), BookingStatus.COMPLETED,
-                null);
+        // ── COMPLETED — حجوزات منتهية (للريفيو) ────────────────────────
 
-        // COMPLETED #3 — ضيف 3 في فندق Petra (سيكتب review سيئ)
-        Booking completed3 = booking(desert,
-                "Yuki Tanaka", "guest3@example.com", "+81-3-5550-0003",
-                1, 0, today.minusDays(60), today.minusDays(57),
-                desert.getBasePrice(), BookingStatus.COMPLETED,
-                null);
+        Booking done1 = bk(h1Classic, "ليلى أبو عمر", "layla@example.ps",
+                "+970-59-200-1111", 2, 0,
+                today.minusDays(25), today.minusDays(22),
+                h1Classic.getBasePrice(), BookingStatus.COMPLETED, null);
 
-        // COMPLETED #4 — ضيف 4 في الفندق الأول (بدون review — لتست missing review)
-        Booking completed4 = booking(twin,
-                "Carlos Mendez", "guest4@example.com", "+52-55-5550-0004",
-                2, 1, today.minusDays(15), today.minusDays(12),
-                twin.getBasePrice(), BookingStatus.COMPLETED,
-                null);
+        Booking done2 = bk(h2Heritage, "عمر الحسين", "omar@example.ps",
+                "+970-59-300-2222", 2, 0,
+                today.minusDays(40), today.minusDays(37),
+                h2Heritage.getBasePrice(), BookingStatus.COMPLETED, null);
+
+        Booking done3 = bk(h4Standard, "James Wilson", "james@example.com",
+                "+1-202-555-0199", 1, 0,
+                today.minusDays(55), today.minusDays(52),
+                h4Standard.getBasePrice(), BookingStatus.COMPLETED,
+                "Amazing pilgrimage experience!");
+
+        Booking done4 = bk(h6Desert, "خالد النجار", "khalid@example.ps",
+                "+970-59-500-4444", 2, 0,
+                today.minusDays(20), today.minusDays(17),
+                h6Desert.getBasePrice(), BookingStatus.COMPLETED, null);
+
+        Booking done5 = bk(h9Standard, "رانيا الخطيب", "rania@example.ps",
+                "+970-56-400-3333", 2, 0,
+                today.minusDays(10), today.minusDays(8),
+                h9Standard.getBasePrice(), BookingStatus.COMPLETED, null);
+
+        // done6 — بدون ريفيو (لتست تذكير الريفيو)
+        Booking done6 = bk(h1Royal, "سارة حداد", "sara@example.ps",
+                "+970-56-600-5555", 2, 0,
+                today.minusDays(12), today.minusDays(9),
+                h1Royal.getBasePrice(), BookingStatus.COMPLETED,
+                "ليلة الذكرى. كانت تجربة لا تُنسى!");
 
         List<Booking> saved = bookingRepository.saveAll(List.of(
-                pending1, pending2, pending3,
-                confirmed1, confirmed2, confirmed3, confirmed4,
-                cancelled1, cancelled2, cancelled3,
-                completed1, completed2, completed3, completed4));
+                p1, p2, p3, p4,
+                c1, c2, c3, c4, c5,
+                can1, can2, can3,
+                done1, done2, done3, done4, done5, done6));
 
-        log.info("✅ Bookings created: 3 PENDING, 4 CONFIRMED, 3 CANCELLED, 4 COMPLETED");
+        log.info("✅ Bookings created: 4 PENDING, 5 CONFIRMED, 3 CANCELLED, 6 COMPLETED");
         return saved;
     }
 
+    private Booking bk(RoomType rt, String name, String email, String phone,
+                       int adults, int children, LocalDate in, LocalDate out,
+                       BigDecimal ppn, BookingStatus status, String notes) {
+        Booking b = new Booking();
+        b.setRoomType(rt);
+        b.setGuestName(name);
+        b.setGuestEmail(email);
+        b.setGuestPhone(phone);
+        b.setAdults(adults);
+        b.setChildren(children);
+        b.setTotalGuests(adults + children);
+        b.setCheckIn(in);
+        b.setCheckOut(out);
+        b.setPricePerNight(ppn);
+        long nights = java.time.temporal.ChronoUnit.DAYS.between(in, out);
+        b.setTotalPrice(ppn.multiply(BigDecimal.valueOf(nights)).multiply(bd("1.16")));
+        b.setStatus(status);
+        b.setGuestNotes(notes);
+        return b;
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
-    //  7. PAYMENTS
+    //  8. PAYMENTS — مدفوعات بكل الحالات
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<Payment> seedPayments(List<Booking> bookings) {
@@ -813,108 +1230,99 @@ public class LoadDatabase implements CommandLineRunner {
             return paymentRepository.findAll();
         }
 
-        // نجيب الحجوزات بالاسم من الـ list
-        Booking pending1   = findBooking(bookings, "guest1@example.com", BookingStatus.PENDING, 0);
-        Booking pending2   = findBooking(bookings, "guest2@example.com", BookingStatus.PENDING, 0);
-        Booking pending3   = findBooking(bookings, "guest4@example.com", BookingStatus.PENDING, 0);
-        Booking confirmed1 = findBooking(bookings, "guest3@example.com", BookingStatus.CONFIRMED, 0);
-        Booking confirmed2 = findBooking(bookings, "guest1@example.com", BookingStatus.CONFIRMED, 0);
-        Booking confirmed3 = findBooking(bookings, "guest2@example.com", BookingStatus.CONFIRMED, 0);
-        Booking confirmed4 = findBooking(bookings, "guest4@example.com", BookingStatus.CONFIRMED, 0);
-        Booking cancelled1 = findBooking(bookings, "guest2@example.com", BookingStatus.CANCELLED, 0);
-        Booking cancelled2 = findBooking(bookings, "guest3@example.com", BookingStatus.CANCELLED, 0);
-        Booking completed1 = findBooking(bookings, "guest1@example.com", BookingStatus.COMPLETED, 0);
-        Booking completed2 = findBooking(bookings, "guest2@example.com", BookingStatus.COMPLETED, 1);
-        Booking completed3 = findBooking(bookings, "guest3@example.com", BookingStatus.COMPLETED, 0);
-        Booking completed4 = findBooking(bookings, "guest4@example.com", BookingStatus.COMPLETED, 0);
+        Booking p1 = findBk(bookings, "layla@example.ps", BookingStatus.PENDING, 0);
+        Booking p2 = findBk(bookings, "james@example.com", BookingStatus.PENDING, 0);
+        Booking p3 = findBk(bookings, "omar@example.ps", BookingStatus.PENDING, 0);
+        Booking p4 = findBk(bookings, "rania@example.ps", BookingStatus.PENDING, 0);
+        Booking c1 = findBk(bookings, "khalid@example.ps", BookingStatus.CONFIRMED, 0);
+        Booking c2 = findBk(bookings, "khalid@example.ps", BookingStatus.CONFIRMED, 1);
+        Booking c3 = findBk(bookings, "layla@example.ps", BookingStatus.CONFIRMED, 0);
+        Booking c4 = findBk(bookings, "sara@example.ps", BookingStatus.CONFIRMED, 0);
+        Booking c5 = findBk(bookings, "james@example.com", BookingStatus.CONFIRMED, 0);
+        Booking can1 = findBk(bookings, "omar@example.ps", BookingStatus.CANCELLED, 0);
+        Booking can2 = findBk(bookings, "rania@example.ps", BookingStatus.CANCELLED, 0);
+        Booking done1 = findBk(bookings, "layla@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done2 = findBk(bookings, "omar@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done3 = findBk(bookings, "james@example.com", BookingStatus.COMPLETED, 0);
+        Booking done4 = findBk(bookings, "khalid@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done5 = findBk(bookings, "rania@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done6 = findBk(bookings, "sara@example.ps", BookingStatus.COMPLETED, 0);
 
-        // ── PENDING payments ──────────────────────────────────────────────
+        // PENDING payments
+        Payment pp1 = pay(p1.getId(), p1.getTotalPrice(), PaymentStatus.PENDING, null, null);
+        Payment pp2 = pay(p2.getId(), p2.getTotalPrice(), PaymentStatus.PENDING, null, null);
+        Payment pp3 = pay(p3.getId(), p3.getTotalPrice(), PaymentStatus.PENDING, null, null);
+        Payment pp4 = pay(p4.getId(), p4.getTotalPrice(), PaymentStatus.PENDING, null, null);
 
-        // Payment PENDING للـ pending1 (لم يدفع بعد)
-        Payment pp1 = payment(pending1.getId(), pending1.getTotalPrice(),
-                PaymentStatus.PENDING, null, null, null);
+        // FAILED attempt (محاولة فاشلة على p1 قبل البندنق الحالي)
+        Payment pf1 = pay(p1.getId(), p1.getTotalPrice(),
+                PaymentStatus.FAILED, "البطاقة مرفوضة — رصيد غير كافٍ", null);
 
-        // Payment PENDING للـ pending2
-        Payment pp2 = payment(pending2.getId(), pending2.getTotalPrice(),
-                PaymentStatus.PENDING, null, null, null);
+        // SUCCESS payments — للحجوزات المؤكدة
+        Payment sp1 = pay(c1.getId(), c1.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(11));
+        Payment sp2 = pay(c2.getId(), c2.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(5));
+        Payment sp3 = pay(c3.getId(), c3.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(2));
+        Payment sp4 = pay(c4.getId(), c4.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(13));
+        Payment sp5 = pay(c5.getId(), c5.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(7));
 
-        // Payment PENDING للـ pending3
-        Payment pp3 = payment(pending3.getId(), pending3.getTotalPrice(),
-                PaymentStatus.PENDING, null, null, null);
+        // SUCCESS — للحجوزات المكتملة
+        Payment cp1 = pay(done1.getId(), done1.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(26));
+        Payment cp2 = pay(done2.getId(), done2.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(41));
+        Payment cp3 = pay(done3.getId(), done3.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(56));
+        Payment cp4 = pay(done4.getId(), done4.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(21));
+        Payment cp5 = pay(done5.getId(), done5.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(11));
+        Payment cp6 = pay(done6.getId(), done6.getTotalPrice(), PaymentStatus.SUCCESS,
+                null, LocalDateTime.now().minusDays(13));
 
-        // ── FAILED then PENDING (محاولة فاشلة ثم محاولة جديدة pending) ──
+        // REFUNDED — للحجوزات الملغاة
+        Payment rp1 = pay(can1.getId(), can1.getTotalPrice(), PaymentStatus.REFUNDED, null,
+                LocalDateTime.now().minusDays(18));
+        rp1.setRefundReason("إلغاء مبكر — استرداد كامل حسب السياسة.");
+        rp1.setRefundedAt(LocalDateTime.now().minusDays(17));
 
-        // محاولة فاشلة لحجز pending1
-        Payment failedAttempt = payment(pending1.getId(), pending1.getTotalPrice(),
-                PaymentStatus.FAILED,
-                "Card declined: insufficient funds",
-                null,
-                LocalDateTime.now().minusHours(2));
-
-        // ── SUCCESS payments ──────────────────────────────────────────────
-
-        Payment sp1 = payment(confirmed1.getId(), confirmed1.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(8), null);
-
-        Payment sp2 = payment(confirmed2.getId(), confirmed2.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(5), null);
-
-        Payment sp3 = payment(confirmed3.getId(), confirmed3.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(16), null);
-
-        Payment sp4 = payment(confirmed4.getId(), confirmed4.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(3), null);
-
-        // COMPLETED booking payments
-        Payment cp1 = payment(completed1.getId(), completed1.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(32), null);
-
-        Payment cp2 = payment(completed2.getId(), completed2.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(47), null);
-
-        Payment cp3 = payment(completed3.getId(), completed3.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(62), null);
-
-        Payment cp4 = payment(completed4.getId(), completed4.getTotalPrice(),
-                PaymentStatus.SUCCESS, null,
-                LocalDateTime.now().minusDays(17), null);
-
-        // ── REFUNDED payments ─────────────────────────────────────────────
-
-        // Refund للـ cancelled1
-        Payment rp1 = payment(cancelled1.getId(), cancelled1.getTotalPrice(),
-                PaymentStatus.REFUNDED, null,
-                LocalDateTime.now().minusDays(23), null);
-        rp1.setRefundReason("Guest cancelled — full refund per policy.");
-        rp1.setRefundedAt(LocalDateTime.now().minusDays(22));
-
-        // Refund للـ cancelled2
-        Payment rp2 = payment(cancelled2.getId(), cancelled2.getTotalPrice(),
-                PaymentStatus.REFUNDED, null,
-                LocalDateTime.now().minusDays(13), null);
-        rp2.setRefundReason("Manager cancelled due to room maintenance issue — full refund.");
-        rp2.setRefundedAt(LocalDateTime.now().minusDays(11));
+        Payment rp2 = pay(can2.getId(), can2.getTotalPrice(), PaymentStatus.REFUNDED, null,
+                LocalDateTime.now().minusDays(11));
+        rp2.setRefundReason("إلغاء رحلة عمل — استرداد كامل.");
+        rp2.setRefundedAt(LocalDateTime.now().minusDays(10));
 
         List<Payment> saved = paymentRepository.saveAll(List.of(
-                pp1, pp2, pp3,
-                failedAttempt,
-                sp1, sp2, sp3, sp4,
-                cp1, cp2, cp3, cp4,
+                pp1, pp2, pp3, pp4, pf1,
+                sp1, sp2, sp3, sp4, sp5,
+                cp1, cp2, cp3, cp4, cp5, cp6,
                 rp1, rp2));
 
-        log.info("✅ Payments created: 3 PENDING, 1 FAILED, 8 SUCCESS, 2 REFUNDED");
+        log.info("✅ Payments: 4 PENDING, 1 FAILED, 11 SUCCESS, 2 REFUNDED = {} total", saved.size());
         return saved;
     }
 
+    private Payment pay(Long bookingId, BigDecimal amount,
+                        PaymentStatus status, String failReason, LocalDateTime paidAt) {
+        Payment p = new Payment();
+        p.setBookingId(bookingId);
+        p.setAmount(amount);
+        p.setCurrency("USD");
+        p.setMethod(PaymentMethod.MOCK_CARD);
+        p.setStatus(status);
+        p.setProviderName("MOCK_GATEWAY");
+        p.setTransactionReference("TRS-" + UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 12).toUpperCase());
+        p.setFailureReason(failReason);
+        p.setPaidAt(paidAt);
+        return p;
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
-    //  8. REVIEWS
+    //  9. REVIEWS — تقييمات حقيقية بالعربية والإنجليزية
     // ═════════════════════════════════════════════════════════════════════════
 
     private void seedReviews(List<Booking> bookings, List<Hotel> hotels) {
@@ -923,50 +1331,82 @@ public class LoadDatabase implements CommandLineRunner {
             return;
         }
 
-        Hotel h1 = hotels.get(0); // Grand Amman Palace
-        Hotel h2 = hotels.get(1); // Petra Desert Lodge
+        Hotel h1 = hotels.get(0); // فندق الكرمل القدس
+        Hotel h2 = hotels.get(1); // فندق دار السلام
+        Hotel h4 = hotels.get(3); // فندق جورج بيت لحم
+        Hotel h6 = hotels.get(5); // فندق أريحا الريف
+        Hotel h9 = hotels.get(8); // فندق أبراهام الخليل
 
-        Booking completed1 = findBooking(bookings, "guest1@example.com", BookingStatus.COMPLETED, 0);
-        Booking completed2 = findBooking(bookings, "guest2@example.com", BookingStatus.COMPLETED, 1);
-        Booking completed3 = findBooking(bookings, "guest3@example.com", BookingStatus.COMPLETED, 0);
-        // completed4 (guest4) — intentionally left without review
+        Booking done1 = findBk(bookings, "layla@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done2 = findBk(bookings, "omar@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done3 = findBk(bookings, "james@example.com", BookingStatus.COMPLETED, 0);
+        Booking done4 = findBk(bookings, "khalid@example.ps", BookingStatus.COMPLETED, 0);
+        Booking done5 = findBk(bookings, "rania@example.ps", BookingStatus.COMPLETED, 0);
+        // done6 (sara) — بدون ريفيو عمداً
 
-        // ── Review 1: ممتاز 5/5 ──────────────────────────────────────────
+        // ── تقييم ممتاز 5★ — ليلى في الكرمل القدس ────────────────────────
         Review r1 = new Review();
-        r1.setBooking(completed1);
+        r1.setBooking(done1);
         r1.setHotelId(h1.getId());
-        r1.setGuestEmail("guest1@example.com");
+        r1.setGuestEmail("layla@example.ps");
         r1.setRating(5);
-        r1.setComment("Absolutely outstanding! The staff were incredibly attentive, " +
-                "the room was immaculate, and the breakfast was divine. " +
-                "Will definitely return. Best hotel stay in years!");
+        r1.setComment("تجربة لا تُنسى في قلب القدس! الفندق يقع بالقرب من قبة الصخرة " +
+                "والمسجد الأقصى خطوات. الموظفون محترفون للغاية، والفطور بوفيه رائع " +
+                "بالأكلات الفلسطينية الأصيلة. الإطلالة من الشرفة على أسوار المدينة القديمة " +
+                "سحرية في الفجر والغروب. سأعود حتماً!");
 
-        // ── Review 2: متوسط 3/5 ──────────────────────────────────────────
+        // ── تقييم جيد 4★ — عمر في دار السلام ────────────────────────────
         Review r2 = new Review();
-        r2.setBooking(completed2);
-        r2.setHotelId(h1.getId());
-        r2.setGuestEmail("guest2@example.com");
-        r2.setRating(3);
-        r2.setComment("Good hotel overall but the room was smaller than advertised. " +
-                "The view was nice but AC was noisy at night. " +
-                "Room service was slow (45 min wait). Decent for the price.");
+        r2.setBooking(done2);
+        r2.setHotelId(h2.getId());
+        r2.setGuestEmail("omar@example.ps");
+        r2.setRating(4);
+        r2.setComment("فندق رائع بتصميم عربي أصيل وساحة داخلية هادئة ومريحة جداً. " +
+                "الموقع ممتاز وقريب من كل المعالم. الطعام لذيذ والغرف نظيفة. " +
+                "نقطة الضعف الوحيدة: الإنترنت كان بطيئاً أحياناً في المساء. " +
+                "بشكل عام تجربة ممتعة وسأنصح بها الأصدقاء.");
 
-        // ── Review 3: سيئ 1/5 ────────────────────────────────────────────
+        // ── تقييم إيجابي 5★ — جيمس في فندق جورج بيت لحم (إنجليزي) ───────
         Review r3 = new Review();
-        r3.setBooking(completed3);
-        r3.setHotelId(h2.getId());
-        r3.setGuestEmail("guest3@example.com");
-        r3.setRating(1);
-        r3.setComment("Very disappointing experience. Hot water was not working for 2 days, " +
-                "WiFi was extremely slow, and the staff was unhelpful. " +
-                "Would not recommend at this price point.");
+        r3.setBooking(done3);
+        r3.setHotelId(h4.getId());
+        r3.setGuestEmail("james@example.com");
+        r3.setRating(5);
+        r3.setComment("Absolutely magnificent! Staying at Hotel George was the highlight " +
+                "of our Holy Land pilgrimage. The location is literally steps from the " +
+                "Church of the Nativity. The Palestinian staff were incredibly warm and " +
+                "welcoming. The food was authentic and delicious. Highly recommended " +
+                "for Christian pilgrims and tourists alike!");
 
-        reviewRepository.saveAll(List.of(r1, r2, r3));
-        log.info("✅ Reviews created: 3 (5★, 3★, 1★). 1 completed booking without review.");
+        // ── تقييم متوسط 3★ — خالد في أريحا الريف ─────────────────────────
+        Review r4 = new Review();
+        r4.setBooking(done4);
+        r4.setHotelId(h6.getId());
+        r4.setGuestEmail("khalid@example.ps");
+        r4.setRating(3);
+        r4.setComment("الفندق في موقع جميل وسط نخيل أريحا، والجو رائع في الشتاء. " +
+                "لكن المسبح كان مغلقاً للصيانة خلال إقامتي وهذا مخيّب للآمال. " +
+                "الخدمة مقبولة وليست مميزة. الغرفة نظيفة لكن الأثاث قديم نوعاً ما. " +
+                "السعر معقول نسبياً مقارنة بالمستوى المقدم.");
+
+        // ── تقييم ضعيف 2★ — رانيا في أبراهام الخليل ──────────────────────
+        Review r5 = new Review();
+        r5.setBooking(done5);
+        r5.setHotelId(h9.getId());
+        r5.setGuestEmail("rania@example.ps");
+        r5.setRating(2);
+        r5.setComment("الموقع ممتاز قريب من المسجد الإبراهيمي لكن الخدمة كانت مخيبة للآمال. " +
+                "الغرفة لم تكن نظيفة تماماً عند الوصول، " +
+                "والمكيف لم يعمل بشكل صحيح طوال الليل. " +
+                "فريق الاستقبال غير متجاوب مع الطلبات. " +
+                "لم تصل خدمة الغرف رغم طلبها مرتين. لن أعود.");
+
+        reviewRepository.saveAll(List.of(r1, r2, r3, r4, r5));
+        log.info("✅ Reviews: 2×5★, 1×4★, 1×3★, 1×2★ (1 COMPLETED booking without review)");
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    //  9. WAITING LIST
+    //  10. WAITING LIST — قوائم انتظار
     // ═════════════════════════════════════════════════════════════════════════
 
     private void seedWaitingList(List<RoomType> roomTypes, List<Hotel> hotels) {
@@ -976,76 +1416,91 @@ public class LoadDatabase implements CommandLineRunner {
         }
 
         LocalDate today = LocalDate.now();
-
         Hotel h1 = hotels.get(0);
-        Hotel h2 = hotels.get(1);
-        RoomType standard     = findRoomType(roomTypes, "Standard Double");
-        RoomType deluxe       = findRoomType(roomTypes, "Deluxe King Suite");
-        RoomType presidential = findRoomType(roomTypes, "Presidential Suite");
-        RoomType desert       = findRoomType(roomTypes, "Desert View Room");
+        Hotel h3 = hotels.get(2);
+        Hotel h5 = hotels.get(4);
 
-        // ── WAITING — ينتظر ──────────────────────────────────────────────
-        WaitingListEntry wl1 = waitingEntry(
-                standard, h1,
-                "guest3@example.com", "Yuki Tanaka",
-                today.plusDays(10), today.plusDays(14),
+        RoomType h1Royal = findRT(roomTypes, "الجناح الملكي — إطلالة الأقصى");
+        RoomType h1Deluxe = findRT(roomTypes, "جناح ديلوكس مع بالكونة");
+        RoomType h3Presidential = findRT(roomTypes, "الجناح الرئاسي — قصر فلسطين");
+        RoomType h5Suite = findRT(roomTypes, "جناح العروسين — سانت جورج");
+
+        // WAITING — عمر ينتظر الجناح الملكي
+        WaitingListEntry wl1 = wl(h1Royal, h1,
+                "omar@example.ps", "عمر الحسين",
+                today.plusDays(8), today.plusDays(12),
                 WaitingListStatus.WAITING, null,
-                "Standard Double", h1.getName());
+                "الجناح الملكي — إطلالة الأقصى", h1.getName());
 
-        WaitingListEntry wl2 = waitingEntry(
-                presidential, h1,
-                "guest4@example.com", "Carlos Mendez",
-                today.plusDays(5), today.plusDays(8),
+        // WAITING — جيمس ينتظر الجناح الرئاسي للمؤتمر
+        WaitingListEntry wl2 = wl(h3Presidential, h3,
+                "james@example.com", "James Wilson",
+                today.plusDays(20), today.plusDays(25),
                 WaitingListStatus.WAITING, null,
-                "Presidential Suite", h1.getName());
+                "الجناح الرئاسي — قصر فلسطين", h3.getName());
 
-        WaitingListEntry wl3 = waitingEntry(
-                desert, h2,
-                "guest1@example.com", "Ahmed Al-Rashid",
-                today.plusDays(20), today.plusDays(24),
-                WaitingListStatus.WAITING, null,
-                "Desert View Room", h2.getName());
-
-        // ── NOTIFIED — أُشعر وعنده 24 ساعة (أُشعر قبل ساعتين) ───────────
-        WaitingListEntry wl4 = waitingEntry(
-                deluxe, h1,
-                "guest2@example.com", "Emily Clarke",
-                today.plusDays(7), today.plusDays(10),
-                WaitingListStatus.NOTIFIED,
-                LocalDateTime.now().minusHours(2), // notifiedAt — 22 ساعة باقية
-                "Deluxe King Suite", h1.getName());
-
-        // ── EXPIRED — انتهت المدة (أُشعر قبل 25 ساعة = منتهي) ───────────
-        WaitingListEntry wl5 = waitingEntry(
-                standard, h1,
-                "guest4@example.com", "Carlos Mendez",
-                today.plusDays(3), today.plusDays(6),
-                WaitingListStatus.EXPIRED,
-                LocalDateTime.now().minusHours(25), // notifiedAt — فات الـ 24 ساعة
-                "Standard Double", h1.getName());
-
-        // ── EXPIRED — تاريخ الحجز فات ─────────────────────────────────
-        WaitingListEntry wl6 = waitingEntry(
-                desert, h2,
-                "guest3@example.com", "Yuki Tanaka",
-                today.minusDays(10), today.minusDays(7),
-                WaitingListStatus.EXPIRED, null,
-                "Desert View Room", h2.getName());
-
-        // ── CANCELLED — ألغى بنفسه ─────────────────────────────────────
-        WaitingListEntry wl7 = waitingEntry(
-                standard, h1,
-                "guest1@example.com", "Ahmed Al-Rashid",
+        // WAITING — رانيا تنتظر جناح العروسين
+        WaitingListEntry wl3 = wl(h5Suite, h5,
+                "rania@example.ps", "رانيا الخطيب",
                 today.plusDays(15), today.plusDays(18),
+                WaitingListStatus.WAITING, null,
+                "جناح العروسين — سانت جورج", h5.getName());
+
+        // NOTIFIED — ليلى أُشعرت قبل 3 ساعات (21 ساعة باقية)
+        WaitingListEntry wl4 = wl(h1Deluxe, h1,
+                "layla@example.ps", "ليلى أبو عمر",
+                today.plusDays(10), today.plusDays(14),
+                WaitingListStatus.NOTIFIED,
+                LocalDateTime.now().minusHours(3),
+                "جناح ديلوكس مع بالكونة", h1.getName());
+
+        // EXPIRED — سارة انتهت مدتها (أُشعرت قبل 26 ساعة)
+        WaitingListEntry wl5 = wl(h1Royal, h1,
+                "sara@example.ps", "سارة حداد",
+                today.plusDays(5), today.plusDays(8),
+                WaitingListStatus.EXPIRED,
+                LocalDateTime.now().minusHours(26),
+                "الجناح الملكي — إطلالة الأقصى", h1.getName());
+
+        // EXPIRED — تاريخ الحجز فات
+        WaitingListEntry wl6 = wl(h1Deluxe, h1,
+                "khalid@example.ps", "خالد النجار",
+                today.minusDays(8), today.minusDays(5),
+                WaitingListStatus.EXPIRED, null,
+                "جناح ديلوكس مع بالكونة", h1.getName());
+
+        // CANCELLED — خالد ألغى انتظاره
+        WaitingListEntry wl7 = wl(h3Presidential, h3,
+                "khalid@example.ps", "خالد النجار",
+                today.plusDays(25), today.plusDays(28),
                 WaitingListStatus.CANCELLED, null,
-                "Standard Double", h1.getName());
+                "الجناح الرئاسي — قصر فلسطين", h3.getName());
 
         waitingListRepository.saveAll(List.of(wl1, wl2, wl3, wl4, wl5, wl6, wl7));
-        log.info("✅ WaitingList created: 3 WAITING, 1 NOTIFIED, 2 EXPIRED, 1 CANCELLED");
+        log.info("✅ WaitingList: 3 WAITING, 1 NOTIFIED, 2 EXPIRED, 1 CANCELLED");
+    }
+
+    private WaitingListEntry wl(RoomType rt, Hotel hotel,
+                                String email, String name,
+                                LocalDate in, LocalDate out,
+                                WaitingListStatus status, LocalDateTime notifiedAt,
+                                String rtName, String hotelName) {
+        WaitingListEntry e = new WaitingListEntry();
+        e.setRoomTypeId(rt.getId());
+        e.setHotelId(hotel.getId());
+        e.setGuestEmail(email);
+        e.setGuestName(name);
+        e.setCheckIn(in);
+        e.setCheckOut(out);
+        e.setStatus(status);
+        e.setNotifiedAt(notifiedAt);
+        e.setRoomTypeName(rtName);
+        e.setHotelName(hotelName);
+        return e;
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    //  10. NOTIFICATIONS
+    //  11. NOTIFICATIONS — إشعارات بكل الأنواع والحالات
     // ═════════════════════════════════════════════════════════════════════════
 
     private void seedNotifications(List<Booking> bookings, List<Payment> payments) {
@@ -1054,257 +1509,144 @@ public class LoadDatabase implements CommandLineRunner {
             return;
         }
 
-        Booking confirmed1 = findBooking(bookings, "guest3@example.com", BookingStatus.CONFIRMED, 0);
-        Booking cancelled1 = findBooking(bookings, "guest2@example.com", BookingStatus.CANCELLED, 0);
-        Booking completed1 = findBooking(bookings, "guest1@example.com", BookingStatus.COMPLETED, 0);
-        Booking pending1   = findBooking(bookings, "guest1@example.com", BookingStatus.PENDING, 0);
+        Booking confirmed1 = findBk(bookings, "khalid@example.ps", BookingStatus.CONFIRMED, 0);
+        Booking confirmed3 = findBk(bookings, "layla@example.ps", BookingStatus.CONFIRMED, 0);
+        Booking cancelled1 = findBk(bookings, "omar@example.ps", BookingStatus.CANCELLED, 0);
+        Booking pending1   = findBk(bookings, "layla@example.ps", BookingStatus.PENDING, 0);
+        Booking done1      = findBk(bookings, "layla@example.ps", BookingStatus.COMPLETED, 0);
 
-        Payment sp1 = findPayment(payments, confirmed1.getId(), PaymentStatus.SUCCESS);
-        Payment rp1 = findPayment(payments, cancelled1.getId(), PaymentStatus.REFUNDED);
-
-        // ── BOOKING_CONFIRMED — SENT ───────────────────────────────────────
-        Notification n1 = notif(
-                "guest3@example.com", "Yuki Tanaka",
+        // BOOKING_CONFIRMED — مُرسل
+        Notification n1 = notif("khalid@example.ps", "خالد النجار",
                 NotificationType.BOOKING_CONFIRMED, NotificationStatus.SENT,
-                "Booking Confirmed — Grand Amman Palace",
-                buildBookingConfirmedBody("Yuki Tanaka", confirmed1),
+                "تم تأكيد حجزك — فندق الكرمل القدس 🎉",
+                "عزيزي خالد النجار، يسعدنا إبلاغك بأن حجزك رقم BK-" + confirmed1.getId() +
+                        " قد تم تأكيده بنجاح.\n\nالفندق: فندق الكرمل القدس\nتاريخ الوصول: " +
+                        confirmed1.getCheckIn() + " الساعة 2:00 ظهراً\nتاريخ المغادرة: " +
+                        confirmed1.getCheckOut() + " الساعة 12:00 ظهراً\nالمبلغ الإجمالي: $" +
+                        confirmed1.getTotalPrice() + "\n\nنتطلع لاستقبالك بحفاوة.\nفريق TerraStay",
                 confirmed1.getId(), ReferenceType.BOOKING,
-                LocalDateTime.now().minusDays(8), LocalDateTime.now().minusDays(8));
+                LocalDateTime.now().minusDays(11), LocalDateTime.now().minusDays(11));
 
-        // ── BOOKING_PENDING — SENT ─────────────────────────────────────────
-        Notification n2 = notif(
-                "guest1@example.com", "Ahmed Al-Rashid",
+        // BOOKING_PENDING — مُرسل
+        Notification n2 = notif("layla@example.ps", "ليلى أبو عمر",
                 NotificationType.BOOKING_PENDING, NotificationStatus.SENT,
-                "Booking Request Received",
-                "Dear Ahmed Al-Rashid, your booking request #" + pending1.getId() +
-                        " has been received and is pending confirmation. " +
-                        "You will be notified once it is confirmed.",
+                "استلمنا طلب حجزك — بانتظار التأكيد",
+                "عزيزتنا ليلى أبو عمر، استلمنا طلب حجزك رقم BK-" + pending1.getId() +
+                        " وهو الآن قيد المراجعة. سنُعلمك فور تأكيده.\n\nشكراً لثقتك بـ TerraStay.",
                 pending1.getId(), ReferenceType.BOOKING,
                 LocalDateTime.now().minusDays(1), LocalDateTime.now().minusDays(1));
 
-        // ── BOOKING_CANCELLED — SENT ───────────────────────────────────────
-        Notification n3 = notif(
-                "guest2@example.com", "Emily Clarke",
+        // BOOKING_CANCELLED — مُرسل
+        Notification n3 = notif("omar@example.ps", "عمر الحسين",
                 NotificationType.BOOKING_CANCELLED, NotificationStatus.SENT,
-                "Booking Cancelled — Refund Initiated",
-                "Dear Emily Clarke, your booking has been cancelled. " +
-                        "A refund of $" + cancelled1.getRefundAmount() + " has been initiated " +
-                        "and will appear in your account within 5-7 business days.",
+                "تم إلغاء حجزك — استرداد كامل",
+                "عزيزنا عمر الحسين، تم إلغاء حجزك رقم BK-" + cancelled1.getId() +
+                        " بنجاح.\nسبب الإلغاء: " + cancelled1.getCancellationReason() +
+                        "\nمبلغ الاسترداد: $" + cancelled1.getRefundAmount() +
+                        "\nسيظهر في حسابك خلال 5-7 أيام عمل.\n\nTerraStay",
                 cancelled1.getId(), ReferenceType.BOOKING,
-                LocalDateTime.now().minusDays(22), LocalDateTime.now().minusDays(22));
+                LocalDateTime.now().minusDays(17), LocalDateTime.now().minusDays(17));
 
-        // ── PAYMENT_SUCCESS — SENT ─────────────────────────────────────────
-        Notification n4 = notif(
-                "guest3@example.com", "Yuki Tanaka",
+        // PAYMENT_SUCCESS — مُرسل
+        Notification n4 = notif("khalid@example.ps", "خالد النجار",
                 NotificationType.PAYMENT_SUCCESS, NotificationStatus.SENT,
-                "Payment Confirmed — $" + confirmed1.getTotalPrice(),
-                "Your payment of $" + confirmed1.getTotalPrice() + " has been successfully processed. " +
-                        "Transaction reference: " + sp1.getTransactionReference(),
-                sp1.getId(), ReferenceType.PAYMENT,
-                LocalDateTime.now().minusDays(8), LocalDateTime.now().minusDays(8));
+                "✅ تم استلام دفعتك بنجاح — $" + confirmed1.getTotalPrice(),
+                "عزيزنا خالد، تمت معالجة دفعتك بمبلغ $" + confirmed1.getTotalPrice() +
+                        " بنجاح.\nرقم المعاملة: TRS-XXXX\nالطريقة: بطاقة ائتمانية\n\nTerraStay",
+                confirmed1.getId(), ReferenceType.PAYMENT,
+                LocalDateTime.now().minusDays(11), LocalDateTime.now().minusDays(11));
 
-        // ── PAYMENT_FAILED — SENT ─────────────────────────────────────────
-        Payment failedPay = findPayment(payments, pending1.getId(), PaymentStatus.FAILED);
-        Notification n5 = notif(
-                "guest1@example.com", "Ahmed Al-Rashid",
+        // PAYMENT_FAILED — مُرسل
+        Notification n5 = notif("layla@example.ps", "ليلى أبو عمر",
                 NotificationType.PAYMENT_FAILED, NotificationStatus.SENT,
-                "Payment Failed — Please Retry",
-                "Unfortunately your payment could not be processed. " +
-                        "Reason: Card declined — insufficient funds. " +
-                        "Please update your payment method and try again.",
-                failedPay.getId(), ReferenceType.PAYMENT,
-                LocalDateTime.now().minusHours(2), LocalDateTime.now().minusHours(2));
+                "❌ فشلت عملية الدفع — يرجى المحاولة مجدداً",
+                "عزيزتنا ليلى، للأسف لم تتم معالجة دفعتك.\nالسبب: البطاقة مرفوضة — رصيد غير كافٍ.\n" +
+                        "يرجى تحديث بيانات الدفع والمحاولة مجدداً.\n\nTerraStay",
+                pending1.getId(), ReferenceType.PAYMENT,
+                LocalDateTime.now().minusHours(3), LocalDateTime.now().minusHours(3));
 
-        // ── PAYMENT_REFUNDED — SENT ────────────────────────────────────────
-        Notification n6 = notif(
-                "guest2@example.com", "Emily Clarke",
+        // PAYMENT_REFUNDED — مُرسل
+        Notification n6 = notif("omar@example.ps", "عمر الحسين",
                 NotificationType.PAYMENT_REFUNDED, NotificationStatus.SENT,
-                "Refund Processed — $" + cancelled1.getTotalPrice(),
-                "Your refund of $" + cancelled1.getTotalPrice() + " has been processed. " +
-                        "Please allow 5-7 business days for the amount to appear in your account.",
-                rp1.getId(), ReferenceType.PAYMENT,
-                LocalDateTime.now().minusDays(22), LocalDateTime.now().minusDays(21));
+                "💰 تم استرداد مبلغك — $" + cancelled1.getTotalPrice(),
+                "عزيزنا عمر، تم استرداد مبلغ $" + cancelled1.getTotalPrice() +
+                        " إلى حسابك البنكي.\nسيظهر خلال 5-7 أيام عمل.\n\nTerraStay",
+                cancelled1.getId(), ReferenceType.PAYMENT,
+                LocalDateTime.now().minusDays(17), LocalDateTime.now().minusDays(16));
 
-        // ── BOOKING_REMINDER — SENT (اليوم قبل الـ check-in) ─────────────
-        Notification n7 = notif(
-                "guest3@example.com", "Yuki Tanaka",
+        // BOOKING_REMINDER — مُرسل
+        Notification n7 = notif("khalid@example.ps", "خالد النجار",
                 NotificationType.BOOKING_REMINDER, NotificationStatus.SENT,
-                "Reminder: Check-in Tomorrow at Grand Amman Palace",
-                "Dear Yuki Tanaka, this is a reminder that your check-in " +
-                        "at Grand Amman Palace is tomorrow. Check-in time: 2:00 PM. " +
-                        "We look forward to welcoming you!",
+                "⏰ تذكير: تسجيل وصولك غداً — فندق الكرمل القدس",
+                "عزيزنا خالد، نذكّرك بأن تسجيل وصولك بفندق الكرمل القدس غداً " +
+                        "الساعة 2:00 ظهراً.\n\nنتطلع لاستقبالك.\nفريق TerraStay",
                 confirmed1.getId(), ReferenceType.BOOKING,
                 LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(2));
 
-        // ── REVIEW_REMINDER — PENDING (لم يُرسل بعد) ─────────────────────
-        Notification n8 = notif(
-                "guest4@example.com", "Carlos Mendez",
+        // REVIEW_REMINDER — معلق (لم يُرسل بعد)
+        Notification n8 = notif("sara@example.ps", "سارة حداد",
                 NotificationType.REVIEW_REMINDER, NotificationStatus.PENDING,
-                "Share Your Experience — Review Your Stay",
-                "Dear Carlos Mendez, we hope you enjoyed your recent stay. " +
-                        "Would you take a moment to share your experience? " +
-                        "Your feedback helps us improve.",
+                "⭐ شاركينا تجربتك — الجناح الملكي، القدس",
+                "عزيزتنا سارة، نأمل أن إقامتك في الجناح الملكي بفندق الكرمل كانت استثنائية. " +
+                        "هل يمكنك مشاركتنا رأيك؟ رأيك يساعدنا على التحسين المستمر.\n\nTerraStay",
                 null, ReferenceType.SYSTEM,
                 null, null);
 
-        // ── ROOM_AVAILABLE — SENT (waiting list notification) ────────────
-        Notification n9 = notif(
-                "guest2@example.com", "Emily Clarke",
+        // ROOM_AVAILABLE — مُرسل (waiting list notification)
+        Notification n9 = notif("layla@example.ps", "ليلى أبو عمر",
                 NotificationType.ROOM_AVAILABLE, NotificationStatus.SENT,
-                "Room Available! Deluxe King Suite — Act Fast",
-                "Great news! A Deluxe King Suite at Grand Amman Palace " +
-                        "has become available for your requested dates. " +
-                        "You have 24 hours to complete your booking.",
+                "🎉 أصبح الجناح الديلوكس متاحاً — أسرعي بالحجز!",
+                "عزيزتنا ليلى، أخبار رائعة! جناح ديلوكس مع بالكونة " +
+                        "في فندق الكرمل القدس أصبح متاحاً للتواريخ التي طلبتِها. " +
+                        "لديكِ 24 ساعة فقط لإتمام الحجز قبل أن يُعرض للآخرين.\n\nTerraStay",
                 null, ReferenceType.SYSTEM,
-                LocalDateTime.now().minusHours(2), LocalDateTime.now().minusHours(2));
+                LocalDateTime.now().minusHours(3), LocalDateTime.now().minusHours(3));
 
-        // ── WELCOME_EMAIL — SENT ──────────────────────────────────────────
-        Notification n10 = notif(
-                "guest1@example.com", "Ahmed Al-Rashid",
+        // WELCOME_EMAIL — مُرسل
+        Notification n10 = notif("layla@example.ps", "ليلى أبو عمر",
                 NotificationType.WELCOME_EMAIL, NotificationStatus.SENT,
-                "Welcome to PinkFlow Hotels!",
-                "Dear Ahmed Al-Rashid, welcome to PinkFlow Hotels! " +
-                        "Your account has been created successfully. " +
-                        "Start exploring our beautiful properties today.",
+                "مرحباً بك في TerraStay — إقامتك الفاخرة تبدأ من هنا",
+                "عزيزتنا ليلى أبو عمر، أهلاً وسهلاً بك في TerraStay!\n" +
+                        "منصة الحجوزات الفندقية الفلسطينية الأولى.\n" +
+                        "ابدئي اكتشاف أجمل فنادق القدس وبيت لحم وأريحا ورام الله.\n\nTerraStay",
                 null, ReferenceType.SYSTEM,
                 LocalDateTime.now().minusDays(60), LocalDateTime.now().minusDays(60));
 
-        // ── FAILED notification — لتست الـ retry logic ────────────────────
-        Notification n11 = notif(
-                "guest5@example.com", "Blocked User",
-                NotificationType.BOOKING_CONFIRMED, NotificationStatus.FAILED,
-                "Booking Confirmation",
-                "Your booking has been confirmed.",
+        // FAILED — فشل نهائي (بريد غير صالح)
+        Notification n11 = notif("amira@example.ps", "أميرة سلامة",
+                NotificationType.BOOKING_CONFIRMED, NotificationStatus.PERMANENTLY_FAILED,
+                "تأكيد الحجز",
+                "تم تأكيد حجزك.",
                 null, ReferenceType.BOOKING,
                 null, null);
         n11.setRetryCount(3);
-        n11.setErrorMessage("SMTP connection refused: recipient address rejected");
+        n11.setErrorMessage("SMTP error: recipient address blocked");
 
-        // ── RETRY_SCHEDULED — في قائمة إعادة المحاولة ────────────────────
-        Notification n12 = notif(
-                "guest4@example.com", "Carlos Mendez",
+        // RETRY_SCHEDULED — في قائمة إعادة المحاولة
+        Notification n12 = notif("james@example.com", "James Wilson",
                 NotificationType.PAYMENT_SUCCESS, NotificationStatus.RETRY_SCHEDULED,
                 "Payment Confirmed",
                 "Your payment has been successfully processed.",
                 null, ReferenceType.PAYMENT,
                 null, null);
         n12.setRetryCount(1);
-        n12.setErrorMessage("Temporary SMTP error — retrying");
-        n12.setNextRetryAt(LocalDateTime.now().plusMinutes(15));
+        n12.setErrorMessage("Temporary SMTP timeout — scheduled for retry");
+        n12.setNextRetryAt(LocalDateTime.now().plusMinutes(25));
 
-        // ── PERMANENTLY_FAILED — فشل نهائي ───────────────────────────────
-        Notification n13 = notif(
-                "invalid@nonexistent.xyz", "Unknown User",
-                NotificationType.CUSTOM, NotificationStatus.PERMANENTLY_FAILED,
-                "Test Notification",
-                "This notification permanently failed after max retries.",
-                null, ReferenceType.SYSTEM,
-                null, null);
-        n13.setRetryCount(5);
-        n13.setErrorMessage("Max retries exceeded: invalid email domain");
-
-        // ── CUSTOM notification ───────────────────────────────────────────
-        Notification n14 = notif(
-                "guest1@example.com", "Ahmed Al-Rashid",
+        // CUSTOM — عرض خاص
+        Notification n13 = notif("khalid@example.ps", "خالد النجار",
                 NotificationType.CUSTOM, NotificationStatus.SENT,
-                "Special Offer — Exclusive for Loyal Guests",
-                "Dear Ahmed Al-Rashid, as a valued guest, we're offering you " +
-                        "an exclusive 20% discount on your next booking. " +
-                        "Use code: LOYAL20 before the end of this month.",
+                "🎁 عرض حصري لنزلائنا المميزين — خصم 20%",
+                "عزيزنا خالد النجار، بصفتك ضيفاً مميزاً في TerraStay، " +
+                        "نقدم لك خصماً حصرياً 20% على حجزك القادم.\n" +
+                        "استخدم الكود: VIPPAL20\nصالح حتى نهاية الشهر.\n\nTerraStay",
                 null, ReferenceType.SYSTEM,
-                LocalDateTime.now().minusDays(5), LocalDateTime.now().minusDays(5));
+                LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(3));
 
         notificationRepository.saveAll(List.of(
-                n1, n2, n3, n4, n5, n6, n7, n8, n9, n10,
-                n11, n12, n13, n14));
+                n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13));
 
-        log.info("✅ Notifications created: 14 (all types & statuses covered)");
-    }
-
-    // ═════════════════════════════════════════════════════════════════════════
-    //  HELPER BUILDERS
-    // ═════════════════════════════════════════════════════════════════════════
-
-    private RoomType roomType(Hotel hotel, String name, int capacity,
-                              BedType bedType, int bedCount, int maxAdults, int maxChildren,
-                              BigDecimal basePrice, int totalUnits,
-                              String description, String policies,
-                              RoomTypeStatus status, Set<Amenity> amenities) {
-        RoomType rt = new RoomType();
-        rt.setHotel(hotel);
-        rt.setName(name);
-        rt.setCapacity(capacity);
-        rt.setBedType(bedType);
-        rt.setBedCount(bedCount);
-        rt.setMaxAdults(maxAdults);
-        rt.setMaxChildren(maxChildren);
-        rt.setBasePrice(basePrice);
-        rt.setTotalUnits(totalUnits);
-        rt.setDescription(description);
-        rt.setPolicies(policies);
-        rt.setStatus(status);
-        rt.setAmenities(amenities);
-        return rt;
-    }
-
-    private Booking booking(RoomType roomType,
-                            String guestName, String guestEmail, String guestPhone,
-                            int adults, int children,
-                            LocalDate checkIn, LocalDate checkOut,
-                            BigDecimal pricePerNight, BookingStatus status,
-                            String notes) {
-        Booking b = new Booking();
-        b.setRoomType(roomType);
-        b.setGuestName(guestName);
-        b.setGuestEmail(guestEmail);
-        b.setGuestPhone(guestPhone);
-        b.setAdults(adults);
-        b.setChildren(children);
-        b.setTotalGuests(adults + children);
-        b.setCheckIn(checkIn);
-        b.setCheckOut(checkOut);
-        b.setPricePerNight(pricePerNight);
-        long nights = java.time.temporal.ChronoUnit.DAYS.between(checkIn, checkOut);
-        b.setTotalPrice(pricePerNight.multiply(BigDecimal.valueOf(nights)));
-        b.setStatus(status);
-        b.setGuestNotes(notes);
-        return b;
-    }
-
-    private Payment payment(Long bookingId, BigDecimal amount,
-                            PaymentStatus status, String failureReason,
-                            LocalDateTime paidAt, LocalDateTime createdOverride) {
-        Payment p = new Payment();
-        p.setBookingId(bookingId);
-        p.setAmount(amount);
-        p.setCurrency("USD");
-        p.setMethod(PaymentMethod.MOCK_CARD);
-        p.setStatus(status);
-        p.setProviderName("MOCK_GATEWAY");
-        p.setTransactionReference("TXN-" + UUID.randomUUID().toString().substring(0, 12).toUpperCase());
-        p.setFailureReason(failureReason);
-        p.setPaidAt(paidAt);
-        return p;
-    }
-
-    private WaitingListEntry waitingEntry(RoomType roomType, Hotel hotel,
-                                          String email, String name,
-                                          LocalDate checkIn, LocalDate checkOut,
-                                          WaitingListStatus status,
-                                          LocalDateTime notifiedAt,
-                                          String roomTypeName, String hotelName) {
-        WaitingListEntry e = new WaitingListEntry();
-        e.setRoomTypeId(roomType.getId());
-        e.setHotelId(hotel.getId());
-        e.setGuestEmail(email);
-        e.setGuestName(name);
-        e.setCheckIn(checkIn);
-        e.setCheckOut(checkOut);
-        e.setStatus(status);
-        e.setNotifiedAt(notifiedAt);
-        e.setRoomTypeName(roomTypeName);
-        e.setHotelName(hotelName);
-        return e;
+        log.info("✅ Notifications: 13 (كل الأنواع والحالات مغطاة)");
     }
 
     private Notification notif(String email, String name,
@@ -1312,7 +1654,7 @@ public class LoadDatabase implements CommandLineRunner {
                                String subject, String body,
                                Long refId, ReferenceType refType,
                                LocalDateTime createdAt, LocalDateTime sentAt) {
-        return Notification.builder()
+        Notification n = Notification.builder()
                 .recipientEmail(email)
                 .recipientName(name)
                 .type(type)
@@ -1321,58 +1663,49 @@ public class LoadDatabase implements CommandLineRunner {
                 .body(body)
                 .referenceId(refId)
                 .referenceType(refType)
-                .createdAt(createdAt != null ? createdAt : LocalDateTime.now())
-                .sentAt(sentAt)
                 .retryCount(0)
                 .build();
-    }
-
-    private String buildBookingConfirmedBody(String guestName, Booking booking) {
-        return "Dear " + guestName + ",\n\n" +
-                "Your booking has been confirmed!\n\n" +
-                "Booking ID: #" + booking.getId() + "\n" +
-                "Check-in: " + booking.getCheckIn() + " at 2:00 PM\n" +
-                "Check-out: " + booking.getCheckOut() + " at 12:00 PM\n" +
-                "Total Guests: " + booking.getTotalGuests() + "\n" +
-                "Total Amount: $" + booking.getTotalPrice() + "\n\n" +
-                "We look forward to welcoming you!\n\n" +
-                "Warm regards,\nPinkFlow Hotels Team";
+        if (createdAt != null) n.setCreatedAt(createdAt);
+        if (sentAt != null) n.setSentAt(sentAt);
+        return n;
     }
 
     // ═════════════════════════════════════════════════════════════════════════
     //  LOOKUP HELPERS
     // ═════════════════════════════════════════════════════════════════════════
 
+    private User findUser(List<User> list, String email) {
+        return list.stream()
+                .filter(u -> email.equals(u.getEmail()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("User not found: " + email));
+    }
+
     private Amenity findAmenity(List<Amenity> list, String name) {
-        return list.stream().filter(a -> a.getName().equals(name))
-                .findFirst().orElseThrow(() ->
-                        new IllegalStateException("Amenity not found: " + name));
+        return list.stream()
+                .filter(a -> name.equals(a.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Amenity not found: " + name));
     }
 
-    private RoomType findRoomType(List<RoomType> list, String name) {
-        return list.stream().filter(r -> r.getName().equals(name))
-                .findFirst().orElseThrow(() ->
-                        new IllegalStateException("RoomType not found: " + name));
+    private RoomType findRT(List<RoomType> list, String name) {
+        return list.stream()
+                .filter(r -> name.equals(r.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("RoomType not found: " + name));
     }
 
-    /**
-     * يجيب الحجز الـ N (0-based) لضيف معين بحالة معينة.
-     * مفيد لما يكون في أكثر من حجز لنفس الضيف بنفس الحالة.
-     */
-    private Booking findBooking(List<Booking> list, String email,
-                                BookingStatus status, int index) {
+    private Booking findBk(List<Booking> list, String email,
+                           BookingStatus status, int index) {
         List<Booking> matches = list.stream()
-                .filter(b -> b.getGuestEmail().equals(email) && b.getStatus() == status)
+                .filter(b -> email.equals(b.getGuestEmail()) && b.getStatus() == status)
                 .toList();
-        if (matches.isEmpty()) throw new IllegalStateException(
-                "Booking not found: " + email + "/" + status);
+        if (matches.isEmpty())
+            throw new IllegalStateException("Booking not found: " + email + "/" + status);
         return matches.get(Math.min(index, matches.size() - 1));
     }
 
-    private Payment findPayment(List<Payment> list, Long bookingId, PaymentStatus status) {
-        return list.stream()
-                .filter(p -> p.getBookingId().equals(bookingId) && p.getStatus() == status)
-                .findFirst().orElseThrow(() ->
-                        new IllegalStateException("Payment not found for bookingId=" + bookingId + "/" + status));
+    private BigDecimal bd(String val) {
+        return new BigDecimal(val);
     }
 }
