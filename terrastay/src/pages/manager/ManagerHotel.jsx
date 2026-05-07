@@ -3,19 +3,20 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../api/axios';
-import { useManagerHotel } from '../../hooks/useManagerHotel';
 import { permissionMessage } from './managerUtils';
 import styles from './ManagerPages.module.css';
 
 const ManagerHotel = () => {
   const form = useForm();
-  const { hotelId, isLoadingHotelId } = useManagerHotel();
 
   const { data: hotel, isLoading, isError, error } = useQuery({
-    queryKey: ['manager-hotel-detail', hotelId],
-    queryFn: () => api.get(`/api/hotels/${hotelId}`).then((response) => response.data),
-    enabled: !!hotelId,
+    queryKey: ['manager-my-hotel'],
+    queryFn: () => api.get('/api/manager/my-hotel').then((response) => {
+      console.log('[ManagerHotel] /api/manager/my-hotel response:', response.data);
+      return response.data;
+    }),
     staleTime: 60000,
+    retry: 1,
   });
 
   useEffect(() => {
@@ -35,18 +36,23 @@ const ManagerHotel = () => {
   }, [form, hotel]);
 
   const mutation = useMutation({
-    mutationFn: (values) => api.put(`/api/admin/hotels/${hotelId}`, values),
+    mutationFn: (values) => {
+      console.log('[ManagerHotel] saving /api/manager/my-hotel payload:', values);
+      console.log('[ManagerHotel] payload JSON:', JSON.stringify(values, null, 2));
+      return api.put('/api/manager/my-hotel', values);
+    },
     onSuccess: () => toast.success('Hotel saved'),
     onError: (err) => {
-      console.error('Save failed:', err.response?.data);
+      console.error('[ManagerHotel] save failed:', err.response?.data || err);
       toast.error(permissionMessage(err));
     },
   });
 
-  if (isLoadingHotelId) return <div className={styles.loading}>Loading...</div>;
-  if (!hotelId) return <div className={styles.loading}>Connecting to hotel...</div>;
   if (isLoading) return <div className={styles.loading}>Loading...</div>;
-  if (isError) return <div className={styles.empty}>{permissionMessage(error)}</div>;
+  if (isError) {
+    console.error('[ManagerHotel] load failed:', error?.response?.data || error);
+    return <div className={styles.empty}>{permissionMessage(error)}</div>;
+  }
 
   return (
     <section className={styles.page}>

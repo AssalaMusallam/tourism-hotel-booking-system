@@ -2,15 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Globe2, MapPin, MessageCircle, Send } from 'lucide-react';
-import { useCities, useHotels } from '../hooks/useCatalogQueries';
+import { useHotels } from '../hooks/useCatalogQueries';
 import HeroSearchBar from '../components/search/HeroSearchBar';
 import HotelCard from '../components/hotel/HotelCard';
 import SkeletonCard from '../components/ui/SkeletonCard';
 import useLanguage from '../hooks/useLanguage';
-import { CITY_IMAGES } from '../data/palestineHotels';
 import styles from './HomePage.module.css';
 
-const fallbackImage = CITY_IMAGES['القدس'];
 const cityFallbacks = [
   { name: 'القدس', nameEn: 'Jerusalem' },
   { name: 'بيت لحم', nameEn: 'Bethlehem' },
@@ -20,13 +18,27 @@ const cityFallbacks = [
   { name: 'الخليل', nameEn: 'Hebron' },
 ];
 
-const cityNameEn = Object.fromEntries(cityFallbacks.map((city) => [city.name, city.nameEn]));
+const cityNavigationMap = {
+  Jerusalem: 'Jerusalem',
+  القدس: 'Jerusalem',
+  Hebron: 'Hebron',
+  الخليل: 'Hebron',
+  Bethlehem: 'Bethlehem',
+  'بيت لحم': 'Bethlehem',
+  Jericho: 'Jericho',
+  أريحا: 'Jericho',
+  Nablus: 'Nablus',
+  نابلس: 'Nablus',
+  Tubas: 'Tubas',
+  طوباس: 'Tubas',
+  Ramallah: 'Ramallah',
+  'رام الله': 'Ramallah',
+  ...Object.fromEntries(cityFallbacks.map((city) => [city.name, city.nameEn])),
+};
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { language, t } = useLanguage();
-  const { data: citiesList } = useCities();
-  const cities = (citiesList?.length ? citiesList.map((city) => ({ name: city, nameEn: cityNameEn[city] || city })) : cityFallbacks).slice(0, 6);
   const { data: featuredData, isLoading } = useHotels({ size: 3, hasImage: true });
   const featured = featuredData?.content || [];
 
@@ -41,6 +53,11 @@ const HomePage = () => {
     if (checkOut) params.set('checkOut', checkOut);
     if (guests) params.set('guests', guests);
     navigate(`/search?${params.toString()}`);
+  };
+
+  const handleCityClick = (cityName) => {
+    const englishCity = cityNavigationMap[cityName] || cityName;
+    navigate(`/search?city=${encodeURIComponent(englishCity)}`);
   };
 
   return (
@@ -58,7 +75,7 @@ const HomePage = () => {
           </motion.div>
           <div className={styles.quickPills}>
             {cityFallbacks.map((quickCity) => (
-              <button type="button" key={quickCity.name} onClick={() => navigate(`/search?city=${encodeURIComponent(quickCity.name)}`)}>
+              <button type="button" key={quickCity.name} onClick={() => handleCityClick(language === 'en' ? quickCity.nameEn : quickCity.name)}>
                 {language === 'en' ? quickCity.nameEn : quickCity.name}
               </button>
             ))}
@@ -66,29 +83,6 @@ const HomePage = () => {
         </div>
       </section>
       <div className="tatreezDivider" />
-
-      <section className={`container ${styles.section}`}>
-        <div className={styles.sectionHeader}>
-          <h2>{t('popularDestinations')}</h2>
-        </div>
-        <div className={styles.destinations}>
-          {cities.map((city) => {
-            const label = language === 'en' ? city.nameEn || city.name : city.name;
-            const img = CITY_IMAGES[city.name] || CITY_IMAGES[city.nameEn] || fallbackImage;
-            return (
-            <motion.button
-              type="button"
-              key={city.name}
-              className={styles.destinationCard}
-              onClick={() => navigate(`/search?city=${encodeURIComponent(city.name)}`)}
-              whileHover={{ y: -4, scale: 1.03 }}
-            >
-              <img src={img} alt={label} />
-              <span>{label}</span>
-            </motion.button>
-          );})}
-        </div>
-      </section>
 
       <section className={styles.featuredBand}>
         <div className={`container ${styles.section}`}>

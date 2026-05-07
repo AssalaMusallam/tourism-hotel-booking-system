@@ -15,7 +15,7 @@ const HotelCard = ({ hotel, index = 0 }) => {
   const { language, t } = useLanguage();
   const lf = useLocalizedField();
   const imgSrc = getImageUrl(
-    hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName
+    hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName || hotel.imageUrl || hotel.image || '/placeholder-hotel.jpg'
   );
   const amenityNames = hotel.amenities?.length
     ? hotel.amenities.map((amenity) => lf(amenity, 'name'))

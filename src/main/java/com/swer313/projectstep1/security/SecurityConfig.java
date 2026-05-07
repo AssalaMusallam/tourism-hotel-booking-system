@@ -167,8 +167,11 @@ public class SecurityConfig {
                                 "/api/room-types",
                                 "/api/room-types/*",
                                 "/api/room-types/*/status",
+                                "/api/rooms/**",
+                                "/api/catalog/**",
                                 "/api/v1/availability",
                                 "/api/v1/hotels/*/availability",
+                                "/api/amenities",
                                 "/api/amenities/**",
                                 "/api/availability/**",
                                 "/api/currencies/**",
@@ -197,8 +200,10 @@ public class SecurityConfig {
                         // ===============================
                         // MANAGER + ADMIN
                         // ===============================
+                        .requestMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")
                         .requestMatchers("/api/admin/hotels/**").hasAnyRole("MANAGER", "ADMIN")
                         .requestMatchers("/api/admin/room-types/**").hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST,   "/api/hotels/*/room-types/**").hasAnyRole("MANAGER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT,    "/api/hotels/*/room-types/**").hasAnyRole("MANAGER", "ADMIN")

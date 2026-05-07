@@ -75,6 +75,8 @@ public interface WaitingListRepository extends JpaRepository<WaitingListEntry, L
             Long roomTypeId, WaitingListStatus status, Pageable pageable
     );
 
+    Page<WaitingListEntry> findByHotelIdOrderByCreatedAtDesc(Long hotelId, Pageable pageable);
+
     // للـ Scheduler — entries WAITING أو NOTIFIED وتاريخها عدى
     @Query("""
         SELECT w FROM WaitingListEntry w

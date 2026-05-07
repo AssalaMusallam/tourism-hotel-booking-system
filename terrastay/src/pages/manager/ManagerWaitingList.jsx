@@ -12,7 +12,7 @@ const ManagerWaitingList = () => {
 
   const { data = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['manager-waiting-list', hotelId],
-    queryFn: () => api.get('/api/waiting-list', { params: { hotelId } }).then((response) => listFromResponse(response.data)),
+    queryFn: () => api.get(`/api/waiting-list/hotel/${hotelId}`).then((response) => listFromResponse(response.data)),
     enabled: !!hotelId,
     staleTime: 60000,
   });

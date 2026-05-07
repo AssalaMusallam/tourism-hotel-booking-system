@@ -69,6 +69,30 @@ public class WaitingListController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/hotel/{hotelId}")
+    @Operation(summary = "Manager/Admin: Get waiting list entries for a hotel")
+    public ResponseEntity<PagedResponse<WaitingListResponseDTO>> getHotelList(
+            @PathVariable Long hotelId,
+            @PageableDefault(size = 20) Pageable pageable) {
+
+        return ResponseEntity.ok(
+                waitingListService.getWaitingListForHotel(hotelId, pageable)
+        );
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/manager")
+    @Operation(summary = "Manager/Admin: Get waiting list entries by hotel id")
+    public ResponseEntity<PagedResponse<WaitingListResponseDTO>> getManagerHotelList(
+            @RequestParam Long hotelId,
+            @PageableDefault(size = 20) Pageable pageable) {
+
+        return ResponseEntity.ok(
+                waitingListService.getWaitingListForHotel(hotelId, pageable)
+        );
+    }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<WaitingListResponseDTO> join(

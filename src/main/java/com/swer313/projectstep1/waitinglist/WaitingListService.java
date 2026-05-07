@@ -26,6 +26,10 @@ public interface WaitingListService {
             Long roomTypeId, Pageable pageable
     );
 
+    PagedResponse<WaitingListResponseDTO> getWaitingListForHotel(
+            Long hotelId, Pageable pageable
+    );
+
     // يستدعيه BookingServiceImpl بعد cancelBooking
     void notifyNextInQueue(Long roomTypeId, LocalDate checkIn, LocalDate checkOut);
 }

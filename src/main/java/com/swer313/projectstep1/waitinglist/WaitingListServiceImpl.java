@@ -189,6 +189,20 @@ public class WaitingListServiceImpl implements WaitingListService {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponse<WaitingListResponseDTO> getWaitingListForHotel(
+            Long hotelId, Pageable pageable) {
+        Page<WaitingListEntry> page = waitingListRepository
+                .findByHotelIdOrderByCreatedAtDesc(hotelId, pageable);
+
+        List<WaitingListResponseDTO> content = page.getContent().stream()
+                .map(e -> toDto(e, calculatePosition(e)))
+                .toList();
+
+        return PagedResponse.from(page, content);
+    }
+
     // NOTIFY NEXT — يستدعيه BookingServiceImpl بعد cancelBooking
     // ══════════════════════════════════════════════════════════════════════════
 

@@ -38,6 +38,17 @@ const CITY_NAME_MAP = {
   قلقيلية: 'Qalqilya',
   طوباس: 'Tubas',
   سلفيت: 'Salfit',
+  'رام الله': 'Ramallah',
+  القدس: 'Jerusalem',
+  'بيت لحم': 'Bethlehem',
+  أريحا: 'Jericho',
+  نابلس: 'Nablus',
+  الخليل: 'Hebron',
+  جنين: 'Jenin',
+  طولكرم: 'Tulkarm',
+  قلقيلية: 'Qalqilya',
+  طوباس: 'Tubas',
+  سلفيت: 'Salfit',
   Ramallah: 'Ramallah',
   Jerusalem: 'Jerusalem',
   Bethlehem: 'Bethlehem',
@@ -75,7 +86,7 @@ const SearchPage = () => {
   const normalizedCity = city ? CITY_MAP[city] || city : '';
   const apiParams = { ...(q && { search: q, q }), ...(normalizedCity && { city: normalizedCity }), page, size: 12 };
   const { data, isLoading, isError, refetch } = useHotels(apiParams);
-  const hotelList = Array.isArray(data) ? data : data?.content || data?.data || [];
+  const hotelList = Array.isArray(data) ? data : data?.content || data?.data || data?.hotels || [];
   const sourceHotels = hotelList.length ? hotelList : palestineHotels;
 
   const hotels = useMemo(() => {

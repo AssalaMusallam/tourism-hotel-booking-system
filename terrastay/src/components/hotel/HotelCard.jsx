@@ -15,7 +15,7 @@ const HotelCard = ({ hotel, onClick, showStatus = false, index = 0 }) => {
   const navigate = useNavigate();
   const { language, t } = useLanguage();
   const lf = useLocalizedField();
-  const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName);
+  const img = getImageUrl(hotel.images?.[0]?.imageUrl || hotel.images?.[0]?.url || hotel.images?.[0]?.fileName || hotel.imageUrl || hotel.image || '/placeholder-hotel.jpg');
   const amenityNames = hotel.amenities?.length
     ? hotel.amenities.map((amenity) => lf(amenity, 'name'))
     : (language === 'en' && hotel.amenityNamesEn

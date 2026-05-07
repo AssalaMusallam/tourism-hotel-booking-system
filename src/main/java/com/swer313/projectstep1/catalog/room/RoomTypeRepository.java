@@ -1,4 +1,5 @@
 package com.swer313.projectstep1.catalog.room;
+import com.swer313.projectstep1.catalog.hotel.Hotel;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,8 @@ public interface RoomTypeRepository extends JpaRepository<RoomType, Long>, JpaSp
 
     // ✅ التحقق من تكرار الاسم داخل نفس الفندق
     boolean existsByHotel_IdAndNameIgnoreCase(Long hotelId, String name);
+
+    boolean existsByNameAndHotel(String name, Hotel hotel);
 
     // ✅ نفس الشيء لكن باستثناء الـ id الحالي (للـ update)
     boolean existsByHotel_IdAndNameIgnoreCaseAndIdNot(Long hotelId, String name, Long id);

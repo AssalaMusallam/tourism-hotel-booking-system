@@ -1,16 +1,17 @@
 .page {
   display: grid;
   gap: 20px;
-  color: #12313d;
+  color: #1C0A12;
 }
 
 .header,
 .card,
 .panel {
-  border: 1px solid #d2e8ee;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(13, 52, 64, 0.08);
+  border: 1px solid #EDD5DE;
+  border-radius: 12px;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(139, 26, 74, 0.08);
+  transition: all 0.2s ease;
 }
 
 .header {
@@ -22,13 +23,13 @@
 
 .header h1 {
   margin: 0;
-  color: #0d3440;
+  color: #1C0A12;
   font-size: 28px;
 }
 
 .header p {
   margin: 6px 0 0;
-  color: #4a7784;
+  color: #9C7080;
   font-weight: 700;
 }
 
@@ -36,8 +37,8 @@
   align-self: flex-start;
   padding: 8px 12px;
   border-radius: 999px;
-  color: #8a5a00;
-  background: #fff4d8;
+  color: #854D0E;
+  background: #FEF9C3;
   font-size: 12px;
   font-weight: 900;
 }
@@ -53,7 +54,7 @@
 }
 
 .card span {
-  color: #4a7784;
+  color: #9C7080;
   font-size: 13px;
   font-weight: 800;
 }
@@ -61,7 +62,7 @@
 .card strong {
   display: block;
   margin-top: 8px;
-  color: #176b7c;
+  color: #8B1A4A;
   font-size: 28px;
 }
 
@@ -74,9 +75,10 @@
 
 .toolbar {
   padding: 16px;
-  border: 1px solid #d2e8ee;
-  border-radius: 16px;
-  background: #fff;
+  border: 1px solid #EDD5DE;
+  border-radius: 12px;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(139, 26, 74, 0.08);
 }
 
 .toolbar input,
@@ -86,9 +88,28 @@
 .form textarea {
   min-height: 42px;
   padding: 9px 12px;
-  border: 1px solid #c5dfe6;
-  border-radius: 12px;
+  border: 1px solid #EDD5DE;
+  border-radius: 8px;
   font: inherit;
+  color: #1C0A12;
+  background: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.toolbar input::placeholder,
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #9C7080;
+}
+
+.toolbar input:focus,
+.toolbar select:focus,
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  outline: none;
+  border-color: #8B1A4A;
+  box-shadow: 0 0 0 3px rgba(139, 26, 74, 0.15);
 }
 
 .panel {
@@ -104,57 +125,99 @@
 .table th,
 .table td {
   padding: 13px;
-  border-bottom: 1px solid #e3f0f3;
+  border-bottom: 1px solid #EDD5DE;
   text-align: start;
 }
 
 .table th {
-  color: #4a7784;
-  background: #f7fbfc;
+  color: #5C3347;
+  background: #F5E6EC;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: #FDF8F9;
 }
 
 .badge {
   display: inline-flex;
+  border: 1px solid #EDD5DE;
   padding: 5px 9px;
   border-radius: 999px;
-  color: #fff;
-  background: #7f8c8d;
+  color: #8B1A4A;
+  background: #F5E6EC;
   font-size: 11px;
   font-weight: 900;
 }
 
-.pending { background: #f39c12; }
+.pending {
+  border-color: #FEF9C3;
+  color: #854D0E;
+  background: #FEF9C3;
+}
+
+.active,
 .confirmed,
 .completed,
-.approved { background: #1aa66a; }
+.approved {
+  border-color: #DCFCE7;
+  color: #166534;
+  background: #DCFCE7;
+}
+
 .cancelled,
 .rejected,
-.failed { background: #e74c3c; }
-.refunded { background: #3498db; }
+.failed {
+  border-color: #FEE2E2;
+  color: #991B1B;
+  background: #FEE2E2;
+}
+
+.refunded {
+  color: #8B1A4A;
+  background: #F5E6EC;
+}
 
 .button,
 .secondary,
 .danger {
   padding: 9px 13px;
-  border-radius: 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   font-weight: 900;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .button {
-  color: #fff;
-  background: #176b7c;
+  color: #FFFFFF;
+  background: #8B1A4A;
+}
+
+.button:hover {
+  background: #6D1238;
 }
 
 .secondary {
-  color: #0d3440;
-  border: 1px solid #c5dfe6;
-  background: #fff;
+  color: #8B1A4A;
+  border: 1px solid #8B1A4A;
+  background: transparent;
+}
+
+.secondary:hover {
+  background: #F5E6EC;
 }
 
 .danger {
-  color: #fff;
-  background: #e74c3c;
+  color: #FFFFFF;
+  background: #991B1B;
+}
+
+.danger:hover {
+  background: #7F1D1D;
 }
 
 .form {
@@ -167,9 +230,37 @@
 .form label {
   display: grid;
   gap: 6px;
-  color: #4a7784;
+  color: #5C3347;
   font-size: 13px;
   font-weight: 900;
+}
+
+.form fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 1px solid #EDD5DE;
+  border-radius: 12px;
+  padding: 14px;
+  color: #5C3347;
+}
+
+.form legend {
+  padding: 0 6px;
+  color: #1C0A12;
+  font-weight: 900;
+}
+
+.form fieldset label {
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid #EDD5DE;
+  border-radius: 999px;
+  color: #8B1A4A;
+  background: #F5E6EC;
 }
 
 .wide {
@@ -191,14 +282,14 @@
 
 .empty {
   padding: 28px;
-  color: #4a7784;
+  color: #9C7080;
   text-align: center;
   font-weight: 800;
 }
 
 .loading {
   padding: 28px;
-  color: #4a7784;
+  color: #9C7080;
   font-weight: 900;
 }
 

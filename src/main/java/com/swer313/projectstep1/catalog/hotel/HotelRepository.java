@@ -7,10 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecificationExecutor<Hotel> {
 
     boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByName(String name);
+
+    Optional<Hotel> findByName(String name);
 
     boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 
