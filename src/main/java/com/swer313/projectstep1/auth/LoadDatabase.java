@@ -45,6 +45,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -228,97 +229,108 @@ public class LoadDatabase implements CommandLineRunner {
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<Amenity> seedAmenities() {
-        if (amenityRepository.count() > 0) {
-            log.info("⏭  Amenities already exist — skipping.");
-            return amenityRepository.findAll();
+        List<Amenity> requiredAmenities = List.of(
+                // CONNECTIVITY
+                am("إنترنت فايبر عالي السرعة",
+                        "إنترنت لاسلكي بسرعة 500 ميغابايت في جميع أرجاء الفندق",
+                        Amenity.AmenityCategory.CONNECTIVITY, false, true),
+                am("تلفاز ذكي 4K مع Netflix",
+                        "شاشة 65 بوصة 4K مع Netflix وYouTube وتطبيقات البث المباشر",
+                        Amenity.AmenityCategory.ENTERTAINMENT, false, true),
+
+                // WELLNESS
+                am("مركز صحي وسبا فاخر",
+                        "سبا متكامل مع مساج وسونا وحمام بخار وجلسات تدليك",
+                        Amenity.AmenityCategory.WELLNESS, true, true),
+                am("صالة رياضية مجهزة",
+                        "صالة رياضية 24/7 بأحدث الأجهزة ومدربين شخصيين",
+                        Amenity.AmenityCategory.WELLNESS, false, true),
+                am("مسبح خارجي مدفأ",
+                        "مسبح خارجي مفتوح طوال السنة مع خدمة شاملة",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+                am("جاكوزي خاص",
+                        "جاكوزي خاص بغرف السويت مع إطلالة بانورامية",
+                        Amenity.AmenityCategory.WELLNESS, true, true),
+
+                // DINING
+                am("إفطار بوفيه مجاني",
+                        "بوفيه إفطار يومي بأصناف عربية وعالمية متنوعة",
+                        Amenity.AmenityCategory.DINING, false, true),
+                am("خدمة غرف على مدار الساعة",
+                        "خدمة غرف 24 ساعة من قائمة المطعم الكاملة",
+                        Amenity.AmenityCategory.DINING, false, true),
+                am("ميني بار متميز",
+                        "ميني بار مكتمل بمشروبات ومقبلات فاخرة",
+                        Amenity.AmenityCategory.DINING, true, true),
+                am("مطعم عربي أصيل",
+                        "مطعم يقدم أشهى المأكولات الفلسطينية والعربية الأصيلة",
+                        Amenity.AmenityCategory.DINING, false, true),
+
+                // COMFORT
+                am("تكييف وتدفئة مركزي",
+                        "تحكم فردي بدرجة الحرارة عبر ثرموستات ذكي في كل غرفة",
+                        Amenity.AmenityCategory.COMFORT, false, true),
+                am("شرفة خاصة مع إطلالة",
+                        "شرفة خاصة مؤثثة بإطلالة على المدينة أو الحديقة",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+                am("إطلالة بانورامية على المدينة",
+                        "غرف علوية مع إطلالة 180° على المدينة القديمة والمعالم الأثرية",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+
+                // PARKING & SECURITY
+                am("موقف سيارات مجاني مع خدمة فاليه",
+                        "موقف مجاني مع خدمة فاليه على مدار الساعة",
+                        Amenity.AmenityCategory.PARKING, false, true),
+                am("خزنة إلكترونية في الغرفة",
+                        "خزنة إلكترونية بحجم كافٍ لحفظ اللابتوب والمستندات",
+                        Amenity.AmenityCategory.SECURITY, false, true),
+
+                // CLEANING
+                am("خدمة غسيل وكوي",
+                        "خدمة غسيل وكوي في نفس اليوم متاحة يومياً",
+                        Amenity.AmenityCategory.CLEANING, false, true),
+
+                // ACCESSIBILITY
+                am("مصعد كهربائي",
+                        "مصاعد حديثة للوصول لجميع الطوابق بسهولة",
+                        Amenity.AmenityCategory.ACCESSIBILITY, false, true),
+
+                // OUTDOOR
+                am("حديقة وفضاء خارجي",
+                        "حديقة جميلة مع أماكن للجلوس في الهواء الطلق وتراس مسقوف",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+                am("مقهى سطح الفندق",
+                        "مقهى روفتوب مفتوح مع مشروبات ومقبلات وإطلالة ساحرة على المدينة",
+                        Amenity.AmenityCategory.DINING, false, true),
+
+                // INACTIVE
+                am("مسبح داخلي (تحت التجديد)",
+                        "مسبح داخلي مغلق مؤقتاً لأعمال التجديد الشاملة",
+                        Amenity.AmenityCategory.OUTDOOR, false, false)
+        );
+
+        List<Amenity> existingAmenities = new ArrayList<>(amenityRepository.findAll());
+        int createdCount = 0;
+
+        for (Amenity requiredAmenity : requiredAmenities) {
+            boolean alreadyExists = existingAmenities.stream()
+                    .anyMatch(existing -> requiredAmenity.getName().equals(existing.getName()));
+
+            if (!alreadyExists) {
+                Amenity savedAmenity = amenityRepository.save(requiredAmenity);
+                existingAmenities.add(savedAmenity);
+                createdCount++;
+            }
         }
 
-        // CONNECTIVITY
-        Amenity wifi      = am("إنترنت فايبر عالي السرعة",
-                "إنترنت لاسلكي بسرعة 500 ميغابايت في جميع أرجاء الفندق",
-                Amenity.AmenityCategory.CONNECTIVITY, false, true);
-        Amenity smartTv   = am("تلفاز ذكي 4K مع Netflix",
-                "شاشة 65 بوصة 4K مع Netflix وYouTube وتطبيقات البث المباشر",
-                Amenity.AmenityCategory.ENTERTAINMENT, false, true);
+        if (createdCount == 0) {
+            log.info("⏭  Amenities already complete — no missing records to add.");
+        } else {
+            log.info("✅ Amenities ensured: {} missing records created, {} total available.",
+                    createdCount, existingAmenities.size());
+        }
 
-        // WELLNESS
-        Amenity spa       = am("مركز صحي وسبا فاخر",
-                "سبا متكامل مع مساج وسونا وحمام بخار وجلسات تدليك",
-                Amenity.AmenityCategory.WELLNESS, true, true);
-        Amenity gym       = am("صالة رياضية مجهزة",
-                "صالة رياضية 24/7 بأحدث الأجهزة ومدربين شخصيين",
-                Amenity.AmenityCategory.WELLNESS, false, true);
-        Amenity pool      = am("مسبح خارجي مدفأ",
-                "مسبح خارجي مفتوح طوال السنة مع خدمة شاملة",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-        Amenity jacuzzi   = am("جاكوزي خاص",
-                "جاكوزي خاص بغرف السويت مع إطلالة بانورامية",
-                Amenity.AmenityCategory.WELLNESS, true, true);
-
-        // DINING
-        Amenity breakfast = am("إفطار بوفيه مجاني",
-                "بوفيه إفطار يومي بأصناف عربية وعالمية متنوعة",
-                Amenity.AmenityCategory.DINING, false, true);
-        Amenity roomSvc   = am("خدمة غرف على مدار الساعة",
-                "خدمة غرف 24 ساعة من قائمة المطعم الكاملة",
-                Amenity.AmenityCategory.DINING, false, true);
-        Amenity minibar   = am("ميني بار متميز",
-                "ميني بار مكتمل بمشروبات ومقبلات فاخرة",
-                Amenity.AmenityCategory.DINING, true, true);
-        Amenity restaurant = am("مطعم عربي أصيل",
-                "مطعم يقدم أشهى المأكولات الفلسطينية والعربية الأصيلة",
-                Amenity.AmenityCategory.DINING, false, true);
-
-        // COMFORT
-        Amenity ac        = am("تكييف وتدفئة مركزي",
-                "تحكم فردي بدرجة الحرارة عبر ثرموستات ذكي في كل غرفة",
-                Amenity.AmenityCategory.COMFORT, false, true);
-        Amenity balcony   = am("شرفة خاصة مع إطلالة",
-                "شرفة خاصة مؤثثة بإطلالة على المدينة أو الحديقة",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-        Amenity cityView  = am("إطلالة بانورامية على المدينة",
-                "غرف علوية مع إطلالة 180° على المدينة القديمة والمعالم الأثرية",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-
-        // PARKING & SECURITY
-        Amenity parking   = am("موقف سيارات مجاني مع خدمة فاليه",
-                "موقف مجاني مع خدمة فاليه على مدار الساعة",
-                Amenity.AmenityCategory.PARKING, false, true);
-        Amenity safe      = am("خزنة إلكترونية في الغرفة",
-                "خزنة إلكترونية بحجم كافٍ لحفظ اللابتوب والمستندات",
-                Amenity.AmenityCategory.SECURITY, false, true);
-
-        // CLEANING
-        Amenity laundry   = am("خدمة غسيل وكوي",
-                "خدمة غسيل وكوي في نفس اليوم متاحة يومياً",
-                Amenity.AmenityCategory.CLEANING, false, true);
-
-        // ACCESSIBILITY
-        Amenity elevator  = am("مصعد كهربائي",
-                "مصاعد حديثة للوصول لجميع الطوابق بسهولة",
-                Amenity.AmenityCategory.ACCESSIBILITY, false, true);
-
-        // OUTDOOR
-        Amenity garden    = am("حديقة وفضاء خارجي",
-                "حديقة جميلة مع أماكن للجلوس في الهواء الطلق وتراس مسقوف",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-        Amenity rooftop   = am("مقهى سطح الفندق",
-                "مقهى روفتوب مفتوح مع مشروبات ومقبلات وإطلالة ساحرة على المدينة",
-                Amenity.AmenityCategory.DINING, false, true);
-
-        // INACTIVE — لتست حالة الخدمات غير النشطة
-        Amenity oldPool   = am("مسبح داخلي (تحت التجديد)",
-                "مسبح داخلي مغلق مؤقتاً لأعمال التجديد الشاملة",
-                Amenity.AmenityCategory.OUTDOOR, false, false);
-
-        List<Amenity> saved = amenityRepository.saveAll(List.of(
-                wifi, smartTv, spa, gym, pool, jacuzzi,
-                breakfast, roomSvc, minibar, restaurant,
-                ac, balcony, cityView, parking, safe,
-                laundry, elevator, garden, rooftop, oldPool));
-
-        log.info("✅ Amenities created: {} (19 active + 1 inactive)", saved.size());
-        return saved;
+        return amenityRepository.findAll();
     }
 
     private Amenity am(String name, String desc,
@@ -391,813 +403,813 @@ public class LoadDatabase implements CommandLineRunner {
         // ════════════════════════════════════════════════════
         Hotel h1 = hotelRepository.findByName("فندق الكرمل القدس")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق الكرمل القدس",
-                "شارع صلاح الدين، القدس القديمة، فلسطين",
-                "يقع فندق الكرمل في قلب البلدة القديمة في القدس، " +
-                        "على بعد خطوات من قبة الصخرة وحائط البراق والمسجد الأقصى. " +
-                        "يوفر الفندق إقامة فاخرة تجمع بين الأصالة الفلسطينية والرفاهية العصرية، " +
-                        "مع إطلالات ساحرة على أسوار المدينة القديمة التي تعود للقرن السادس عشر.",
-                "القدس", "فلسطين",
-                "+970-2-628-1100",  "reservations@karmeljrusalem.ps",
-                "https://www.karmeljerusalem.ps",
-                4.8, 31.7765, 35.2344,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "لا تدخين. لا حيوانات أليفة. الأطفال أقل من 12 سنة مجاناً.",
-                "إلغاء مجاني حتى 48 ساعة قبل الوصول. بعد ذلك تُفرض رسوم ليلة واحدة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, breakfast, parking, restaurant, cityView, elevator))));
+                        "فندق الكرمل القدس",
+                        "شارع صلاح الدين، القدس القديمة، فلسطين",
+                        "يقع فندق الكرمل في قلب البلدة القديمة في القدس، " +
+                                "على بعد خطوات من قبة الصخرة وحائط البراق والمسجد الأقصى. " +
+                                "يوفر الفندق إقامة فاخرة تجمع بين الأصالة الفلسطينية والرفاهية العصرية، " +
+                                "مع إطلالات ساحرة على أسوار المدينة القديمة التي تعود للقرن السادس عشر.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1100",  "reservations@karmeljrusalem.ps",
+                        "https://www.karmeljerusalem.ps",
+                        4.8, 31.7765, 35.2344,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "لا تدخين. لا حيوانات أليفة. الأطفال أقل من 12 سنة مجاناً.",
+                        "إلغاء مجاني حتى 48 ساعة قبل الوصول. بعد ذلك تُفرض رسوم ليلة واحدة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, breakfast, parking, restaurant, cityView, elevator))));
 
         // ════════════════════════════════════════════════════
         // H2 — فندق دار السلام (Jerusalem / القدس)
         // ════════════════════════════════════════════════════
         Hotel h2 = hotelRepository.findByName("فندق دار السلام")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق دار السلام",
-                "شارع المسجد الأقصى، القدس، فلسطين 91000",
-                "فندق دار السلام وجهة للمسافرين الباحثين عن الهدوء والراحة " +
-                        "في قلب القدس. تصميمه يعكس الهندسة الإسلامية الكلاسيكية " +
-                        "مع ساحة داخلية بنوافير رخامية وحدائق مثمرة. " +
-                        "يبعد 5 دقائق سيراً عن المسجد الأقصى والكنيسة والقبور التاريخية.",
-                "القدس", "فلسطين",
-                "+970-2-628-2200", "info@darsalam-hotel.ps",
-                "https://www.darsalamhotel.ps",
-                4.5, 31.7761, 35.2354,
-                LocalTime.of(15, 0), LocalTime.of(11, 0),
-                "ساعات هدوء بعد 11 مساءً. ممنوع التدخين في الغرف.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "فندق دار السلام",
+                        "شارع المسجد الأقصى، القدس، فلسطين 91000",
+                        "فندق دار السلام وجهة للمسافرين الباحثين عن الهدوء والراحة " +
+                                "في قلب القدس. تصميمه يعكس الهندسة الإسلامية الكلاسيكية " +
+                                "مع ساحة داخلية بنوافير رخامية وحدائق مثمرة. " +
+                                "يبعد 5 دقائق سيراً عن المسجد الأقصى والكنيسة والقبور التاريخية.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-2200", "info@darsalam-hotel.ps",
+                        "https://www.darsalamhotel.ps",
+                        4.5, 31.7761, 35.2354,
+                        LocalTime.of(15, 0), LocalTime.of(11, 0),
+                        "ساعات هدوء بعد 11 مساءً. ممنوع التدخين في الغرف.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         // ════════════════════════════════════════════════════
         // H3 — فندق قصر فلسطين (Jerusalem / القدس)
         // ════════════════════════════════════════════════════
         Hotel h3 = hotelRepository.findByName("فندق قصر فلسطين")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق قصر فلسطين",
-                "شارع أم الشرايط، القدس الغربية، فلسطين",
-                "فندق قصر فلسطين رمز الفخامة في القدس. " +
-                        "أسّس عام 1960 ويحتفظ بطابع معماري فلسطيني أصيل. " +
-                        "يضم أكبر قاعة للمؤتمرات في المدينة، ومسبحاً بانورامياً " +
-                        "وحديقة ملكية تمتد على مساحة 5 دونمات. " +
-                        "اختيار أمراء ورؤساء الدول منذ خمسة عقود.",
-                "القدس", "فلسطين",
-                "+970-2-628-3300", "reservations@qasrpalestine.ps",
-                "https://www.qasrpalestine.ps",
-                4.6, 31.7834, 35.2183,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "لا تدخين. نزلاء VIP يحصلون على خدمة كونسيارج شخصية.",
-                "إلغاء مجاني حتى 72 ساعة. خصم 50% للإلغاء خلال 24-72 ساعة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "فندق قصر فلسطين",
+                        "شارع أم الشرايط، القدس الغربية، فلسطين",
+                        "فندق قصر فلسطين رمز الفخامة في القدس. " +
+                                "أسّس عام 1960 ويحتفظ بطابع معماري فلسطيني أصيل. " +
+                                "يضم أكبر قاعة للمؤتمرات في المدينة، ومسبحاً بانورامياً " +
+                                "وحديقة ملكية تمتد على مساحة 5 دونمات. " +
+                                "اختيار أمراء ورؤساء الدول منذ خمسة عقود.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-3300", "reservations@qasrpalestine.ps",
+                        "https://www.qasrpalestine.ps",
+                        4.6, 31.7834, 35.2183,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "لا تدخين. نزلاء VIP يحصلون على خدمة كونسيارج شخصية.",
+                        "إلغاء مجاني حتى 72 ساعة. خصم 50% للإلغاء خلال 24-72 ساعة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         // ════════════════════════════════════════════════════
         // H4 — فندق جورج (Bethlehem / بيت لحم)
         // ════════════════════════════════════════════════════
         Hotel h4 = hotelRepository.findByName("فندق جورج")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق جورج",
-                "ميدان المهد، بيت لحم، فلسطين 90500",
-                "فندق جورج يقع على بعد 100 متر من كنيسة المهد، " +
-                        "أقدس كنيسة مسيحية في العالم. " +
-                        "يرحب بالحجاج والسياح من جميع أنحاء العالم " +
-                        "في أجواء دافئة تعكس روح بيت لحم الأصيلة. " +
-                        "المطعم يقدم أشهى الأكلات الفلسطينية الموروثة.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-4400", "info@georgehotel-bethlehem.ps",
-                "https://www.georgehotel-bethlehem.ps",
-                4.4, 31.7043, 35.2073,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "فندق عائلي. يرحب بالحجاج والسياح من جميع الأديان.",
-                "إلغاء مجاني حتى 48 ساعة قبل الوصول.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "فندق جورج",
+                        "ميدان المهد، بيت لحم، فلسطين 90500",
+                        "فندق جورج يقع على بعد 100 متر من كنيسة المهد، " +
+                                "أقدس كنيسة مسيحية في العالم. " +
+                                "يرحب بالحجاج والسياح من جميع أنحاء العالم " +
+                                "في أجواء دافئة تعكس روح بيت لحم الأصيلة. " +
+                                "المطعم يقدم أشهى الأكلات الفلسطينية الموروثة.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-4400", "info@georgehotel-bethlehem.ps",
+                        "https://www.georgehotel-bethlehem.ps",
+                        4.4, 31.7043, 35.2073,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "فندق عائلي. يرحب بالحجاج والسياح من جميع الأديان.",
+                        "إلغاء مجاني حتى 48 ساعة قبل الوصول.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         // ════════════════════════════════════════════════════
         // H5 — منتجع سانت جورج (Bethlehem / بيت لحم)
         // ════════════════════════════════════════════════════
         Hotel h5 = hotelRepository.findByName("منتجع سانت جورج")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "منتجع سانت جورج",
-                "طريق بيت جالا، بيت لحم، فلسطين 90501",
-                "منتجع سانت جورج الفاخر يجمع بين الهدوء والطبيعة الخلابة " +
-                        "في قلب جبال بيت لحم. المنتجع محاط بكروم العنب وأشجار الزيتون المعمرة. " +
-                        "يضم مسبحاً لانهائياً بإطلالة على التلال، " +
-                        "ومركز صحي عالمي المستوى، ومطعماً يقدم خمور العنب الفلسطينية المحلية.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-5500", "reservations@saintgeorge-resort.ps",
-                "https://www.saintgeorgeresort.ps",
-                4.7, 31.7098, 35.1834,
-                LocalTime.of(15, 0), LocalTime.of(12, 0),
-                "لا حيوانات أليفة. الأطفال أقل من 16 سنة في الأجنحة الكبيرة فقط.",
-                "غير قابل للاسترداد لحجوزات أقل من 48 ساعة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, rooftop, elevator))));
+                        "منتجع سانت جورج",
+                        "طريق بيت جالا، بيت لحم، فلسطين 90501",
+                        "منتجع سانت جورج الفاخر يجمع بين الهدوء والطبيعة الخلابة " +
+                                "في قلب جبال بيت لحم. المنتجع محاط بكروم العنب وأشجار الزيتون المعمرة. " +
+                                "يضم مسبحاً لانهائياً بإطلالة على التلال، " +
+                                "ومركز صحي عالمي المستوى، ومطعماً يقدم خمور العنب الفلسطينية المحلية.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-5500", "reservations@saintgeorge-resort.ps",
+                        "https://www.saintgeorgeresort.ps",
+                        4.7, 31.7098, 35.1834,
+                        LocalTime.of(15, 0), LocalTime.of(12, 0),
+                        "لا حيوانات أليفة. الأطفال أقل من 16 سنة في الأجنحة الكبيرة فقط.",
+                        "غير قابل للاسترداد لحجوزات أقل من 48 ساعة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, rooftop, elevator))));
 
         // ════════════════════════════════════════════════════
         // H6 — فندق أريحا الريف (Jericho / أريحا)
         // ════════════════════════════════════════════════════
         Hotel h6 = hotelRepository.findByName("فندق أريحا الريف")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق أريحا الريف",
-                "شارع النخيل، أريحا، فلسطين 18000",
-                "أريحا — أقدم مدينة في العالم تستضيف فندق الريف، " +
-                        "واحة هادئة وسط نخيل أريحا الشهير. " +
-                        "المناخ الدافئ طوال السنة يجعله وجهة مثالية في الشتاء. " +
-                        "قريب من قلعة هيروديوم وبحر الملح، " +
-                        "ومن مسار دراجات وادي القلط الشهير.",
-                "أريحا", "فلسطين",
-                "+970-2-232-6600", "info@jerichohotel.ps",
-                "https://www.jerichohotel.ps",
-                4.2, 31.8579, 35.4588,
-                LocalTime.of(14, 0), LocalTime.of(11, 0),
-                "تحكم فردي بالتكييف. خدمات المنتجع تشمل رحلات للمواقع الأثرية.",
-                "إلغاء مجاني حتى 24 ساعة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, pool, breakfast, parking, restaurant, garden))));
+                        "فندق أريحا الريف",
+                        "شارع النخيل، أريحا، فلسطين 18000",
+                        "أريحا — أقدم مدينة في العالم تستضيف فندق الريف، " +
+                                "واحة هادئة وسط نخيل أريحا الشهير. " +
+                                "المناخ الدافئ طوال السنة يجعله وجهة مثالية في الشتاء. " +
+                                "قريب من قلعة هيروديوم وبحر الملح، " +
+                                "ومن مسار دراجات وادي القلط الشهير.",
+                        "أريحا", "فلسطين",
+                        "+970-2-232-6600", "info@jerichohotel.ps",
+                        "https://www.jerichohotel.ps",
+                        4.2, 31.8579, 35.4588,
+                        LocalTime.of(14, 0), LocalTime.of(11, 0),
+                        "تحكم فردي بالتكييف. خدمات المنتجع تشمل رحلات للمواقع الأثرية.",
+                        "إلغاء مجاني حتى 24 ساعة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, pool, breakfast, parking, restaurant, garden))));
 
         // ════════════════════════════════════════════════════
         // H7 — فندق رام المشرق (Ramallah / رام الله)
         // ════════════════════════════════════════════════════
         Hotel h7 = hotelRepository.findByName("فندق رام المشرق")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق رام المشرق",
-                "شارع الإرسال، رام الله، فلسطين 00972",
-                "فندق رام المشرق في قلب رام الله التجارية والثقافية. " +
-                        "وجهة المؤتمرات والأعمال في فلسطين. " +
-                        "يضم أحدث قاعات الاجتماعات وصالات العرض، " +
-                        "ومطعماً على السطح يوفر أجمل إطلالة على تلال رام الله الخضراء. " +
-                        "بالقرب من المتحف الفلسطيني ومركز المدينة.",
-                "رام الله", "فلسطين",
-                "+970-2-295-7700", "info@rammashreq.ps",
-                "https://www.rammashreq.ps",
-                4.3, 31.9012, 35.2042,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "مناسب لرجال الأعمال. فطور مجاني مع الإقامة.",
-                "إلغاء مجاني حتى 24 ساعة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "فندق رام المشرق",
+                        "شارع الإرسال، رام الله، فلسطين 00972",
+                        "فندق رام المشرق في قلب رام الله التجارية والثقافية. " +
+                                "وجهة المؤتمرات والأعمال في فلسطين. " +
+                                "يضم أحدث قاعات الاجتماعات وصالات العرض، " +
+                                "ومطعماً على السطح يوفر أجمل إطلالة على تلال رام الله الخضراء. " +
+                                "بالقرب من المتحف الفلسطيني ومركز المدينة.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-7700", "info@rammashreq.ps",
+                        "https://www.rammashreq.ps",
+                        4.3, 31.9012, 35.2042,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "مناسب لرجال الأعمال. فطور مجاني مع الإقامة.",
+                        "إلغاء مجاني حتى 24 ساعة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         // ════════════════════════════════════════════════════
         // H8 — فندق نابلس الكبير (Nablus / نابلس)
         // ════════════════════════════════════════════════════
         Hotel h8 = hotelRepository.findByName("فندق نابلس الكبير")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق نابلس الكبير",
-                "شارع فيصل، نابلس، فلسطين 44000",
-                "فندق نابلس الكبير يرحب بك في عاصمة فلسطين الاقتصادية. " +
-                        "موقعه المتميز قريب من البلدة القديمة وأسواق النحاسين والقيساريات. " +
-                        "جرّب أشهى الكنافة النابلسية الأصيلة في مطعمنا، " +
-                        "واستمتع بجلسة حمام تركي تقليدي في الحمام العثماني الملحق.",
-                "نابلس", "فلسطين",
-                "+970-9-232-8800", "reservations@nablushotel.ps",
-                "https://www.nablushotel.ps",
-                4.1, 32.2181, 35.2534,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قريب من الأسواق الشعبية. أجواء عائلية مرحبة.",
-                "إلغاء مجاني حتى 24 ساعة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, spa, breakfast, parking, restaurant, garden, elevator))));
+                        "فندق نابلس الكبير",
+                        "شارع فيصل، نابلس، فلسطين 44000",
+                        "فندق نابلس الكبير يرحب بك في عاصمة فلسطين الاقتصادية. " +
+                                "موقعه المتميز قريب من البلدة القديمة وأسواق النحاسين والقيساريات. " +
+                                "جرّب أشهى الكنافة النابلسية الأصيلة في مطعمنا، " +
+                                "واستمتع بجلسة حمام تركي تقليدي في الحمام العثماني الملحق.",
+                        "نابلس", "فلسطين",
+                        "+970-9-232-8800", "reservations@nablushotel.ps",
+                        "https://www.nablushotel.ps",
+                        4.1, 32.2181, 35.2534,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قريب من الأسواق الشعبية. أجواء عائلية مرحبة.",
+                        "إلغاء مجاني حتى 24 ساعة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, spa, breakfast, parking, restaurant, garden, elevator))));
 
         // ════════════════════════════════════════════════════
         // H9 — فندق أبراهام الخليل (Hebron / الخليل)
         // ════════════════════════════════════════════════════
         Hotel h9 = hotelRepository.findByName("فندق أبراهام الخليل")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق أبراهام الخليل",
-                "شارع العين، الخليل، فلسطين 90200",
-                "فندق أبراهام في الخليل — مدينة إبراهيم الخليل ومسرح التاريخ. " +
-                        "قريب من المسجد الإبراهيمي والبلدة القديمة العريقة، " +
-                        "ومصانع الزجاج والفخار الخليلية الشهيرة. " +
-                        "يقدم الفندق تجربة إقامة أصيلة مع إطلالة مميزة على جبال الخليل.",
-                "الخليل", "فلسطين",
-                "+970-2-222-9900", "info@abrahamhotel-hebron.ps",
-                "https://www.abrahamhotelhebron.ps",
-                4.0, 31.5326, 35.0998,
-                LocalTime.of(14, 0), LocalTime.of(11, 0),
-                "يرحب بجميع الأديان. طابع عائلي أصيل.",
-                "إلغاء مجاني حتى 24 ساعة.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden))));
+                        "فندق أبراهام الخليل",
+                        "شارع العين، الخليل، فلسطين 90200",
+                        "فندق أبراهام في الخليل — مدينة إبراهيم الخليل ومسرح التاريخ. " +
+                                "قريب من المسجد الإبراهيمي والبلدة القديمة العريقة، " +
+                                "ومصانع الزجاج والفخار الخليلية الشهيرة. " +
+                                "يقدم الفندق تجربة إقامة أصيلة مع إطلالة مميزة على جبال الخليل.",
+                        "الخليل", "فلسطين",
+                        "+970-2-222-9900", "info@abrahamhotel-hebron.ps",
+                        "https://www.abrahamhotelhebron.ps",
+                        4.0, 31.5326, 35.0998,
+                        LocalTime.of(14, 0), LocalTime.of(11, 0),
+                        "يرحب بجميع الأديان. طابع عائلي أصيل.",
+                        "إلغاء مجاني حتى 24 ساعة.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden))));
 
         // ════════════════════════════════════════════════════
         // H10 — فندق الزهور (Tulkarm / طولكرم) — INACTIVE
         // ════════════════════════════════════════════════════
         Hotel h10 = hotelRepository.findByName("فندق الزهور طولكرم")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "فندق الزهور طولكرم",
-                "شارع الاستقلال، طولكرم، فلسطين 26400",
-                "فندق الزهور في طولكرم تحت التجديد الشامل. " +
-                        "سيعود بأبهى حلة في الربع الثاني من عام 2026 " +
-                        "بتصميم عصري يحافظ على الطابع التراثي الفلسطيني.",
-                "طولكرم", "فلسطين",
-                "+970-9-267-1010", "info@zuhourtulkarm.ps",
-                null,
-                3.8, 32.3100, 35.0300,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "مغلق مؤقتاً لأعمال التجديد الشاملة.",
-                "لا تُقبل الحجوزات حالياً — قيد التجديد.",
-                Hotel.Status.INACTIVE,
-                Set.of(wifi, ac))));
+                        "فندق الزهور طولكرم",
+                        "شارع الاستقلال، طولكرم، فلسطين 26400",
+                        "فندق الزهور في طولكرم تحت التجديد الشامل. " +
+                                "سيعود بأبهى حلة في الربع الثاني من عام 2026 " +
+                                "بتصميم عصري يحافظ على الطابع التراثي الفلسطيني.",
+                        "طولكرم", "فلسطين",
+                        "+970-9-267-1010", "info@zuhourtulkarm.ps",
+                        null,
+                        3.8, 32.3100, 35.0300,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "مغلق مؤقتاً لأعمال التجديد الشاملة.",
+                        "لا تُقبل الحجوزات حالياً — قيد التجديد.",
+                        Hotel.Status.INACTIVE,
+                        Set.of(wifi, ac))));
 
         Hotel h11 = hotelRepository.findByName("Reggenza Hotel Downtown Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Reggenza Hotel Downtown Ramallah",
-                "ميدان المنارة، رام الله، فلسطين",
-                "فندق فاخر في قلب رام الله قرب ميدان المنارة، مناسب للمسافرين الباحثين عن إقامة راقية وخدمة عالية المستوى. يوفر غرفا أنيقة وتجربة حضرية قريبة من المطاعم والمراكز الثقافية.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1101", "info@reggenza-ramallah.ps",
-                "https://www.reggenza-ramallah.ps",
-                4.7, 31.9038, 35.2034,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "Reggenza Hotel Downtown Ramallah",
+                        "ميدان المنارة، رام الله، فلسطين",
+                        "فندق فاخر في قلب رام الله قرب ميدان المنارة، مناسب للمسافرين الباحثين عن إقامة راقية وخدمة عالية المستوى. يوفر غرفا أنيقة وتجربة حضرية قريبة من المطاعم والمراكز الثقافية.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1101", "info@reggenza-ramallah.ps",
+                        "https://www.reggenza-ramallah.ps",
+                        4.7, 31.9038, 35.2034,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         Hotel h12 = hotelRepository.findByName("Millennium Palestine Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Millennium Palestine Ramallah",
-                "شارع البيرة، رام الله، فلسطين",
-                "فندق عصري بإطلالة بانورامية على المدينة ومسبح خارجي مناسب للإقامات الفاخرة ورحلات الأعمال. يتميز بمرافق ضيافة واسعة وخدمة احترافية.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1102", "info@millennium-palestine.ps",
-                "https://www.millennium-palestine.ps",
-                4.5, 31.9065, 35.2058,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Millennium Palestine Ramallah",
+                        "شارع البيرة، رام الله، فلسطين",
+                        "فندق عصري بإطلالة بانورامية على المدينة ومسبح خارجي مناسب للإقامات الفاخرة ورحلات الأعمال. يتميز بمرافق ضيافة واسعة وخدمة احترافية.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1102", "info@millennium-palestine.ps",
+                        "https://www.millennium-palestine.ps",
+                        4.5, 31.9065, 35.2058,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h13 = hotelRepository.findByName("Carmel Hotel Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Carmel Hotel Ramallah",
-                "شارع الإرسال، رام الله، فلسطين",
-                "فندق خمس نجوم في شارع الإرسال يضم مركز لياقة وحديقة هادئة وغرفا رحبة. يلائم الضيوف الباحثين عن راحة فاخرة في مركز رام الله.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1103", "info@carmel-ramallah.ps",
-                "https://www.carmel-ramallah.ps",
-                4.5, 31.902, 35.201,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "Carmel Hotel Ramallah",
+                        "شارع الإرسال، رام الله، فلسطين",
+                        "فندق خمس نجوم في شارع الإرسال يضم مركز لياقة وحديقة هادئة وغرفا رحبة. يلائم الضيوف الباحثين عن راحة فاخرة في مركز رام الله.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1103", "info@carmel-ramallah.ps",
+                        "https://www.carmel-ramallah.ps",
+                        4.5, 31.902, 35.201,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         Hotel h14 = hotelRepository.findByName("St Andrew's Guesthouse Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "St Andrew's Guesthouse Ramallah",
-                "شارع النزهة، رام الله، فلسطين",
-                "بيت ضيافة مريح وودود في رام الله يقدم إقامة اقتصادية دافئة وخدمة شخصية. مناسب للزوار والرحالة والوفود الصغيرة.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1104", "info@standrews-ramallah.ps",
-                "https://www.standrews-ramallah.ps",
-                4.55, 31.899, 35.207,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "St Andrew's Guesthouse Ramallah",
+                        "شارع النزهة، رام الله، فلسطين",
+                        "بيت ضيافة مريح وودود في رام الله يقدم إقامة اقتصادية دافئة وخدمة شخصية. مناسب للزوار والرحالة والوفود الصغيرة.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1104", "info@standrews-ramallah.ps",
+                        "https://www.standrews-ramallah.ps",
+                        4.55, 31.899, 35.207,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h15 = hotelRepository.findByName("Royal Court Suites Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Royal Court Suites Ramallah",
-                "قلب رام الله، فلسطين",
-                "أجنحة مريحة في قلب رام الله، تتميز بشرفات خاصة في جميع الغرف وقربها من المطاعم والأسواق. خيار عملي للإقامات الطويلة والعائلية.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1105", "info@royalcourt-ramallah.ps",
-                "https://www.royalcourt-ramallah.ps",
-                4.2, 31.9012, 35.2005,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "Royal Court Suites Ramallah",
+                        "قلب رام الله، فلسطين",
+                        "أجنحة مريحة في قلب رام الله، تتميز بشرفات خاصة في جميع الغرف وقربها من المطاعم والأسواق. خيار عملي للإقامات الطويلة والعائلية.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1105", "info@royalcourt-ramallah.ps",
+                        "https://www.royalcourt-ramallah.ps",
+                        4.2, 31.9012, 35.2005,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h16 = hotelRepository.findByName("MERYLAND Hotel Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "MERYLAND Hotel Ramallah",
-                "200م من ميدان المنارة، رام الله",
-                "فندق ثلاث نجوم قريب من ميدان المنارة يقدم إقامة اقتصادية نظيفة وموقعا مركزيا. مناسب لرحلات العمل القصيرة والزوار الباحثين عن قيمة جيدة.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1106", "info@meryland-ramallah.ps",
-                "https://www.meryland-ramallah.ps",
-                4.1, 31.9035, 35.203,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "MERYLAND Hotel Ramallah",
+                        "200م من ميدان المنارة، رام الله",
+                        "فندق ثلاث نجوم قريب من ميدان المنارة يقدم إقامة اقتصادية نظيفة وموقعا مركزيا. مناسب لرحلات العمل القصيرة والزوار الباحثين عن قيمة جيدة.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1106", "info@meryland-ramallah.ps",
+                        "https://www.meryland-ramallah.ps",
+                        4.1, 31.9035, 35.203,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h17 = hotelRepository.findByName("City Inn Palace Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "City Inn Palace Hotel",
-                "1كم من ميدان المنارة، رام الله",
-                "فندق هادئ يضم حديقة وتراسا وموقف سيارات مجاني، ويقدم إقامة مريحة على مسافة قصيرة من مركز رام الله.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1107", "info@cityinnpalace.ps",
-                "https://www.cityinnpalace.ps",
-                4, 31.9, 35.199,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "City Inn Palace Hotel",
+                        "1كم من ميدان المنارة، رام الله",
+                        "فندق هادئ يضم حديقة وتراسا وموقف سيارات مجاني، ويقدم إقامة مريحة على مسافة قصيرة من مركز رام الله.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1107", "info@cityinnpalace.ps",
+                        "https://www.cityinnpalace.ps",
+                        4, 31.9, 35.199,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h18 = hotelRepository.findByName("Ankars Suites & Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Ankars Suites & Hotel",
-                "400م من مركز السكاكيني، رام الله",
-                "أجنحة فندقية مع صالة رياضية وحديقة وتراس على السطح بالقرب من مركز السكاكيني الثقافي. مناسبة للإقامات العملية والطويلة.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1108", "info@ankars-suites.ps",
-                "https://www.ankars-suites.ps",
-                3.9, 31.8985, 35.2015,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "Ankars Suites & Hotel",
+                        "400م من مركز السكاكيني، رام الله",
+                        "أجنحة فندقية مع صالة رياضية وحديقة وتراس على السطح بالقرب من مركز السكاكيني الثقافي. مناسبة للإقامات العملية والطويلة.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1108", "info@ankars-suites.ps",
+                        "https://www.ankars-suites.ps",
+                        3.9, 31.8985, 35.2015,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h19 = hotelRepository.findByName("Palestine Plaza Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Palestine Plaza Hotel",
-                "800م من المقاطعة، رام الله",
-                "فندق حضري يضم مطعما وتراسا وموقف سيارات مجاني وصالة رياضية. مناسب للمسافرين الباحثين عن موقع عملي في رام الله.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1109", "info@palestineplaza.ps",
-                "https://www.palestineplaza.ps",
-                3.25, 31.905, 35.197,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "Palestine Plaza Hotel",
+                        "800م من المقاطعة، رام الله",
+                        "فندق حضري يضم مطعما وتراسا وموقف سيارات مجاني وصالة رياضية. مناسب للمسافرين الباحثين عن موقع عملي في رام الله.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1109", "info@palestineplaza.ps",
+                        "https://www.palestineplaza.ps",
+                        3.25, 31.905, 35.197,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h20 = hotelRepository.findByName("Mirador Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Mirador Hotel",
-                "2كم من ميدان المنارة، رام الله",
-                "فندق أربع نجوم يوفر خدمة كونسيرج وحديقة وخدمات عملية مثل الصراف الآلي. يقع في منطقة هادئة نسبيا من رام الله.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1110", "info@mirador-ramallah.ps",
-                "https://www.mirador-ramallah.ps",
-                3.65, 31.908, 35.195,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "Mirador Hotel",
+                        "2كم من ميدان المنارة، رام الله",
+                        "فندق أربع نجوم يوفر خدمة كونسيرج وحديقة وخدمات عملية مثل الصراف الآلي. يقع في منطقة هادئة نسبيا من رام الله.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1110", "info@mirador-ramallah.ps",
+                        "https://www.mirador-ramallah.ps",
+                        3.65, 31.908, 35.195,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h21 = hotelRepository.findByName("Lotus Boutique Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Lotus Boutique Hotel",
-                "بيت لحم، فلسطين",
-                "فندق بوتيكي أنيق في بيت لحم يجمع بين التصميم الهادئ والخدمة الشخصية. يوفر موقف سيارات مجاني وإقامة قريبة من قلب المدينة.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1201", "info@lotus-bethlehem.ps",
-                "https://www.lotus-bethlehem.ps",
-                4.4, 31.706, 35.201,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Lotus Boutique Hotel",
+                        "بيت لحم، فلسطين",
+                        "فندق بوتيكي أنيق في بيت لحم يجمع بين التصميم الهادئ والخدمة الشخصية. يوفر موقف سيارات مجاني وإقامة قريبة من قلب المدينة.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1201", "info@lotus-bethlehem.ps",
+                        "https://www.lotus-bethlehem.ps",
+                        4.4, 31.706, 35.201,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h22 = hotelRepository.findByName("Assaraya Palace Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Assaraya Palace Hotel",
-                "بيت لحم القديمة، فلسطين",
-                "فندق بطابع قصر في بيت لحم القديمة يقدم تجربة إقامة راقية وأجواء تراثية. مناسب للضيوف الباحثين عن موقع تاريخي وخدمة مميزة.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1202", "info@assaraya-palace.ps",
-                "https://www.assaraya-palace.ps",
-                4.6, 31.704, 35.205,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Assaraya Palace Hotel",
+                        "بيت لحم القديمة، فلسطين",
+                        "فندق بطابع قصر في بيت لحم القديمة يقدم تجربة إقامة راقية وأجواء تراثية. مناسب للضيوف الباحثين عن موقع تاريخي وخدمة مميزة.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1202", "info@assaraya-palace.ps",
+                        "https://www.assaraya-palace.ps",
+                        4.6, 31.704, 35.205,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h23 = hotelRepository.findByName("Bright Tower Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Bright Tower Hotel",
-                "بيت لحم، فلسطين",
-                "فندق حديث بإطلالات بانورامية على بيت لحم وغرف عصرية مشرقة. يقدم إقامة مريحة وقريبة من معالم المدينة.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1203", "info@brighttower-bethlehem.ps",
-                "https://www.brighttower-bethlehem.ps",
-                4.55, 31.7025, 35.2035,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "Bright Tower Hotel",
+                        "بيت لحم، فلسطين",
+                        "فندق حديث بإطلالات بانورامية على بيت لحم وغرف عصرية مشرقة. يقدم إقامة مريحة وقريبة من معالم المدينة.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1203", "info@brighttower-bethlehem.ps",
+                        "https://www.brighttower-bethlehem.ps",
+                        4.55, 31.7025, 35.2035,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h24 = hotelRepository.findByName("Sancta Maria Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Sancta Maria Hotel",
-                "بيت لحم، فلسطين",
-                "فندق بطابع ديني وتراثي يرحب بالحجاج والزوار، مع موقف سيارات مجاني وموقع مناسب لاستكشاف بيت لحم.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1204", "info@sanctamaria-bethlehem.ps",
-                "https://www.sanctamaria-bethlehem.ps",
-                4.45, 31.7055, 35.206,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Sancta Maria Hotel",
+                        "بيت لحم، فلسطين",
+                        "فندق بطابع ديني وتراثي يرحب بالحجاج والزوار، مع موقف سيارات مجاني وموقع مناسب لاستكشاف بيت لحم.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1204", "info@sanctamaria-bethlehem.ps",
+                        "https://www.sanctamaria-bethlehem.ps",
+                        4.45, 31.7055, 35.206,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h25 = hotelRepository.findByName("Grand Hotel Bethlehem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Grand Hotel Bethlehem",
-                "بيت لحم، فلسطين",
-                "فندق فاخر عالي التقييم في بيت لحم يوفر غرفا واسعة وخدمة راقية. مناسب للإقامات المميزة وقريب من أهم المعالم.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1205", "info@grand-bethlehem.ps",
-                "https://www.grand-bethlehem.ps",
-                4.65, 31.707, 35.202,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "Grand Hotel Bethlehem",
+                        "بيت لحم، فلسطين",
+                        "فندق فاخر عالي التقييم في بيت لحم يوفر غرفا واسعة وخدمة راقية. مناسب للإقامات المميزة وقريب من أهم المعالم.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1205", "info@grand-bethlehem.ps",
+                        "https://www.grand-bethlehem.ps",
+                        4.65, 31.707, 35.202,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         Hotel h26 = hotelRepository.findByName("Christmas Hotel Bethlehem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Christmas Hotel Bethlehem",
-                "شارع المهد، بيت لحم، فلسطين",
-                "فندق قريب من كنيسة المهد بطابع احتفالي وخدمة تناسب الحجاج والعائلات. يتميز بموقعه على شارع المهد.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1206", "info@christmas-bethlehem.ps",
-                "https://www.christmas-bethlehem.ps",
-                4.3, 31.7035, 35.208,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Christmas Hotel Bethlehem",
+                        "شارع المهد، بيت لحم، فلسطين",
+                        "فندق قريب من كنيسة المهد بطابع احتفالي وخدمة تناسب الحجاج والعائلات. يتميز بموقعه على شارع المهد.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1206", "info@christmas-bethlehem.ps",
+                        "https://www.christmas-bethlehem.ps",
+                        4.3, 31.7035, 35.208,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h27 = hotelRepository.findByName("Paradise Hotel Bethlehem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Paradise Hotel Bethlehem",
-                "بيت لحم، فلسطين",
-                "فندق عائلي محاط بحديقة يقدم إقامة مريحة وهادئة في بيت لحم. مناسب للعائلات والمجموعات الصغيرة.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1207", "info@paradise-bethlehem.ps",
-                "https://www.paradise-bethlehem.ps",
-                4.1, 31.708, 35.199,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "Paradise Hotel Bethlehem",
+                        "بيت لحم، فلسطين",
+                        "فندق عائلي محاط بحديقة يقدم إقامة مريحة وهادئة في بيت لحم. مناسب للعائلات والمجموعات الصغيرة.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1207", "info@paradise-bethlehem.ps",
+                        "https://www.paradise-bethlehem.ps",
+                        4.1, 31.708, 35.199,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h28 = hotelRepository.findByName("Alexander Hotel Bethlehem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Alexander Hotel Bethlehem",
-                "بيت لحم، فلسطين",
-                "فندق اقتصادي قرب البلدة القديمة في بيت لحم يقدم غرفا عملية وخدمة ودودة. خيار مناسب للمسافرين ذوي الميزانية المحدودة.",
-                "بيت لحم", "فلسطين",
-                "+970-2-274-1208", "info@alexander-bethlehem.ps",
-                "https://www.alexander-bethlehem.ps",
-                3.9, 31.7015, 35.2045,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "Alexander Hotel Bethlehem",
+                        "بيت لحم، فلسطين",
+                        "فندق اقتصادي قرب البلدة القديمة في بيت لحم يقدم غرفا عملية وخدمة ودودة. خيار مناسب للمسافرين ذوي الميزانية المحدودة.",
+                        "بيت لحم", "فلسطين",
+                        "+970-2-274-1208", "info@alexander-bethlehem.ps",
+                        "https://www.alexander-bethlehem.ps",
+                        3.9, 31.7015, 35.2045,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h29 = hotelRepository.findByName("American Colony Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "American Colony Hotel",
-                "شارع نابلس، القدس الشرقية، فلسطين",
-                "فندق تاريخي فاخر من فئة خمس نجوم في القدس الشرقية، يعد من معالم الضيافة الكلاسيكية. يجمع بين الحدائق الهادئة والعمارة التاريخية والخدمة الراقية.",
-                "القدس", "فلسطين",
-                "+970-2-628-1301", "info@american-colony.ps",
-                "https://www.american-colony.ps",
-                4.9, 31.7895, 35.231,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "American Colony Hotel",
+                        "شارع نابلس، القدس الشرقية، فلسطين",
+                        "فندق تاريخي فاخر من فئة خمس نجوم في القدس الشرقية، يعد من معالم الضيافة الكلاسيكية. يجمع بين الحدائق الهادئة والعمارة التاريخية والخدمة الراقية.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1301", "info@american-colony.ps",
+                        "https://www.american-colony.ps",
+                        4.9, 31.7895, 35.231,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         Hotel h30 = hotelRepository.findByName("Legacy Hotel Jerusalem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Legacy Hotel Jerusalem",
-                "القدس، فلسطين",
-                "فندق حديث في القدس يوفر إطلالات على المدينة ومرافق راقية ومسبحا للضيوف. مناسب للإقامات العائلية ورحلات العمل.",
-                "القدس", "فلسطين",
-                "+970-2-628-1302", "info@legacy-jerusalem.ps",
-                "https://www.legacy-jerusalem.ps",
-                4.6, 31.782, 35.22,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Legacy Hotel Jerusalem",
+                        "القدس، فلسطين",
+                        "فندق حديث في القدس يوفر إطلالات على المدينة ومرافق راقية ومسبحا للضيوف. مناسب للإقامات العائلية ورحلات العمل.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1302", "info@legacy-jerusalem.ps",
+                        "https://www.legacy-jerusalem.ps",
+                        4.6, 31.782, 35.22,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h31 = hotelRepository.findByName("National Hotel Jerusalem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "National Hotel Jerusalem",
-                "شارع الزهراء، القدس، فلسطين",
-                "فندق مركزي في شارع الزهراء يقدم غرفا عائلية وموقعا مناسبا لاستكشاف القدس. يتميز بخدمة عملية وأجواء مريحة.",
-                "القدس", "فلسطين",
-                "+970-2-628-1303", "info@national-jerusalem.ps",
-                "https://www.national-jerusalem.ps",
-                4.3, 31.785, 35.228,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "National Hotel Jerusalem",
+                        "شارع الزهراء، القدس، فلسطين",
+                        "فندق مركزي في شارع الزهراء يقدم غرفا عائلية وموقعا مناسبا لاستكشاف القدس. يتميز بخدمة عملية وأجواء مريحة.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1303", "info@national-jerusalem.ps",
+                        "https://www.national-jerusalem.ps",
+                        4.3, 31.785, 35.228,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h32 = hotelRepository.findByName("Jerusalem Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Jerusalem Hotel",
-                "شارع نابلس، القدس، فلسطين",
-                "فندق بوتيكي في مبنى تاريخي من القرن التاسع عشر قرب شارع نابلس. يوفر تجربة أصيلة تجمع بين التراث والراحة.",
-                "القدس", "فلسطين",
-                "+970-2-628-1304", "info@jerusalem-hotel.ps",
-                "https://www.jerusalem-hotel.ps",
-                4.4, 31.787, 35.2295,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Jerusalem Hotel",
+                        "شارع نابلس، القدس، فلسطين",
+                        "فندق بوتيكي في مبنى تاريخي من القرن التاسع عشر قرب شارع نابلس. يوفر تجربة أصيلة تجمع بين التراث والراحة.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1304", "info@jerusalem-hotel.ps",
+                        "https://www.jerusalem-hotel.ps",
+                        4.4, 31.787, 35.2295,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h33 = hotelRepository.findByName("Golden Walls Hotel Jerusalem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Golden Walls Hotel Jerusalem",
-                "القدس القديمة، فلسطين",
-                "فندق قريب من باب العامود وخطوات من أسوار البلدة القديمة. مناسب للزوار الراغبين في موقع تاريخي مركزي.",
-                "القدس", "فلسطين",
-                "+970-2-628-1305", "info@goldenwalls-jerusalem.ps",
-                "https://www.goldenwalls-jerusalem.ps",
-                4.2, 31.778, 35.235,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Golden Walls Hotel Jerusalem",
+                        "القدس القديمة، فلسطين",
+                        "فندق قريب من باب العامود وخطوات من أسوار البلدة القديمة. مناسب للزوار الراغبين في موقع تاريخي مركزي.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1305", "info@goldenwalls-jerusalem.ps",
+                        "https://www.goldenwalls-jerusalem.ps",
+                        4.2, 31.778, 35.235,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h34 = hotelRepository.findByName("Christmas Hotel Jerusalem")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Christmas Hotel Jerusalem",
-                "القدس، فلسطين",
-                "فندق مناسب للحجاج والزوار بميزانية متوسطة، يقدم إقامة ودودة وموقعا مريحا في القدس.",
-                "القدس", "فلسطين",
-                "+970-2-628-1306", "info@christmas-jerusalem.ps",
-                "https://www.christmas-jerusalem.ps",
-                4, 31.781, 35.226,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Christmas Hotel Jerusalem",
+                        "القدس، فلسطين",
+                        "فندق مناسب للحجاج والزوار بميزانية متوسطة، يقدم إقامة ودودة وموقعا مريحا في القدس.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1306", "info@christmas-jerusalem.ps",
+                        "https://www.christmas-jerusalem.ps",
+                        4, 31.781, 35.226,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h35 = hotelRepository.findByName("Mount of Olives Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Mount of Olives Hotel",
-                "جبل الزيتون، القدس، فلسطين",
-                "فندق على جبل الزيتون يتميز بإطلالة رائعة على البلدة القديمة وقبة الصخرة. خيار هادئ للزوار ومحبي المشاهد التاريخية.",
-                "القدس", "فلسطين",
-                "+970-2-628-1307", "info@mountofolives-hotel.ps",
-                "https://www.mountofolives-hotel.ps",
-                4.1, 31.778, 35.243,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Mount of Olives Hotel",
+                        "جبل الزيتون، القدس، فلسطين",
+                        "فندق على جبل الزيتون يتميز بإطلالة رائعة على البلدة القديمة وقبة الصخرة. خيار هادئ للزوار ومحبي المشاهد التاريخية.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1307", "info@mountofolives-hotel.ps",
+                        "https://www.mountofolives-hotel.ps",
+                        4.1, 31.778, 35.243,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h36 = hotelRepository.findByName("Notre Dame Jerusalem Center")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Notre Dame Jerusalem Center",
-                "مقابل باب الجديد، القدس، فلسطين",
-                "مركز ضيافة تاريخي مقابل باب الجديد يضم مطعما على السطح بإطلالة أيقونية. مناسب للحجاج والضيوف الباحثين عن موقع استثنائي.",
-                "القدس", "فلسطين",
-                "+970-2-628-1308", "info@notredame-jerusalem.ps",
-                "https://www.notredame-jerusalem.ps",
-                4.5, 31.78, 35.227,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Notre Dame Jerusalem Center",
+                        "مقابل باب الجديد، القدس، فلسطين",
+                        "مركز ضيافة تاريخي مقابل باب الجديد يضم مطعما على السطح بإطلالة أيقونية. مناسب للحجاج والضيوف الباحثين عن موقع استثنائي.",
+                        "القدس", "فلسطين",
+                        "+970-2-628-1308", "info@notredame-jerusalem.ps",
+                        "https://www.notredame-jerusalem.ps",
+                        4.5, 31.78, 35.227,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h37 = hotelRepository.findByName("InterContinental Jericho")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "InterContinental Jericho",
-                "أريحا، فلسطين",
-                "منتجع دولي واسع في أريحا يقدم مرافق متكاملة ومسابح ومساحات استرخاء. مناسب للعائلات والإقامات الفاخرة في المناخ الدافئ.",
-                "أريحا", "فلسطين",
-                "+970-2-232-1401", "info@intercontinental-jericho.ps",
-                "https://www.intercontinental-jericho.ps",
-                4.25, 31.85, 35.456,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "InterContinental Jericho",
+                        "أريحا، فلسطين",
+                        "منتجع دولي واسع في أريحا يقدم مرافق متكاملة ومسابح ومساحات استرخاء. مناسب للعائلات والإقامات الفاخرة في المناخ الدافئ.",
+                        "أريحا", "فلسطين",
+                        "+970-2-232-1401", "info@intercontinental-jericho.ps",
+                        "https://www.intercontinental-jericho.ps",
+                        4.25, 31.85, 35.456,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h38 = hotelRepository.findByName("Dead Sea View Hotel Jericho")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Dead Sea View Hotel Jericho",
-                "طريق البحر الميت، أريحا، فلسطين",
-                "فندق بإطلالة على البحر الميت يوفر سبا ومسابح ووصولا سهلا إلى الطريق الصحراوي. مناسب للاسترخاء والعلاجات الطبيعية.",
-                "أريحا", "فلسطين",
-                "+970-2-232-1402", "info@deadsea-jericho.ps",
-                "https://www.deadsea-jericho.ps",
-                4.35, 31.78, 35.5,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Dead Sea View Hotel Jericho",
+                        "طريق البحر الميت، أريحا، فلسطين",
+                        "فندق بإطلالة على البحر الميت يوفر سبا ومسابح ووصولا سهلا إلى الطريق الصحراوي. مناسب للاسترخاء والعلاجات الطبيعية.",
+                        "أريحا", "فلسطين",
+                        "+970-2-232-1402", "info@deadsea-jericho.ps",
+                        "https://www.deadsea-jericho.ps",
+                        4.35, 31.78, 35.5,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h39 = hotelRepository.findByName("Oasis Hotel Jericho")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Oasis Hotel Jericho",
-                "أريحا، فلسطين",
-                "فندق واحة هادئ بين النخيل في أريحا مع مسبح خارجي وأجواء مريحة. مثالي للإجازات القصيرة والهدوء.",
-                "أريحا", "فلسطين",
-                "+970-2-232-1403", "info@oasis-jericho.ps",
-                "https://www.oasis-jericho.ps",
-                4, 31.862, 35.45,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Oasis Hotel Jericho",
+                        "أريحا، فلسطين",
+                        "فندق واحة هادئ بين النخيل في أريحا مع مسبح خارجي وأجواء مريحة. مثالي للإجازات القصيرة والهدوء.",
+                        "أريحا", "فلسطين",
+                        "+970-2-232-1403", "info@oasis-jericho.ps",
+                        "https://www.oasis-jericho.ps",
+                        4, 31.862, 35.45,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h40 = hotelRepository.findByName("Seven Trees Hotel Jericho")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Seven Trees Hotel Jericho",
-                "أريحا، فلسطين",
-                "فندق اقتصادي في أريحا وسط حديقة هادئة، يقدم إقامة بسيطة ومناسبة للرحلات القصيرة.",
-                "أريحا", "فلسطين",
-                "+970-2-232-1404", "info@seventrees-jericho.ps",
-                "https://www.seventrees-jericho.ps",
-                3.8, 31.87, 35.445,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "Seven Trees Hotel Jericho",
+                        "أريحا، فلسطين",
+                        "فندق اقتصادي في أريحا وسط حديقة هادئة، يقدم إقامة بسيطة ومناسبة للرحلات القصيرة.",
+                        "أريحا", "فلسطين",
+                        "+970-2-232-1404", "info@seventrees-jericho.ps",
+                        "https://www.seventrees-jericho.ps",
+                        3.8, 31.87, 35.445,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h41 = hotelRepository.findByName("Al-Yasmeen Hotel Nablus")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Al-Yasmeen Hotel Nablus",
-                "نابلس، فلسطين",
-                "فندق مركزي قريب من سوق البلدة القديمة في نابلس، يقدم إقامة مريحة وأجواء محلية أصيلة.",
-                "نابلس", "فلسطين",
-                "+970-9-232-1501", "info@alyasmeen-nablus.ps",
-                "https://www.alyasmeen-nablus.ps",
-                4.2, 32.223, 35.258,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Al-Yasmeen Hotel Nablus",
+                        "نابلس، فلسطين",
+                        "فندق مركزي قريب من سوق البلدة القديمة في نابلس، يقدم إقامة مريحة وأجواء محلية أصيلة.",
+                        "نابلس", "فلسطين",
+                        "+970-9-232-1501", "info@alyasmeen-nablus.ps",
+                        "https://www.alyasmeen-nablus.ps",
+                        4.2, 32.223, 35.258,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h42 = hotelRepository.findByName("Mövenpick Hotel Nablus")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Mövenpick Hotel Nablus",
-                "نابلس، فلسطين",
-                "فندق خمس نجوم بعلامة دولية في نابلس يقدم غرفا فاخرة ومرافق ضيافة متكاملة. مناسب للأعمال والإقامات الراقية.",
-                "نابلس", "فلسطين",
-                "+970-9-232-1502", "info@movenpick-nablus.ps",
-                "https://www.movenpick-nablus.ps",
-                4.5, 32.215, 35.25,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "Mövenpick Hotel Nablus",
+                        "نابلس، فلسطين",
+                        "فندق خمس نجوم بعلامة دولية في نابلس يقدم غرفا فاخرة ومرافق ضيافة متكاملة. مناسب للأعمال والإقامات الراقية.",
+                        "نابلس", "فلسطين",
+                        "+970-9-232-1502", "info@movenpick-nablus.ps",
+                        "https://www.movenpick-nablus.ps",
+                        4.5, 32.215, 35.25,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         Hotel h43 = hotelRepository.findByName("Al-Balad Hotel Nablus")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Al-Balad Hotel Nablus",
-                "البلدة القديمة، نابلس، فلسطين",
-                "فندق تراثي في مبنى محلي داخل البلدة القديمة، يتيح للضيوف تجربة نابلس الأصيلة وقرب الأسواق التاريخية.",
-                "نابلس", "فلسطين",
-                "+970-9-232-1503", "info@albalad-nablus.ps",
-                "https://www.albalad-nablus.ps",
-                4, 32.22, 35.255,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Al-Balad Hotel Nablus",
+                        "البلدة القديمة، نابلس، فلسطين",
+                        "فندق تراثي في مبنى محلي داخل البلدة القديمة، يتيح للضيوف تجربة نابلس الأصيلة وقرب الأسواق التاريخية.",
+                        "نابلس", "فلسطين",
+                        "+970-9-232-1503", "info@albalad-nablus.ps",
+                        "https://www.albalad-nablus.ps",
+                        4, 32.22, 35.255,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h44 = hotelRepository.findByName("Al-Zeitoun Hotel Jenin")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Al-Zeitoun Hotel Jenin",
-                "جنين، فلسطين",
-                "فندق عالي التقييم في جنين يقدم غرفا راقية وميني بار وسبا فاخر. مناسب للضيوف الباحثين عن إقامة مميزة شمال فلسطين.",
-                "جنين", "فلسطين",
-                "+970-4-250-1504", "info@alzeitoun-jenin.ps",
-                "https://www.alzeitoun-jenin.ps",
-                5, 32.461, 35.296,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
+                        "Al-Zeitoun Hotel Jenin",
+                        "جنين، فلسطين",
+                        "فندق عالي التقييم في جنين يقدم غرفا راقية وميني بار وسبا فاخر. مناسب للضيوف الباحثين عن إقامة مميزة شمال فلسطين.",
+                        "جنين", "فلسطين",
+                        "+970-4-250-1504", "info@alzeitoun-jenin.ps",
+                        "https://www.alzeitoun-jenin.ps",
+                        5, 32.461, 35.296,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, spa, gym, pool, breakfast, parking, restaurant, cityView, rooftop, elevator))));
 
         Hotel h45 = hotelRepository.findByName("Hebron Heritage Hotel")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Hebron Heritage Hotel",
-                "البلدة القديمة، الخليل، فلسطين",
-                "فندق تراثي في مبنى حجري داخل البلدة القديمة في الخليل. يقدم تجربة محلية قريبة من الأسواق والمعالم التاريخية.",
-                "الخليل", "فلسطين",
-                "+970-2-222-1601", "info@hebronheritage.ps",
-                "https://www.hebronheritage.ps",
-                4, 31.54, 35.105,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
+                        "Hebron Heritage Hotel",
+                        "البلدة القديمة، الخليل، فلسطين",
+                        "فندق تراثي في مبنى حجري داخل البلدة القديمة في الخليل. يقدم تجربة محلية قريبة من الأسواق والمعالم التاريخية.",
+                        "الخليل", "فلسطين",
+                        "+970-2-222-1601", "info@hebronheritage.ps",
+                        "https://www.hebronheritage.ps",
+                        4, 31.54, 35.105,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, restaurant, garden, cityView, elevator))));
 
         Hotel h46 = hotelRepository.findByName("Al-Reef Hotel Hebron")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Al-Reef Hotel Hebron",
-                "الخليل، فلسطين",
-                "فندق اقتصادي قريب من المسجد الإبراهيمي، يوفر غرفا عملية وخدمة بسيطة للمسافرين.",
-                "الخليل", "فلسطين",
-                "+970-2-222-1602", "info@alreef-hebron.ps",
-                "https://www.alreef-hebron.ps",
-                3.8, 31.53, 35.095,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "Al-Reef Hotel Hebron",
+                        "الخليل، فلسطين",
+                        "فندق اقتصادي قريب من المسجد الإبراهيمي، يوفر غرفا عملية وخدمة بسيطة للمسافرين.",
+                        "الخليل", "فلسطين",
+                        "+970-2-222-1602", "info@alreef-hebron.ps",
+                        "https://www.alreef-hebron.ps",
+                        3.8, 31.53, 35.095,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h47 = hotelRepository.findByName("Palestine House Hotel Hebron")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Palestine House Hotel Hebron",
-                "الخليل، فلسطين",
-                "فندق محلي تديره عائلة في الخليل، يقدم ضيافة ودودة وأجواء فلسطينية أصيلة.",
-                "الخليل", "فلسطين",
-                "+970-2-222-1603", "info@palestinehouse-hebron.ps",
-                "https://www.palestinehouse-hebron.ps",
-                3.9, 31.535, 35.1,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "Palestine House Hotel Hebron",
+                        "الخليل، فلسطين",
+                        "فندق محلي تديره عائلة في الخليل، يقدم ضيافة ودودة وأجواء فلسطينية أصيلة.",
+                        "الخليل", "فلسطين",
+                        "+970-2-222-1603", "info@palestinehouse-hebron.ps",
+                        "https://www.palestinehouse-hebron.ps",
+                        3.9, 31.535, 35.1,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         Hotel h48 = hotelRepository.findByName("Al-Mathaf Hotel Gaza")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Al-Mathaf Hotel Gaza",
-                "غزة، فلسطين",
-                "فندق بوتيكي قرب المتحف في غزة يجمع بين الأجواء الثقافية والضيافة الهادئة. مناسب للزوار الباحثين عن تجربة محلية مميزة.",
-                "غزة", "فلسطين",
-                "+970-8-282-1701", "info@almathaf-gaza.ps",
-                "https://www.almathaf-gaza.ps",
-                4.2, 31.505, 34.456,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, breakfast, parking, restaurant, garden, elevator))));
+                        "Al-Mathaf Hotel Gaza",
+                        "غزة، فلسطين",
+                        "فندق بوتيكي قرب المتحف في غزة يجمع بين الأجواء الثقافية والضيافة الهادئة. مناسب للزوار الباحثين عن تجربة محلية مميزة.",
+                        "غزة", "فلسطين",
+                        "+970-8-282-1701", "info@almathaf-gaza.ps",
+                        "https://www.almathaf-gaza.ps",
+                        4.2, 31.505, 34.456,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, breakfast, parking, restaurant, garden, elevator))));
 
         Hotel h49 = hotelRepository.findByName("Windmill Hotel Ramallah")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Windmill Hotel Ramallah",
-                "البيرة، رام الله، فلسطين",
-                "فندق قريب من منطقة ميدان المنارة والبيرة، يقدم إقامة عملية ومريحة للزوار ورجال الأعمال.",
-                "رام الله", "فلسطين",
-                "+970-2-295-1702", "info@windmill-ramallah.ps",
-                "https://www.windmill-ramallah.ps",
-                4, 31.91, 35.21,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
+                        "Windmill Hotel Ramallah",
+                        "البيرة، رام الله، فلسطين",
+                        "فندق قريب من منطقة ميدان المنارة والبيرة، يقدم إقامة عملية ومريحة للزوار ورجال الأعمال.",
+                        "رام الله", "فلسطين",
+                        "+970-2-295-1702", "info@windmill-ramallah.ps",
+                        "https://www.windmill-ramallah.ps",
+                        4, 31.91, 35.21,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, smartTv, ac, gym, breakfast, parking, restaurant, rooftop, elevator))));
 
         Hotel h50 = hotelRepository.findByName("Daraghmeh Hotel Nablus")
                 .orElseGet(() -> hotelRepository.save(hotel(
-                "Daraghmeh Hotel Nablus",
-                "نابلس، فلسطين",
-                "فندق محلي ميسور في نابلس يخدم المسافرين والزبائن المحليين بغرف بسيطة وموقع مناسب.",
-                "نابلس", "فلسطين",
-                "+970-9-232-1703", "info@daraghmeh-nablus.ps",
-                "https://www.daraghmeh-nablus.ps",
-                3.7, 32.219, 35.253,
-                LocalTime.of(14, 0), LocalTime.of(12, 0),
-                "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
-                "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
-                Hotel.Status.ACTIVE,
-                Set.of(wifi, ac, breakfast, parking, elevator))));
+                        "Daraghmeh Hotel Nablus",
+                        "نابلس، فلسطين",
+                        "فندق محلي ميسور في نابلس يخدم المسافرين والزبائن المحليين بغرف بسيطة وموقع مناسب.",
+                        "نابلس", "فلسطين",
+                        "+970-9-232-1703", "info@daraghmeh-nablus.ps",
+                        "https://www.daraghmeh-nablus.ps",
+                        3.7, 32.219, 35.253,
+                        LocalTime.of(14, 0), LocalTime.of(12, 0),
+                        "قوانين إقامة مرنة مع احترام الهدوء والممتلكات العامة. يمنع التدخين داخل الغرف وتتوفر خدمات الضيوف على مدار اليوم.",
+                        "إلغاء مجاني حتى 24 ساعة قبل الوصول. بعد ذلك قد تطبق رسوم الليلة الأولى.",
+                        Hotel.Status.ACTIVE,
+                        Set.of(wifi, ac, breakfast, parking, elevator))));
 
         List<Hotel> saved = hotelRepository.findAll();
 
@@ -1294,10 +1306,10 @@ public class LoadDatabase implements CommandLineRunner {
     // ═════════════════════════════════════════════════════════════════════════
 
     private void seedHotelImages(List<Hotel> hotels) {
+        hotelImageRepository.deleteAll();
         int added = 0;
         for (Hotel hotel : hotels) {
             if (hotel == null || hotel.getId() == null) continue;
-            if (!hotelImageRepository.findByHotelId(hotel.getId()).isEmpty()) continue;
 
             List<String> urls = getHotelImages(hotel.getName());
             List<HotelImage> images = urls.stream().map(url -> {
@@ -1317,34 +1329,34 @@ public class LoadDatabase implements CommandLineRunner {
     private List<String> getHotelImages(String hotelName) {
         return switch (hotelName) {
             case "فندق الكرمل القدس" -> List.of(
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://images.unsplash.com/photo-1704221700518-de22a52c0cd6?w=600&auto=format&fit=crop&q=60",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "فندق دار السلام" -> List.of(
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "فندق قصر فلسطين" -> List.of(
-                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1704221700518-de22a52c0cd6?w=600&auto=format&fit=crop&q=60",
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "فندق جورج" -> List.of(
-                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1853043396/photo/church-of-the-nativity.jpg?s=612x612&w=0&k=20&c=IJMiuPMcUzsfykSpflJnvwmeTf78Ckn5_Y93siSrPnA=",
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA="
             );
             case "منتجع سانت جورج" -> List.of(
-                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/1853043396/photo/church-of-the-nativity.jpg?s=612x612&w=0&k=20&c=IJMiuPMcUzsfykSpflJnvwmeTf78Ckn5_Y93siSrPnA=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "فندق أريحا الريف" -> List.of(
                     "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
@@ -1365,10 +1377,10 @@ public class LoadDatabase implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80"
             );
             case "فندق أبراهام الخليل" -> List.of(
-                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1153448195/photo/a-day-in-hebron.jpg?s=612x612&w=0&k=20&c=0HBsv8zPQH9WbjNueRJqz7jONmKAZQO7ocTz35lPrRo=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA="
             );
             case "فندق الزهور طولكرم" -> List.of(
                     "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80"
@@ -1440,69 +1452,69 @@ public class LoadDatabase implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80"
             );
             case "Sancta Maria Hotel" -> List.of(
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1853043396/photo/church-of-the-nativity.jpg?s=612x612&w=0&k=20&c=IJMiuPMcUzsfykSpflJnvwmeTf78Ckn5_Y93siSrPnA=",
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Grand Hotel Bethlehem" -> List.of(
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/1853043396/photo/church-of-the-nativity.jpg?s=612x612&w=0&k=20&c=IJMiuPMcUzsfykSpflJnvwmeTf78Ckn5_Y93siSrPnA=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y="
             );
             case "Christmas Hotel Bethlehem" -> List.of(
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1853043396/photo/church-of-the-nativity.jpg?s=612x612&w=0&k=20&c=IJMiuPMcUzsfykSpflJnvwmeTf78Ckn5_Y93siSrPnA=",
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA="
             );
             case "Paradise Hotel Bethlehem" -> List.of(
-                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA="
             );
             case "Alexander Hotel Bethlehem" -> List.of(
-                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/185009951/photo/bethlehem.jpg?s=612x612&w=0&k=20&c=Ge_x-isyyrr-SMqyZtsbtF1jstH1DDFQMsZnSLel56Y=",
+                    "https://media.istockphoto.com/id/1853043396/photo/church-of-the-nativity.jpg?s=612x612&w=0&k=20&c=IJMiuPMcUzsfykSpflJnvwmeTf78Ckn5_Y93siSrPnA=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y="
             );
             case "American Colony Hotel" -> List.of(
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Legacy Hotel Jerusalem" -> List.of(
-                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://images.unsplash.com/photo-1704221700518-de22a52c0cd6?w=600&auto=format&fit=crop&q=60",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y="
             );
             case "National Hotel Jerusalem" -> List.of(
-                    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Jerusalem Hotel" -> List.of(
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1704221700518-de22a52c0cd6?w=600&auto=format&fit=crop&q=60",
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI="
             );
             case "Golden Walls Hotel Jerusalem" -> List.of(
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Christmas Hotel Jerusalem" -> List.of(
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://images.unsplash.com/photo-1704221700518-de22a52c0cd6?w=600&auto=format&fit=crop&q=60",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA="
             );
             case "Mount of Olives Hotel" -> List.of(
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://media.istockphoto.com/id/508035738/photo/king-david-hotel-in-jerusalem-israel.jpg?s=612x612&w=0&k=20&c=Gh4f9vrlPB-skD53XitA-QUzlbQ21VKi5T4_ZMMwlu4=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Notre Dame Jerusalem Center" -> List.of(
-                    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1704221700518-de22a52c0cd6?w=600&auto=format&fit=crop&q=60",
+                    "https://media.istockphoto.com/id/2151730488/photo/the-car-traffic-at-jerusalem-downtown-with-green-parks-shopping-malls-hotels-old-town-walls.jpg?s=612x612&w=0&k=20&c=SwVadgpqUkyqu_HaPWvPTqHUt_kJZmHIDbve-ITVAaI=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y="
             );
             case "InterContinental Jericho" -> List.of(
                     "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
@@ -1545,19 +1557,19 @@ public class LoadDatabase implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80"
             );
             case "Hebron Heritage Hotel" -> List.of(
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1153448195/photo/a-day-in-hebron.jpg?s=612x612&w=0&k=20&c=0HBsv8zPQH9WbjNueRJqz7jONmKAZQO7ocTz35lPrRo=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA="
             );
             case "Al-Reef Hotel Hebron" -> List.of(
-                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1153448195/photo/a-day-in-hebron.jpg?s=612x612&w=0&k=20&c=0HBsv8zPQH9WbjNueRJqz7jONmKAZQO7ocTz35lPrRo=",
+                    "https://media.istockphoto.com/id/936290088/photo/clean-hotel-sign-on-white-building.jpg?s=612x612&w=0&k=20&c=HZZLMLjc7waCxuPXjOD4bPi0fgqS_pFUtAL4ZOD8i3Y=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Palestine House Hotel Hebron" -> List.of(
-                    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1529290130-4ca3753253ae?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&w=1200&q=80"
+                    "https://media.istockphoto.com/id/1153448195/photo/a-day-in-hebron.jpg?s=612x612&w=0&k=20&c=0HBsv8zPQH9WbjNueRJqz7jONmKAZQO7ocTz35lPrRo=",
+                    "https://media.istockphoto.com/id/499208871/photo/hotel-sign.jpg?s=612x612&w=0&k=20&c=TsofZxDrY2JKyT8myRNuf7wr8FKMovvKfZcJFCP6OrA=",
+                    "https://media.istockphoto.com/id/1171972597/photo/hotel.jpg?s=612x612&w=0&k=20&c=szkQij4lk389wErV9wo1XfkXtRvjpiGJgONf1sQ6zG0="
             );
             case "Al-Mathaf Hotel Gaza" -> List.of(
                     "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
@@ -2617,5 +2629,3 @@ public class LoadDatabase implements CommandLineRunner {
         return new BigDecimal(val);
     }
 }
-
-
