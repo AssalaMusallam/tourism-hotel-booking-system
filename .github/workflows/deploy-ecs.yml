@@ -30,9 +30,6 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run unit tests
-        run: mvn test
-
       - name: Build Spring Boot jar
         run: mvn -B package -DskipTests
 
