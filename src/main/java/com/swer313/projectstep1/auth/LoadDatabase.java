@@ -45,6 +45,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -228,97 +229,108 @@ public class LoadDatabase implements CommandLineRunner {
     // ═════════════════════════════════════════════════════════════════════════
 
     private List<Amenity> seedAmenities() {
-        if (amenityRepository.count() > 0) {
-            log.info("⏭  Amenities already exist — skipping.");
-            return amenityRepository.findAll();
+        List<Amenity> requiredAmenities = List.of(
+                // CONNECTIVITY
+                am("إنترنت فايبر عالي السرعة",
+                        "إنترنت لاسلكي بسرعة 500 ميغابايت في جميع أرجاء الفندق",
+                        Amenity.AmenityCategory.CONNECTIVITY, false, true),
+                am("تلفاز ذكي 4K مع Netflix",
+                        "شاشة 65 بوصة 4K مع Netflix وYouTube وتطبيقات البث المباشر",
+                        Amenity.AmenityCategory.ENTERTAINMENT, false, true),
+
+                // WELLNESS
+                am("مركز صحي وسبا فاخر",
+                        "سبا متكامل مع مساج وسونا وحمام بخار وجلسات تدليك",
+                        Amenity.AmenityCategory.WELLNESS, true, true),
+                am("صالة رياضية مجهزة",
+                        "صالة رياضية 24/7 بأحدث الأجهزة ومدربين شخصيين",
+                        Amenity.AmenityCategory.WELLNESS, false, true),
+                am("مسبح خارجي مدفأ",
+                        "مسبح خارجي مفتوح طوال السنة مع خدمة شاملة",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+                am("جاكوزي خاص",
+                        "جاكوزي خاص بغرف السويت مع إطلالة بانورامية",
+                        Amenity.AmenityCategory.WELLNESS, true, true),
+
+                // DINING
+                am("إفطار بوفيه مجاني",
+                        "بوفيه إفطار يومي بأصناف عربية وعالمية متنوعة",
+                        Amenity.AmenityCategory.DINING, false, true),
+                am("خدمة غرف على مدار الساعة",
+                        "خدمة غرف 24 ساعة من قائمة المطعم الكاملة",
+                        Amenity.AmenityCategory.DINING, false, true),
+                am("ميني بار متميز",
+                        "ميني بار مكتمل بمشروبات ومقبلات فاخرة",
+                        Amenity.AmenityCategory.DINING, true, true),
+                am("مطعم عربي أصيل",
+                        "مطعم يقدم أشهى المأكولات الفلسطينية والعربية الأصيلة",
+                        Amenity.AmenityCategory.DINING, false, true),
+
+                // COMFORT
+                am("تكييف وتدفئة مركزي",
+                        "تحكم فردي بدرجة الحرارة عبر ثرموستات ذكي في كل غرفة",
+                        Amenity.AmenityCategory.COMFORT, false, true),
+                am("شرفة خاصة مع إطلالة",
+                        "شرفة خاصة مؤثثة بإطلالة على المدينة أو الحديقة",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+                am("إطلالة بانورامية على المدينة",
+                        "غرف علوية مع إطلالة 180° على المدينة القديمة والمعالم الأثرية",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+
+                // PARKING & SECURITY
+                am("موقف سيارات مجاني مع خدمة فاليه",
+                        "موقف مجاني مع خدمة فاليه على مدار الساعة",
+                        Amenity.AmenityCategory.PARKING, false, true),
+                am("خزنة إلكترونية في الغرفة",
+                        "خزنة إلكترونية بحجم كافٍ لحفظ اللابتوب والمستندات",
+                        Amenity.AmenityCategory.SECURITY, false, true),
+
+                // CLEANING
+                am("خدمة غسيل وكوي",
+                        "خدمة غسيل وكوي في نفس اليوم متاحة يومياً",
+                        Amenity.AmenityCategory.CLEANING, false, true),
+
+                // ACCESSIBILITY
+                am("مصعد كهربائي",
+                        "مصاعد حديثة للوصول لجميع الطوابق بسهولة",
+                        Amenity.AmenityCategory.ACCESSIBILITY, false, true),
+
+                // OUTDOOR
+                am("حديقة وفضاء خارجي",
+                        "حديقة جميلة مع أماكن للجلوس في الهواء الطلق وتراس مسقوف",
+                        Amenity.AmenityCategory.OUTDOOR, false, true),
+                am("مقهى سطح الفندق",
+                        "مقهى روفتوب مفتوح مع مشروبات ومقبلات وإطلالة ساحرة على المدينة",
+                        Amenity.AmenityCategory.DINING, false, true),
+
+                // INACTIVE
+                am("مسبح داخلي (تحت التجديد)",
+                        "مسبح داخلي مغلق مؤقتاً لأعمال التجديد الشاملة",
+                        Amenity.AmenityCategory.OUTDOOR, false, false)
+        );
+
+        List<Amenity> existingAmenities = new ArrayList<>(amenityRepository.findAll());
+        int createdCount = 0;
+
+        for (Amenity requiredAmenity : requiredAmenities) {
+            boolean alreadyExists = existingAmenities.stream()
+                    .anyMatch(existing -> requiredAmenity.getName().equals(existing.getName()));
+
+            if (!alreadyExists) {
+                Amenity savedAmenity = amenityRepository.save(requiredAmenity);
+                existingAmenities.add(savedAmenity);
+                createdCount++;
+            }
         }
 
-        // CONNECTIVITY
-        Amenity wifi      = am("إنترنت فايبر عالي السرعة",
-                "إنترنت لاسلكي بسرعة 500 ميغابايت في جميع أرجاء الفندق",
-                Amenity.AmenityCategory.CONNECTIVITY, false, true);
-        Amenity smartTv   = am("تلفاز ذكي 4K مع Netflix",
-                "شاشة 65 بوصة 4K مع Netflix وYouTube وتطبيقات البث المباشر",
-                Amenity.AmenityCategory.ENTERTAINMENT, false, true);
+        if (createdCount == 0) {
+            log.info("⏭  Amenities already complete — no missing records to add.");
+        } else {
+            log.info("✅ Amenities ensured: {} missing records created, {} total available.",
+                    createdCount, existingAmenities.size());
+        }
 
-        // WELLNESS
-        Amenity spa       = am("مركز صحي وسبا فاخر",
-                "سبا متكامل مع مساج وسونا وحمام بخار وجلسات تدليك",
-                Amenity.AmenityCategory.WELLNESS, true, true);
-        Amenity gym       = am("صالة رياضية مجهزة",
-                "صالة رياضية 24/7 بأحدث الأجهزة ومدربين شخصيين",
-                Amenity.AmenityCategory.WELLNESS, false, true);
-        Amenity pool      = am("مسبح خارجي مدفأ",
-                "مسبح خارجي مفتوح طوال السنة مع خدمة شاملة",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-        Amenity jacuzzi   = am("جاكوزي خاص",
-                "جاكوزي خاص بغرف السويت مع إطلالة بانورامية",
-                Amenity.AmenityCategory.WELLNESS, true, true);
-
-        // DINING
-        Amenity breakfast = am("إفطار بوفيه مجاني",
-                "بوفيه إفطار يومي بأصناف عربية وعالمية متنوعة",
-                Amenity.AmenityCategory.DINING, false, true);
-        Amenity roomSvc   = am("خدمة غرف على مدار الساعة",
-                "خدمة غرف 24 ساعة من قائمة المطعم الكاملة",
-                Amenity.AmenityCategory.DINING, false, true);
-        Amenity minibar   = am("ميني بار متميز",
-                "ميني بار مكتمل بمشروبات ومقبلات فاخرة",
-                Amenity.AmenityCategory.DINING, true, true);
-        Amenity restaurant = am("مطعم عربي أصيل",
-                "مطعم يقدم أشهى المأكولات الفلسطينية والعربية الأصيلة",
-                Amenity.AmenityCategory.DINING, false, true);
-
-        // COMFORT
-        Amenity ac        = am("تكييف وتدفئة مركزي",
-                "تحكم فردي بدرجة الحرارة عبر ثرموستات ذكي في كل غرفة",
-                Amenity.AmenityCategory.COMFORT, false, true);
-        Amenity balcony   = am("شرفة خاصة مع إطلالة",
-                "شرفة خاصة مؤثثة بإطلالة على المدينة أو الحديقة",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-        Amenity cityView  = am("إطلالة بانورامية على المدينة",
-                "غرف علوية مع إطلالة 180° على المدينة القديمة والمعالم الأثرية",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-
-        // PARKING & SECURITY
-        Amenity parking   = am("موقف سيارات مجاني مع خدمة فاليه",
-                "موقف مجاني مع خدمة فاليه على مدار الساعة",
-                Amenity.AmenityCategory.PARKING, false, true);
-        Amenity safe      = am("خزنة إلكترونية في الغرفة",
-                "خزنة إلكترونية بحجم كافٍ لحفظ اللابتوب والمستندات",
-                Amenity.AmenityCategory.SECURITY, false, true);
-
-        // CLEANING
-        Amenity laundry   = am("خدمة غسيل وكوي",
-                "خدمة غسيل وكوي في نفس اليوم متاحة يومياً",
-                Amenity.AmenityCategory.CLEANING, false, true);
-
-        // ACCESSIBILITY
-        Amenity elevator  = am("مصعد كهربائي",
-                "مصاعد حديثة للوصول لجميع الطوابق بسهولة",
-                Amenity.AmenityCategory.ACCESSIBILITY, false, true);
-
-        // OUTDOOR
-        Amenity garden    = am("حديقة وفضاء خارجي",
-                "حديقة جميلة مع أماكن للجلوس في الهواء الطلق وتراس مسقوف",
-                Amenity.AmenityCategory.OUTDOOR, false, true);
-        Amenity rooftop   = am("مقهى سطح الفندق",
-                "مقهى روفتوب مفتوح مع مشروبات ومقبلات وإطلالة ساحرة على المدينة",
-                Amenity.AmenityCategory.DINING, false, true);
-
-        // INACTIVE — لتست حالة الخدمات غير النشطة
-        Amenity oldPool   = am("مسبح داخلي (تحت التجديد)",
-                "مسبح داخلي مغلق مؤقتاً لأعمال التجديد الشاملة",
-                Amenity.AmenityCategory.OUTDOOR, false, false);
-
-        List<Amenity> saved = amenityRepository.saveAll(List.of(
-                wifi, smartTv, spa, gym, pool, jacuzzi,
-                breakfast, roomSvc, minibar, restaurant,
-                ac, balcony, cityView, parking, safe,
-                laundry, elevator, garden, rooftop, oldPool));
-
-        log.info("✅ Amenities created: {} (19 active + 1 inactive)", saved.size());
-        return saved;
+        return amenityRepository.findAll();
     }
 
     private Amenity am(String name, String desc,
@@ -385,7 +397,6 @@ public class LoadDatabase implements CommandLineRunner {
         Amenity garden    = findAmenity(amenities, "حديقة وفضاء خارجي");
         Amenity rooftop   = findAmenity(amenities, "مقهى سطح الفندق");
         Amenity elevator  = findAmenity(amenities, "مصعد كهربائي");
-        Amenity laundry      = findAmenity(amenities, "خدمة غسيل وكوي الملابس");
 
         // ════════════════════════════════════════════════════
         // H1 — فندق الكرمل القدس (Jerusalem / القدس)
