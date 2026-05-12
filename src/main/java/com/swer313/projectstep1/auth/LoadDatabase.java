@@ -397,7 +397,6 @@ public class LoadDatabase implements CommandLineRunner {
         Amenity garden    = findAmenity(amenities, "حديقة وفضاء خارجي");
         Amenity rooftop   = findAmenity(amenities, "مقهى سطح الفندق");
         Amenity elevator  = findAmenity(amenities, "مصعد كهربائي");
-        Amenity credit = findAmenity(amenities, "كردت ");
 
         // ════════════════════════════════════════════════════
         // H1 — فندق الكرمل القدس (Jerusalem / القدس)
